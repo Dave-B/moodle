@@ -10,7 +10,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
-if ($_SERVER['SCRIPT_NAME'] == '/git.php') {
+if ($_SERVER['SCRIPT_NAME'] == '/lib/git.php') {
     // Script called directly, so prepare for debugging.
     error_reporting(E_ALL & ~E_NOTICE);
     ini_set('display_errors', 'On');
@@ -21,6 +21,7 @@ if ($_SERVER['SCRIPT_NAME'] == '/git.php') {
 $gitpath = '/usr/bin/git';
 $repospath = $_SERVER['DOCUMENT_ROOT'];
 //echo $repospath."\n";
+$passfile = $repospath.'/pass.csv';
 
 function git_get_status() {
     global $gitpath, $repospath;
@@ -48,4 +49,28 @@ function git_get_current_branch_clean() {
 }
 //echo git_get_current_branch();
 
+function git_set_db_pass($branch, $pass) {
+    global $passfile;
+    $fh = fopen($passfile, 'a');
+    fwrite($fh, $branch.','.$pass."\n");
+    fclose($fh);
+}
+//git_set_db_pass('branch3', 'pass3');
+
+function git_get_db_pass($branch) {
+    global $passfile;
+    $fh = fopen($passfile, 'r');
+    $contents = fread($fh, filesize($passfile));
+    fclose($fh);
+
+    $lines = explode("\n", $contents);
+    foreach($lines as $line) {
+        if (strstr($line, $branch.',')) {
+            $line = explode(",", $line);
+            return $line[1];
+        }
+    }
+    return false;
+}
+//echo git_get_db_pass('branch');
 ?>

@@ -563,7 +563,15 @@ if ($nextstage == SAVE) {
         $str .= '$CFG->dbname    = \''.$INSTALL['dbname']."';\r\n";
         // support single quotes in db user/passwords
         $str .= '$CFG->dbuser    = \''.addsingleslashes($INSTALL['dbuser'])."';\r\n";
-        $str .= '$CFG->dbpass    = \''.addsingleslashes($INSTALL['dbpass'])."';\r\n";
+        if(isset($gitcurrentbranch)) {
+            // Write pass to file excluded from Git SCM
+            git_set_db_pass($gitcurrentbranch, addsingleslashes($INSTALL['dbpass']));
+            // Set config to load pass from file
+            $str .= "include_once('lib/git.php');\r\n";
+            $str .= '$CFG->dbpass  = git_get_db_pass($gitcurrentbranch); // Current git branch name'."\r\n";
+        } else {
+            $str .= '$CFG->dbpass    = \''.addsingleslashes($INSTALL['dbpass'])."';\r\n";
+        }
     }
     $str .= '$CFG->dbpersist =  false;'."\r\n";
     $str .= '$CFG->prefix    = \''.$INSTALL['prefix']."';\r\n";
