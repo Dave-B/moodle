@@ -41,9 +41,11 @@ function git_get_current_branch() {
 }
 
 function git_get_current_branch_clean() {
-    // Make lowercase, remove spaces.
+    // Make lowercase, remove spaces, etc.
     $branch = git_get_current_branch();
-    $branch = str_replace(' ', '', $branch);
+    $bad  = array(' ', '-');
+    $good = array('', '_');
+    $branch = str_replace($bad, $good, $branch);
     $branch = strtolower($branch);
     return $branch;
 }
