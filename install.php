@@ -10,6 +10,13 @@ if (file_exists('./config.php')) {
     $configfile = './config.php';
 }
 
+/// Are we working with Git?
+if (file_exists('./.git')) {
+    include_once('lib/git.php');
+    $gitcurrentbranch = git_get_current_branch_clean(); // Current git branch name
+    //echo $gitcurrentbranch;
+}
+
 ///==========================================================================//
 /// We are doing this in stages
 define ('WELCOME',            0); /// 0. Welcome and language settings
@@ -61,7 +68,11 @@ if ( empty($INSTALL['language']) and empty($_POST['language']) ) {
     $INSTALL['dbpass']          = '';
     $INSTALL['dbtype']          = 'mysql';
     $INSTALL['dbname']          = 'moodle';
-    $INSTALL['prefix']          = 'mdl_';
+    if(isset($gitcurrentbranch)) {
+        $INSTALL['prefix']          = $gitcurrentbranch.'_';
+    } else {
+        $INSTALL['prefix']          = 'mdl_';
+    }
 
     $INSTALL['downloadlangpack']       = false;
     $INSTALL['showdownloadlangpack']   = true;
@@ -70,7 +81,11 @@ if ( empty($INSTALL['language']) and empty($_POST['language']) ) {
 /// To be used by the Installer
     $INSTALL['wwwroot']         = '';
     $INSTALL['dirroot']         = dirname(__FILE__);
-    $INSTALL['dataroot']        = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'moodledata';
+    if(isset($gitcurrentbranch)) {
+        $INSTALL['dataroot']        = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'mdata_'.$gitcurrentbranch;
+    } else {
+        $INSTALL['dataroot']        = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'moodledata';
+    }
 
 /// To be configured in the Installer
     $INSTALL['wwwrootform']         = '';
@@ -180,7 +195,11 @@ if ($INSTALL['wwwroot'] == '') {
             $CFG->dataroot = ''; //can not find secure location for dataroot
             break;
         }
-        $CFG->dataroot = dirname($parrent).'/moodledata';
+        if(isset($gitcurrentbranch)) {
+            $CFG->dataroot = dirname($parrent).'/mdata_'.$gitcurrentbranch;
+        } else {
+            $CFG->dataroot = dirname($parrent).'/moodledata';
+        }
     }
         $INSTALL['dataroot'] = $CFG->dataroot;
 }
@@ -288,7 +307,11 @@ if ($INSTALL['stage'] == DATABASE) {
         $INSTALL['dbname'] = '';
 
         if ($INSTALL['prefix'] == '') { /// must have a prefix
-            $INSTALL['prefix'] = 'mdl_';
+            if(isset($gitcurrentbranch)) {
+                $INSTALL['prefix']          = $gitcurrentbranch.'_';
+            } else {
+                $INSTALL['prefix']          = 'mdl_';
+            }
         }
     }
 
