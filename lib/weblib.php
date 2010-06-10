@@ -2019,6 +2019,7 @@ function clean_text($text, $format=FORMAT_MOODLE) {
         default:
 
             if (!empty($CFG->enablehtmlpurifier)) {
+                //this is PHP5 only, the lib/setup.php contains a disabler for PHP4
                 $text = purify_html($text);
             } else {
             /// Fix non standard entity notations
@@ -2046,24 +2047,29 @@ function clean_text($text, $format=FORMAT_MOODLE) {
 
 /**
  * KSES replacement cleaning function - uses HTML Purifier.
+ *
+ * @global object
+ * @param string $text The (X)HTML string to purify
  */
 function purify_html($text) {
     global $CFG;
 
     // this can not be done only once because we sometimes need to reset the cache
-    $cachedir = $CFG->dataroot.'/cache/htmlpurifier/';
+    $cachedir = $CFG->dataroot.'/cache/htmlpurifier';
     $status = check_dir_exists($cachedir, true, true);
 
     static $purifier = false;
+    static $config;
     if ($purifier === false) {
-        require_once $CFG->libdir.'/htmlpurifier/HTMLPurifier.auto.php';
+        require_once $CFG->libdir.'/htmlpurifier/HTMLPurifier.safe-includes.php';
         $config = HTMLPurifier_Config::createDefault();
-        $config->set('Core', 'AcceptFullDocuments', false);
-        $config->set('Core', 'Encoding', 'UTF-8');
-        $config->set('HTML', 'Doctype', 'XHTML 1.0 Transitional');
-        $config->set('Cache', 'SerializerPath', $cachedir);
-        $config->set('URI', 'AllowedSchemes', array('http'=>1, 'https'=>1, 'ftp'=>1, 'irc'=>1, 'nntp'=>1, 'news'=>1, 'rtsp'=>1, 'teamspeak'=>1, 'gopher'=>1, 'mms'=>1));
-        $config->set('Attr', 'AllowedFrameTargets', array('_blank'));
+        $config->set('Output.Newline', "\n");
+        $config->set('Core.ConvertDocumentToFragment', true);
+        $config->set('Core.Encoding', 'UTF-8');
+        $config->set('HTML.Doctype', 'XHTML 1.0 Transitional');
+        $config->set('Cache.SerializerPath', $cachedir);
+        $config->set('URI.AllowedSchemes', array('http'=>1, 'https'=>1, 'ftp'=>1, 'irc'=>1, 'nntp'=>1, 'news'=>1, 'rtsp'=>1, 'teamspeak'=>1, 'gopher'=>1, 'mms'=>1));
+        $config->set('Attr.AllowedFrameTargets', array('_blank'));
         $purifier = new HTMLPurifier($config);
     }
     return $purifier->purify($text);
@@ -2133,6 +2139,7 @@ function cleanAttributes2($htmlArray){
                 }
             }
             $arreach['value'] = preg_replace("/j\s*a\s*v\s*a\s*s\s*c\s*r\s*i\s*p\s*t/i", "Xjavascript", $arreach['value']);
+            $arreach['value'] = preg_replace("/v\s*b\s*s\s*c\s*r\s*i\s*p\s*t/i", "Xvbscript", $arreach['value']);
             $arreach['value'] = preg_replace("/e\s*x\s*p\s*r\s*e\s*s\s*s\s*i\s*o\s*n/i", "Xexpression", $arreach['value']);
             $arreach['value'] = preg_replace("/b\s*i\s*n\s*d\s*i\s*n\s*g/i", "Xbinding", $arreach['value']);
         } else if ($arreach['name'] == 'href') {
@@ -2520,8 +2527,10 @@ function print_header ($title='', $heading='', $navigation='', $focus='',
         $meta .= '<script type="text/javascript"  src="'.$CFG->httpswwwroot.'/lib/swfobject/swfobject.js"></script>';
         $meta .= 
            "<script type=\"text/javascript\">\n".
+           "//<![CDATA[\n".
            "  var flashversion = swfobject.getFlashPlayerVersion();\n".
-           "  YAHOO.util.Connect.asyncRequest('GET','".$CFG->httpswwwroot."/login/environment.php?sesskey=".sesskey()."&amp;flashversion='+flashversion.major+'.'+flashversion.minor+'.'+flashversion.release);\n".
+           "  YAHOO.util.Connect.asyncRequest('GET','".$CFG->httpswwwroot."/login/environment.php?sesskey=".sesskey()."&flashversion='+flashversion.major+'.'+flashversion.minor+'.'+flashversion.release);\n".
+           "//]]>\n".
            "</script>";
     }
 
@@ -4693,6 +4702,12 @@ function print_group_picture($group, $courseid, $large=false, $return=false, $li
 
     $context = get_context_instance(CONTEXT_COURSE, $courseid);
 
+    // If there is no picture, do nothing
+    if (!$group->picture) {
+        return '';
+    }
+
+    // If picture is hidden, only show to those with course:managegroups
     if ($group->hidepicture and !has_capability('moodle/course:managegroups', $context)) {
         return '';
     }
@@ -4707,12 +4722,13 @@ function print_group_picture($group, $courseid, $large=false, $return=false, $li
     } else {
         $file = 'f2';
     }
-    if ($group->picture) {  // Print custom group picture
-        require_once($CFG->libdir.'/filelib.php');
-        $grouppictureurl = get_file_url($group->id.'/'.$file.'.jpg', null, 'usergroup');
-        $output .= '<img class="grouppicture" src="'.$grouppictureurl.'"'.
-            ' alt="'.s(get_string('group').' '.$group->name).'" title="'.s($group->name).'"/>';
-    }
+    
+    // Print custom group picture
+    require_once($CFG->libdir.'/filelib.php');
+    $grouppictureurl = get_file_url($group->id.'/'.$file.'.jpg', null, 'usergroup');
+    $output .= '<img class="grouppicture" src="'.$grouppictureurl.'"'.
+        ' alt="'.s(get_string('group').' '.$group->name).'" title="'.s($group->name).'"/>';
+
     if ($link or has_capability('moodle/site:accessallgroups', $context)) {
         $output .= '</a>';
     }
