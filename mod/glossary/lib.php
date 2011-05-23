@@ -189,7 +189,15 @@ function glossary_user_outline($course, $user, $mod, $glossary) {
     } else if ($grade) {
         $result = new object();
         $result->info = get_string('grade') . ': ' . $grade->str_long_grade;
-        $result->time = $grade->dategraded;
+
+        //datesubmitted == time created. dategraded == time modified or time overridden
+        //if grade was last modified by the user themselves use date graded. Otherwise use date submitted
+        if ($grade->usermodified == $user->id || empty($grade->datesubmitted)) {
+            $result->time = $grade->dategraded;
+        } else {
+            $result->time = $grade->datesubmitted;
+        }
+
         return $result;
     }
 
@@ -301,12 +309,11 @@ function glossary_print_recent_activity($course, $viewfullnames, $timestart) {
         if ($entrycount < GLOSSARY_RECENT_ACTIVITY_LIMIT) {
             if ($entry->approved) {
                 $dimmed = '';
-                $urlparams = array('g' => $entry->glossaryid, 'mode' => 'entry', 'hook' => $entry->id);
+                $link = $CFG->wwwroot.'/mod/glossary/view.php?g='.$entry->glossaryid.'&amp;mode=entry&amp;hook='.$entry->id;
             } else {
                 $dimmed = ' dimmed_text';
-                $urlparams = array('id' => $ids[$entry->glossaryid], 'mode' => 'approval', 'hook' => format_text($entry->concept, true));
+                $link = $CFG->wwwroot.'/mod/glossary/view.php?id='.$ids[$entry->glossaryid].'&amp;mode=approval&amp;hook='.format_text($entry->concept, true);
             }
-            $link = new moodle_url($CFG->wwwroot.'/mod/glossary/view.php' , $urlparams);
             echo '<div class="head'.$dimmed.'">';
             echo '<div class="date">'.userdate($entry->timemodified, $strftimerecent).'</div>';
             echo '<div class="name">'.fullname($entry, $viewfullnames).'</div>';
