@@ -1,0 +1,89 @@
+html, body#tinymce {background-color:#FFF;}
+body {padding:0;}
+ body.lang-vi {font-family:Arial, Verdana, Helvetica, sans-serif !important;}
+ 
+ /**
+  * Links
+  */
+a {text-decoration:none;color:#002D62;}
+a:hover {text-decoration:underline;color:#476A8F;}
+
+#page-header a {text-decoration:none;color:#FFF;font-weight:bold;}
+#page-header a:hover {text-decoration:underline;color:#FFF;}
+ 
+.tree_item {color:#002D62;}
+.tree_item:hover {color:#476A8F;}
+
+ /**
+  * Headings
+  */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {color:#002B5F;}
+
+#page-header h1 {color:#FFF;}
+
+ h1.main,
+ h2.main,
+ h3.main,
+ h4.main,
+ h5.main,
+ h6.main {text-align:center;font-weight:bold;color:#002B5F;}
+ 
+ th.header,
+ td.header,
+ div.header,
+ .navbar {border-color:#DDDDDD;}
+ 
+.block .header {background-color:#F5F6FA;padding:2px 4px;}
+.block .content {background-color:#FFF;border-top:1px solid #D5D5D5;}
+.block .content hr {border-top-color:#D5D5D5;}
+ /**
+  * Boxes
+  */
+ .header,
+ .navbar {background:none;}
+ 
+ /**
+  * Overriding base
+  */
+#page-header {background-color:#002147;color:#FFF;}
+.pagelayout-frontpage #page-header {border:0;margin:0;width:100%;}
+
+.headermain,
+#page-header .headermenu {margin-left:15px;float:none;text-align:left;}
+#page-header .logo {float:right;margin:1em;}
+
+.navbar {margin:0;padding-left:10px;border:0;border-top: 1px solid #3f5774;}
+
+.path-course-view .weeks .content, .path-course-view .topics .content, .path-course-view .weeks .section, .path-course-view .topics .section {background-color:#FFF;}
+
+#page-mod-resource-view .resourcecontent {margin:0; border: 1px dotted red;}
+#page-mod-resource-view .resourcecontent object {border: 1px dotted green;}
+
+ /**
+  * Course spine page
+  */
+ h3.sectionname {margin:.5em;font-size:140%;}
+ #section-0 h3.sectionname {margin:.5em;font-size:180%;}
+ .course-content div.summary {margin-left:2em;}
+ .section div.right {margin-top:2px;}
+
+/**
+ * Mod theme tweaks
+ */
+/* *** Quiz *** */
+#page-mod-quiz-edit * {border-radius:0;}
+#page-mod-quiz-edit .questionbankwindow div.header {background-color:#F5F6FA;}
+#page-mod-quiz-edit div.quizpage .pagecontent {background-color:#F5F6FA;border:1px solid #D5D5D5;}
+#page-mod-quiz-edit div.question div.content div.questioncontrols {background-color:#FFF;positon:static;width:auto;}
+#page-mod-quiz-edit div.question div.content div.points {background-color:#F5F6FA;border:1px solid #D5D5D5;float:right;margin:20px 0 2px 0;position:static;width:auto;}
+#page-mod-quiz-edit .editq div.question div.content  {background-color:#FFF;}
+#page-mod-quiz-edit .questionbankwindow div.header a {text-decoration:none;color:#002D62;font-weight:normal;}
+#page-mod-quiz-edit .questionbankwindow div.header a:hover {text-decoration:underline;color:#476A8F;}
+#page-mod-quiz-edit div.questionbank,
+#page-mod-quiz-edit div.container div.generalbox {background-color:#FFF;border:1px solid #D5D5D5;padding: 2px;}
+.que .formulation {background-color:#FFF;border:1px solid #D5D5D5}
