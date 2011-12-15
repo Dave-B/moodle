@@ -1,0 +1,130 @@
+html, body#tinymce {background-color:#FFFFC8;}
+body {padding:0; font-size: 14px;}
+body.lang-vi {font-family:Arial, Verdana, Helvetica, sans-serif !important;}
+ 
+ /**
+  * Links
+  */
+a {text-decoration:none;color:#002D62;}
+a:hover {text-decoration:underline;color:#476A8F;}
+
+.headermenu a {text-decoration:none;color:#00043A;font-weight:bold;}
+.headermenu a:hover {text-decoration:underline;color:#00043A;}
+.navbar a {text-decoration:none;color:#fff;font-weight:bold;}
+.navbar a:hover {text-decoration:underline;color:#fff;}
+ 
+.tree_item {color:#002D62;}
+.tree_item:hover {color:#476A8F;}
+
+ /**
+  * Headings
+  */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {color:#00043A;}
+
+h1.main,
+h2.main,
+h3.main,
+h4.main,
+h5.main,
+h6.main {text-align:center;font-weight:bold;color:#002B5F;}
+
+th.header,
+td.header,
+div.header,
+.navbar {border-color:#DDDDDD;}
+
+.block, .block .content {border-bottom-left-radius: .7em; border-bottom-right-radius: .5em; overflow: clip;}
+.block .header {color: #005; background-color: #FFD400;;padding:2px 4px;}
+.block .content {background-color:#FFF;border-top:1px solid #D5D5D5;}
+.block .content hr {border-top-color:#D5D5D5;}
+
+#dock {
+  background: #FFD400 url("[[pix:theme|oy_grad]]") repeat-y left;
+}
+#dock .dockeditem .dockedtitle, #dockeditempanel .dockeditempanel_hd {
+  background: #FFD400 url("[[pix:theme|oy_grad]]") repeat-y right;
+  border-color: #666;
+}
+#dockeditempanel .dockeditempanel_hd h2 {
+  color: #00043A;
+}
+
+ /**
+  * Boxes
+  */
+ .header,
+ .navbar {background:none;}
+
+ /**
+  * Overriding base
+  */
+#page-header {
+  color: #005;
+  background: #FFD400 url("[[pix:theme|oy_grad]]") repeat-y left;}
+.pagelayout-frontpage #page-header {border:0;margin:0;width:100%;}
+
+.headermain,
+#page-header .headermenu {margin-left:15px;float:none;text-align:left;}
+#page-header .logo {float:right;margin:.5em;}
+
+.navbar {
+  color: white;
+  font-size: 0.8em;
+  background: #666 url("[[pix:theme|fade]]") repeat-x top;
+  border: 1px solid black;
+  border-width: 1px 0 1px 0;
+  margin: 0;
+  }
+
+.nav-inner {
+  background: url("[[pix:theme|fade2]]") repeat-x bottom;
+  padding: 0 1em;
+  }
+.navbar .breadcrumb {
+  margin: 7px 5px 0 5px;
+}
+.navbar .navbutton {
+  background: url("[[pix:theme|fade2]]") repeat-x bottom;
+  margin: 3px 0;
+}
+
+.path-course-view .weeks .content, .path-course-view .topics .content, .path-course-view .weeks .section, .path-course-view .topics .section {background-color:#FFF;}
+
+#page-mod-resource-view .resourcecontent {margin:0; border: 1px dotted red;}
+#page-mod-resource-view .resourcecontent object {border: 1px dotted green;}
+
+ /**
+  * Course spine page
+  */
+ h3.sectionname {margin:.5em;font-size:140%;}
+ #section-0 h3.sectionname {margin:.5em;font-size:180%;}
+ .course-content div.summary {margin-left:2em;}
+ .section div.right {margin-top:2px;}
+
+img.iconsmall {
+  height: 12px;
+  margin-right: 6px;
+  vertical-align: middle;
+  width: 12px;
+}
+
+/**
+ * Mod theme tweaks
+ */
+/* *** Quiz *** */
+#page-mod-quiz-edit * {border-radius:0;}
+#page-mod-quiz-edit .questionbankwindow div.header {background-color:#F5F6FA;}
+#page-mod-quiz-edit div.quizpage .pagecontent {background-color:#F5F6FA;border:1px solid #D5D5D5;}
+#page-mod-quiz-edit div.question div.content div.questioncontrols {background-color:#FFF;positon:static;width:auto;}
+#page-mod-quiz-edit div.question div.content div.points {background-color:#F5F6FA;border:1px solid #D5D5D5;float:right;margin:20px 0 2px 0;position:static;width:auto;}
+#page-mod-quiz-edit .editq div.question div.content  {background-color:#FFF;}
+#page-mod-quiz-edit .questionbankwindow div.header a {text-decoration:none;color:#002D62;font-weight:normal;}
+#page-mod-quiz-edit .questionbankwindow div.header a:hover {text-decoration:underline;color:#476A8F;}
+#page-mod-quiz-edit div.questionbank,
+#page-mod-quiz-edit div.container div.generalbox {background-color:#FFF;border:1px solid #D5D5D5;padding: 2px;}
+.que .formulation {background-color:#FFF;border:1px solid #D5D5D5}
