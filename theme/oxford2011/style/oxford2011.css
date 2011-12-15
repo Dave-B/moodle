@@ -1,5 +1,5 @@
 html, body#tinymce {background-color:#FFF;}
-body {padding:0;}
+body {padding:0; font-size: 14px;}
  body.lang-vi {font-family:Arial, Verdana, Helvetica, sans-serif !important;}
  
  /**
@@ -59,6 +59,21 @@ h6 {color:#002B5F;}
 
 .navbar {margin:0;padding-left:10px;border:0;border-top: 1px solid #3f5774;}
 
+.navbar {
+  color: white;
+  font-size: 0.8em;
+  border-top: 1px solid #3f5774;
+  border-width: 1px 0 1px 0;
+  margin: 0;
+  padding: 0 1em;
+  }
+.navbar .breadcrumb {
+  margin: 7px 5px 0 5px;
+}
+.navbar .navbutton {
+  margin: 3px 0;
+}
+
 .path-course-view .weeks .content, .path-course-view .topics .content, .path-course-view .weeks .section, .path-course-view .topics .section {background-color:#FFF;}
 
 #page-mod-resource-view .resourcecontent {margin:0; border: 1px dotted red;}
@@ -71,6 +86,13 @@ h6 {color:#002B5F;}
  #section-0 h3.sectionname {margin:.5em;font-size:180%;}
  .course-content div.summary {margin-left:2em;}
  .section div.right {margin-top:2px;}
+
+img.iconsmall {
+  height: 12px;
+  margin-right: 6px;
+  vertical-align: middle;
+  width: 12px;
+}
 
 /**
  * Mod theme tweaks
