@@ -5,15 +5,15 @@ body.lang-vi {font-family:Arial, Verdana, Helvetica, sans-serif !important;}
  /**
   * Links
   */
-a {text-decoration:none;color:#002D62;}
+a, a:visited {text-decoration:none;color: #334859;}
 a:hover {text-decoration:underline;color:#476A8F;}
 
-.headermenu a {text-decoration:none;color:#00043A;font-weight:bold;}
-.headermenu a:hover {text-decoration:underline;color:#00043A;}
-.navbar a {text-decoration:none;color:#fff;font-weight:bold;}
-.navbar a:hover {text-decoration:underline;color:#fff;}
+#page-header a, #page-header a:visited {text-decoration:none;color:#000;font-weight:bold;}
+#page-header a:hover {text-decoration:underline;color:#00043A;}
+#page-header .navbar a {text-decoration:none;color:#fff;font-weight:bold;}
+#page-header .navbar a:hover {text-decoration:underline;color:#fff;}
  
-.tree_item {color:#002D62;}
+.tree_item {color:#334859;}
 .tree_item:hover {color:#476A8F;}
 
  /**
@@ -33,15 +33,30 @@ h4.main,
 h5.main,
 h6.main {text-align:center;font-weight:bold;color:#002B5F;}
 
+.coursebox {border-radius: 1em; background: #fff; padding: .3em; width:  auto;}
+#page-content .region-content {padding: 0;}
+#page-site-index #page-content .region-content {padding: .5em;}
+#page-content #region-pre .region-content {margin-right: .5em;}
+#page-content #region-post .region-content {margin-left: .5em;}
+#page-content-wrapper {margin: 1em;}
+.course-content ul.topics li.section {margin: 1em;}
+.course-content ul.topics li#section-0 {margin-top: 0;}
+
 th.header,
 td.header,
 div.header,
 .navbar {border-color:#DDDDDD;}
 
-.block, .block .content {border-bottom-left-radius: .7em; border-bottom-right-radius: .5em; overflow: clip;}
-.block .header {color: #005; background-color: #FFD400;;padding:2px 4px;}
-.block .content {background-color:#FFF;border-top:1px solid #D5D5D5;}
+.block .header, .header {color: #005; background: #FFD400; padding: 2px 4px;}
+.block .content {border-bottom-left-radius: 1em; border-bottom-right-radius: 1em; overflow: clip; background-color: #fff; border-top:1px solid #D5D5D5; padding-bottom: .5em}
+#region-pre .block {border-bottom-left-radius: 1em; border-bottom-right-radius: 1em;}
+#region-pre .block.hidden {border-radius: 0; padding: 0;}
 .block .content hr {border-top-color:#D5D5D5;}
+
+.sitetopic {border: 0; padding: 0 5px;}
+.sitetopic h1 {margin-top: 0;}
+.mod_introbox {border: 0;}
+h2.headingblock.header {padding: .3em; font-size: 120%;}
 
 #dock {
   background: #FFD400 url("[[pix:theme|oy_grad]]") repeat-y left;
@@ -53,12 +68,6 @@ div.header,
 #dockeditempanel .dockeditempanel_hd h2 {
   color: #00043A;
 }
-
- /**
-  * Boxes
-  */
- .header,
- .navbar {background:none;}
 
  /**
   * Overriding base
@@ -101,10 +110,11 @@ div.header,
  /**
   * Course spine page
   */
- h3.sectionname {margin:.5em;font-size:140%;}
- #section-0 h3.sectionname {margin:.5em;font-size:180%;}
- .course-content div.summary {margin-left:2em;}
- .section div.right {margin-top:2px;}
+h3.sectionname {margin:.5em;font-size:140%;}
+#section-0 h3.sectionname {margin:.5em;font-size:180%;}
+.course-content div.summary {margin-left:2em;}
+.course-content ul.section li.activity {margin: .3em auto;}
+.section div.right {margin-top:2px;}
 
 img.iconsmall {
   height: 12px;

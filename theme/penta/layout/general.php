@@ -41,7 +41,7 @@ echo $OUTPUT->doctype() ?>
         <img src="<?php echo $OUTPUT->pix_url('penta', 'theme');?>" alt="Paediatric European Network for the treatment of AIDS" id="pentalogo" class="logo" width="60" height="60" />
         <img src="<?php echo $OUTPUT->pix_url('espid', 'theme');?>" alt="European Society for Paediatric Infectious Diseases" class="logo" width="60" height="60" />
         <img src="<?php echo $OUTPUT->pix_url('eurocoord', 'theme');?>" alt="EuroCoord" class="logo" width="136" height="60" />
-        <h1 class="headermain"><?php echo $PAGE->heading ?></h1>
+        <h1 class="headermain"><a href="/"><?php echo $PAGE->heading ?></a></h1>
         <div class="headermenu"><?php
             if ($haslogininfo) {
                 echo $OUTPUT->login_info();
@@ -70,6 +70,7 @@ if ($PAGE->pagelayout == 'frametop') {
     echo core_renderer::MAIN_CONTENT_TOKEN;
 } else { ?>
     <div id="page-content">
+    <div id="page-content-wrapper" class="clearfix">
         <div id="region-main-box">
             <div id="region-post-box">
 
@@ -98,6 +99,7 @@ if ($PAGE->pagelayout == 'frametop') {
                 <?php } ?>
             </div>
         </div>
+    </div>
     </div>
 
 <!-- START OF FOOTER -->

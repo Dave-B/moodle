@@ -34,7 +34,9 @@ echo $OUTPUT->doctype() ?>
 <div id="page">
 
     <div id="page-header" class="clearfix">
-        <img src="<?php echo $OUTPUT->pix_url('ox', 'theme');?>" width="141" height="46" alt="University of Oxford" class="logo"/>
+        <img src="<?php echo $OUTPUT->pix_url('penta', 'theme');?>" alt="Paediatric European Network for the treatment of AIDS" id="pentalogo" class="logo" width="60" height="60" />
+        <img src="<?php echo $OUTPUT->pix_url('espid', 'theme');?>" alt="European Society for Paediatric Infectious Diseases" class="logo" width="60" height="60" />
+        <img src="<?php echo $OUTPUT->pix_url('eurocoord', 'theme');?>" alt="EuroCoord" class="logo" width="136" height="60" />
         <h1 class="headermain"><?php echo $PAGE->heading ?></h1>
         <div class="headermenu"><?php
             echo $OUTPUT->login_info();
@@ -48,6 +50,7 @@ echo $OUTPUT->doctype() ?>
 <!-- END OF HEADER -->
 
     <div id="page-content">
+    <div id="page-content-wrapper" class="clearfix">
         <div id="region-main-box">
             <div id="region-post-box">
 
@@ -77,6 +80,7 @@ echo $OUTPUT->doctype() ?>
 
             </div>
         </div>
+    </div>
     </div>
 
 <!-- START OF FOOTER -->
