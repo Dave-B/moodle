@@ -38,7 +38,7 @@ echo $OUTPUT->doctype() ?>
 <?php if ($hasheading || $hasnavbar) { ?>
     <div id="page-header">
         <?php if ($hasheading) { ?>
-        <img src="<?php echo $OUTPUT->pix_url('logo', 'theme');?>" width="271" height="65" alt="climateeducation.net" class="logo"/>
+        <a href="/"><img src="<?php echo $OUTPUT->pix_url('logo', 'theme');?>" width="271" height="65" alt="climateeducation.net" class="logo"/></a>
         <div class="headermenu"><?php
             if ($haslogininfo) {
                 echo $OUTPUT->login_info();

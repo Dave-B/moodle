@@ -59,5 +59,5 @@ $THEME->layouts = array(
 );
 
 // Set the frameset height on this theme
-$THEME->resourceframesize = 104;
+$THEME->resourceframesize = 109;
 

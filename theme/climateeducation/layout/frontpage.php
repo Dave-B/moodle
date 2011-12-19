@@ -28,14 +28,13 @@ echo $OUTPUT->doctype() ?>
     <meta name="description" content="<?php p(strip_tags(format_text($SITE->summary, FORMAT_HTML))) ?>" />
     <?php echo $OUTPUT->standard_head_html() ?>
 </head>
-<body id="<?php p($PAGE->bodyid) ?>" class="<?php p($PAGE->bodyclasses.' '.join(' ', $bodyclasses)) ?>">
+<body id="<?php p($PAGE->bodyid) ?>" class="<?php p($PAGE->bodyclasses.' '.join(' ', $bodyclasses)) ?> clearfix">
 <?php echo $OUTPUT->standard_top_of_body_html() ?>
 
 <div id="page">
 
     <div id="page-header" class="clearfix">
-        <img src="<?php echo $OUTPUT->pix_url('ox', 'theme');?>" width="141" height="46" alt="University of Oxford" class="logo"/>
-        <h1 class="headermain"><?php echo $PAGE->heading ?></h1>
+        <a href="/"><img src="<?php echo $OUTPUT->pix_url('logo', 'theme');?>" width="271" height="65" alt="climateeducation.net" class="logo"/></a>
         <div class="headermenu"><?php
             echo $OUTPUT->login_info();
             echo $OUTPUT->lang_menu();
@@ -48,6 +47,7 @@ echo $OUTPUT->doctype() ?>
 <!-- END OF HEADER -->
 
     <div id="page-content">
+    <div id="page-content-wrapper" class="clearfix">
         <div id="region-main-box">
             <div id="region-post-box">
 
@@ -77,6 +77,7 @@ echo $OUTPUT->doctype() ?>
 
             </div>
         </div>
+    </div>
     </div>
 
 <!-- START OF FOOTER -->
