@@ -14,9 +14,13 @@
 
     $sitesettings = array(
         'allowcoursethemes'=>'1',
-        'bloglevel'=>'1',
+//        'bloglevel'=>'1',
         'cachetext'=>'1800',
-        'filteruploadedfiles'=>'2'
+        'filteruploadedfiles'=>'2',
+        'custommenuitems'=>'Online support|http://onlinesupport.conted.ox.ac.uk/
+-Courseware Guide|http://onlinesupport.conted.ox.ac.uk/CoursewareGuide/
+-Learning Support|http://onlinesupport.conted.ox.ac.uk/nml/
+-Technical support|http://onlinesupport.conted.ox.ac.uk/TechnicalSupport/'
     );
 
     $modulesettings = array(
