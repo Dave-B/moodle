@@ -26,27 +26,27 @@ h6 {color:#002B5F;}
 
 #page-header h1 {color:#FFF;}
 
- h1.main,
- h2.main,
- h3.main,
- h4.main,
- h5.main,
- h6.main {text-align:center;font-weight:bold;color:#002B5F;}
- 
- th.header,
- td.header,
- div.header,
- .navbar {border-color:#DDDDDD;}
+h1.main,
+h2.main,
+h3.main,
+h4.main,
+h5.main,
+h6.main {text-align:center;font-weight:bold;color:#002B5F;}
+
+h2.headingblock.header {font-size:125%;background-color:#F5F6FA}
+
+th.header,
+td.header,
+div.header,
+.navbar {border-color:#DDDDDD;}
  
 .block .header {background-color:#F5F6FA;padding:2px 4px;}
 .block .content {background-color:#FFF;border-top:1px solid #D5D5D5;}
 .block .content hr {border-top-color:#D5D5D5;}
- /**
-  * Boxes
-  */
- .header,
- .navbar {background:none;}
- 
+
+.header,
+.navbar {background:none;}
+
  /**
   * Overriding base
   */
@@ -74,6 +74,11 @@ h6 {color:#002B5F;}
   margin: 3px 0;
 }
 
+#custommenu {float: right; margin: 2px 1.8em; background: #002147; color: #fff;}
+#custommenu.nonav {margin: -.5em 3.5em 3px; font-size: 0.8em;}
+#custommenu .yui3-menu .yui3-menu-content {background: #002147; color: #fff;}
+#custommenu .yui3-menu .yui3-menu-label-menuvisible, #custommenu .yui3-menu .yui3-menuitem-active, #custommenu .yui3-menu .yui3-menuitem-active a {background: #F5F6FA; color: #002B5F;}
+
 .path-course-view .weeks .content, .path-course-view .topics .content, .path-course-view .weeks .section, .path-course-view .topics .section {background-color:#FFF;}
 
 #page-mod-resource-view .resourcecontent {margin:0; border: 1px dotted red;}
@@ -86,6 +91,7 @@ h6 {color:#002B5F;}
  #section-0 h3.sectionname {margin:.5em;font-size:180%;}
  .course-content div.summary {margin-left:2em;}
  .section div.right {margin-top:2px;}
+.course-content ul.section li.activity {line-height:1.7em;}
 
 img.iconsmall {
   height: 12px;

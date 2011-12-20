@@ -18,7 +18,7 @@
 /**
  * Configuration for TALL's University of Oxford theme.
  *
- * Based on Moodle's Standard theme
+ * Based on Moodle's Standard theme.
  *
  * @author    David Balch <david.balch@conted.ox.ac.uk>
  * @copyright 2011 University of Oxford
@@ -27,6 +27,7 @@
 
 $THEME->name = 'oxford2011';
 $THEME->parents = array('base');
+
 $THEME->sheets = array(
     'core',     /** Must come first**/
     'admin',
@@ -60,4 +61,3 @@ $THEME->layouts = array(
 
 // Set the frameset height on this theme
 $THEME->resourceframesize = 104;
-

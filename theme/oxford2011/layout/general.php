@@ -30,7 +30,7 @@ echo $OUTPUT->doctype() ?>
 <head>
     <title><?php echo $PAGE->title ?></title>
     <link rel="shortcut icon" href="<?php echo $OUTPUT->pix_url('favicon', 'theme')?>" />
-    <?php echo $OUTPUT->standard_head_html() ?>
+    <a href="/"><?php echo $OUTPUT->standard_head_html() ?>
 </head>
 <body id="<?php p($PAGE->bodyid) ?>" class="<?php p($PAGE->bodyclasses.' '.join(' ', $bodyclasses)) ?>">
 <?php echo $OUTPUT->standard_top_of_body_html() ?>
@@ -39,7 +39,7 @@ echo $OUTPUT->doctype() ?>
     <div id="page-header">
         <?php if ($hasheading) { ?>
         <img src="<?php echo $OUTPUT->pix_url('ox', 'theme');?>" width="141" height="46" alt="University of Oxford" class="logo"/>
-        <h1 class="headermain"><?php echo $PAGE->heading ?></h1>
+        <h1 class="headermain"><a href="/"><?php echo $PAGE->heading ?></a></h1>
         <div class="headermenu"><?php
             if ($haslogininfo) {
                 echo $OUTPUT->login_info();
@@ -49,11 +49,11 @@ echo $OUTPUT->doctype() ?>
             }
             echo $PAGE->headingmenu
         ?></div><?php } ?>
-        <?php if ($hascustommenu) { ?>
-        <div id="custommenu"><?php echo $custommenu; ?></div>
-        <?php } ?>
         <?php if ($hasnavbar) { ?>
             <div class="navbar clearfix">
+                <?php if ($hascustommenu) { ?>
+                <div id="custommenu"><?php echo $custommenu; ?></div>
+                <?php } ?>
                 <div class="breadcrumb"><?php echo $OUTPUT->navbar(); ?></div>
                 <div class="navbutton"> <?php echo $PAGE->button; ?></div>
             </div>

@@ -35,14 +35,14 @@ echo $OUTPUT->doctype() ?>
 
     <div id="page-header" class="clearfix">
         <img src="<?php echo $OUTPUT->pix_url('ox', 'theme');?>" width="141" height="46" alt="University of Oxford" class="logo"/>
-        <h1 class="headermain"><?php echo $PAGE->heading ?></h1>
+        <h1 class="headermain"><a href="/"><?php echo $PAGE->heading ?></a></h1>
         <div class="headermenu"><?php
             echo $OUTPUT->login_info();
             echo $OUTPUT->lang_menu();
             echo $PAGE->headingmenu;
         ?></div>
         <?php if ($hascustommenu) { ?>
-        <div id="custommenu"><?php echo $custommenu; ?></div>
+        <div id="custommenu" class="nonav"><?php echo $custommenu; ?></div>
          <?php } ?>
     </div>
 <!-- END OF HEADER -->
