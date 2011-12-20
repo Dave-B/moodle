@@ -5,6 +5,7 @@
 if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
 
     // Experimental settings page
+    $ADMIN->add('development', new admin_externalpage('talltests', "TALL tests", "$CFG->wwwroot/$CFG->admin/tall-tests.php"));
     $ADMIN->add('development', new admin_category('experimental', new lang_string('experimental','admin')));
 
     $temp = new admin_settingpage('experimentalsettings', new lang_string('experimentalsettings', 'admin'));
