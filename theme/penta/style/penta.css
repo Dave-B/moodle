@@ -113,7 +113,7 @@ h2.headingblock.header {padding: .3em; font-size: 120%;}
 h3.sectionname {margin:.5em;font-size:140%;}
 #section-0 h3.sectionname {margin:.5em;font-size:180%;}
 .course-content div.summary {margin-left:2em;}
-.course-content ul.section li.activity {margin: .3em auto;}
+.course-content ul.section li.activity {line-height:1.7em;}
 .section div.right {margin-top:2px;}
 
 img.iconsmall {
