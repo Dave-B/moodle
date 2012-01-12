@@ -1,7 +1,7 @@
 html, body#tinymce {background-color:#FFF;}
 body {padding:0; font-size: 14px;}
- body.lang-vi {font-family:Arial, Verdana, Helvetica, sans-serif !important;}
- 
+body.lang-vi {font-family:Arial, Verdana, Helvetica, sans-serif !important;}
+
  /**
   * Links
   */
@@ -43,6 +43,7 @@ div.header,
 .block .header {background-color:#F5F6FA;padding:2px 4px;}
 .block .content {background-color:#FFF;border-top:1px solid #D5D5D5;}
 .block .content hr {border-top-color:#D5D5D5;}
+fieldset {border:1px solid #D5D5D5;}
 
 .header,
 .navbar {background:none;}
@@ -115,3 +116,5 @@ img.iconsmall {
 #page-mod-quiz-edit div.questionbank,
 #page-mod-quiz-edit div.container div.generalbox {background-color:#FFF;border:1px solid #D5D5D5;padding: 2px;}
 .que .formulation {background-color:#FFF;border:1px solid #D5D5D5}
+
+.sponsor {font-size: .8em; margin: -.2em 15px;}
