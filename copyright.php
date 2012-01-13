@@ -9,8 +9,8 @@ $copyright = 'Copyright statement';
 
 $PAGE->set_title($SITE->fullname.': '.$copyright);
 
+$PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add($copyright);
-$PAGE->set_heading($copyright);
 
 echo $OUTPUT->header();
 
