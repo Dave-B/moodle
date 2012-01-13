@@ -168,6 +168,7 @@ $string['typeA4_embedded'] = 'A4 Embedded';
 $string['typeletter_embedded'] = 'Letter Embedded';
 $string['typeA4_non_embedded'] = 'A4 Non-Embedded';
 $string['typeletter_non_embedded'] = 'Letter Non-Embedded';
+$string['typeA4_GCP_complex_portrait'] = 'A4 GCP complex portrait';
 $string['typeA4_oxford_2012'] = 'A4 Oxford 2012';
 $string['typeA4_oxford_logo_2012'] = 'A4 Oxford logo 2012';
 
