@@ -10,7 +10,11 @@ a:hover {text-decoration:underline;color:#476A8F;}
 
 #page-header a {text-decoration:none;color:#FFF;font-weight:bold;}
 #page-header a:hover {text-decoration:underline;color:#FFF;}
- 
+
+.loginbox a:link, a:visited {
+  text-decoration: underline;
+}
+
 .tree_item {color:#002D62;}
 .tree_item:hover {color:#476A8F;}
 
