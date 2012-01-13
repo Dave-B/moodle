@@ -169,6 +169,7 @@ $string['typeletter_embedded'] = 'Letter Embedded';
 $string['typeA4_non_embedded'] = 'A4 Non-Embedded';
 $string['typeletter_non_embedded'] = 'Letter Non-Embedded';
 $string['typeA4_GCP_complex_portrait'] = 'A4 GCP complex portrait';
+$string['typeA4_GCP_simple'] = 'A4 GCP simple';
 $string['typeA4_oxford_2012'] = 'A4 Oxford 2012';
 $string['typeA4_oxford_logo_2012'] = 'A4 Oxford logo 2012';
 
@@ -181,6 +182,7 @@ $string['title'] = 'CERTIFICATE of ACHIEVEMENT';
 $string['certify'] = 'This is to certify that';
 $string['statement'] = 'has completed the course';
 $string['statementundertaken'] = 'has undertaken the course';
+$string['statementundertakengcp'] = 'has undertaken the Good Clinical Practice online training course';
 
 // Certificate transcript strings
 $string['notapplicable'] = 'N/A';
