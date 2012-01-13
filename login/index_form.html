@@ -1,8 +1,36 @@
 <?php
+$showlogin = optional_param('showlogin', 0, PARAM_BOOL);
+$showlogin = $showlogin ? '':' style="display: none;"';
 if ($show_instructions) {
     $columns = 'twocolumns';
 } else {
     $columns = 'onecolumn';
+}
+
+$usingMNet = false;
+if (is_enabled_auth('mnet') && strpos($CFG->wwwroot, 'portal') === false) {
+    $usingMNet = true;
+}
+
+$usingShib = false;
+if (is_enabled_auth('shibboleth')) {
+    $usingShib = true;
+}
+
+$showExtraMessage = false;
+/*
+if (strpos($CFG->wwwroot, 'study.conted.ox.ac.uk') ||
+    strpos($CFG->wwwroot, 'dev2moodle.conted.ox.ac.uk')
+   ) {
+    $showExtraMessage = true;
+}
+*/
+
+if (strpos($CFG->wwwroot, 'localmoodle') || strpos($CFG->wwwroot, 'm2')) {
+    // Testing
+    $usingMNet = true;
+    //$usingShib = true;
+    //$showExtraMessage = true;
 }
 
 if (!empty($CFG->loginpasswordautocomplete)) {
@@ -12,20 +40,76 @@ if (!empty($CFG->loginpasswordautocomplete)) {
 }
 ?>
 <div class="loginbox clearfix <?php echo $columns ?>">
-  <div class="loginpanel">
+
+
 <?php
-  if (($CFG->registerauth == 'email') || !empty($CFG->registerauth)) { ?>
-      <div class="skiplinks"><a class="skip" href="signup.php"><?php print_string("tocreatenewaccount"); ?></a></div>
+// If we're using WebAuth/shibboleth, promote WebAuth logins
+if($usingShib) { ?>
+    <div style="text-align: center; padding: 0 1em;">
+        <h2>Oxford username login</h2>
+        <?php if ($showExtraMessage) { ?>
+            <h3>Returning students</h3>
+            <p>If your course started before 2011/12 academic year, please use the <a href="?showlogin=1#reallogin" onclick="document.getElementById('adminlogin').style.display = 'block'; document.getElementById('showloginlink').style.display = 'none';" style="margin: .3em;">Moodle account login</a> below.</p>
+            <h3>New students</h3>
+        <?php } ?>
+        <p>If you have an Oxford username login (in the form 4 letters 4 numbers, e.g. abcd1234) please use the <a title="Webauth login" href="/auth/shibboleth/index.php">University of Oxford Single Sign-On</a> system to log in.</p>
+        <p>If you are having a problem with your Oxford username password please go to: <a href="https://webauth.ox.ac.uk">https://webauth.ox.ac.uk</a>.</p>
+    </div>
+    <br/>
+</div>
+
+<!-- real login -->
+<div class="loginbox clearfix <?php echo $columns ?>">
+    <div class="loginpanel" style="text-align: center; padding: .3em;">
+        <p>If you do not have an Oxford username, but have been sent a Moodle username (in the form surnameinitial, e.g. bloggsj) use the Moodle account login below.</p>
+        <?php if ($showlogin) { ?>
+            <p id="showloginlink"><a href="?showlogin=1" onclick="document.getElementById('adminlogin').style.display = 'block'; document.getElementById('showloginlink').style.display = 'none'; document.getElementById('username').focus(); return false;" style="margin: .3em;">Moodle account login</a></p>
+        <?php } ?>
+    </div>
+
+  <div id="adminlogin" class="loginpanel"<?php echo $showlogin; ?>>
+    <h2>Moodle account login</h2>
+
 <?php
-  } ?>
+} else
+// If we're using Moodle networking, promote portal logins
+if($usingMNet) { ?>
+    <h2>Course Login</h2>
+        <div class="loginpanel" style="text-align: center;">
+        <p>Please log in to your course using <a href="http://portal.conted.ox.ac.uk/">http://portal.conted.ox.ac.uk/</a>.</p>
+        <br/><br/>
+    </div>
+</div>
+
+<!-- real login -->
+<div id="reallogin" class="loginbox clearfix <?php echo $columns ?>">
+  <div class="loginpanel" style="text-align: center; padding: .3em;">
+
+    <?php if ($showlogin) { ?>
+        <p id="showloginlink"><a href="?showlogin=1" onclick="document.getElementById('adminlogin').style.display = 'block'; document.getElementById('showloginlink').style.display = 'none'; document.getElementById('username').focus(); return false;" style="margin: .3em;">Administration</a></p>
+    <?php } ?>
+  </div>
+  <div id="adminlogin" class="loginpanel"<?php echo $showlogin; ?>>
+    <h2>Administrator login</h2>
+
+<?php
+} else {
+?>
+<div class="loginpanel">
     <h2><?php print_string("returningtosite") ?></h2>
+
+<?php
+} ?>
+
       <div class="subcontent loginsub">
         <div class="desc">
           <?php
             print_string("loginusing");
-            echo '<br/>';
-            echo '('.get_string("cookiesenabled").')';
-            echo $OUTPUT->help_icon('cookiesenabled');
+            if (empty($CFG->usesid)) {
+                echo '<br/>';
+                echo '('.get_string("cookiesenabled").')';
+                echo $OUTPUT->help_icon('cookiesenabled');
+            }
            ?>
         </div>
         <?php
@@ -35,8 +119,14 @@ if (!empty($CFG->loginpasswordautocomplete)) {
               echo $OUTPUT->error_text($errormsg);
               echo html_writer::end_tag('div');
           }
+
+          $qs = '';
+          if ($usingMNet || $usingShib) {
+              $qs = '?showlogin=1#reallogin';
+          }
         ?>
-        <form action="<?php echo $CFG->httpswwwroot; ?>/login/index.php" method="post" id="login" <?php echo $autocomplete; ?> >
+
+        <form action="<?php echo $CFG->httpswwwroot; ?>/login/index.php<?php echo $qs; ?>" method="post" id="login" <?php echo $autocomplete; ?> >
           <div class="loginform">
             <div class="form-label"><label for="username"><?php print_string("username") ?></label></div>
             <div class="form-input">
@@ -59,7 +149,6 @@ if (!empty($CFG->loginpasswordautocomplete)) {
           <div class="clearer"><!-- --></div>
           <div class="forgetpass"><a href="forgot_password.php"><?php print_string("forgotten") ?></a></div>
         </form>
-      </div>
 
 <?php if ($CFG->guestloginbutton and !isguestuser()) {  ?>
       <div class="subcontent guestsub">
