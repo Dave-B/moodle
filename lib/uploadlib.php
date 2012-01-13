@@ -569,6 +569,10 @@ function clam_handle_infected_file($file, $userid=0, $basiconly=false) {
             }
         }
     }
+
+    // Tell the user where to look for anti-virus help
+    $notice .= "\n". get_string('clamvirushelp');
+
     return $notice;
 }
 
