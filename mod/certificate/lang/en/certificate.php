@@ -168,6 +168,7 @@ $string['typeA4_embedded'] = 'A4 Embedded';
 $string['typeletter_embedded'] = 'Letter Embedded';
 $string['typeA4_non_embedded'] = 'A4 Non-Embedded';
 $string['typeletter_non_embedded'] = 'Letter Non-Embedded';
+$string['typeA4_oxford_2012'] = 'A4 Oxford 2012';
 
 // Print to certificate strings
 $string['grade'] = 'Grade';
@@ -177,6 +178,7 @@ $string['credithours'] = 'Credit Hours';
 $string['title'] = 'CERTIFICATE of ACHIEVEMENT';
 $string['certify'] = 'This is to certify that';
 $string['statement'] = 'has completed the course';
+$string['statementundertaken'] = 'has undertaken the course';
 
 // Certificate transcript strings
 $string['notapplicable'] = 'N/A';
