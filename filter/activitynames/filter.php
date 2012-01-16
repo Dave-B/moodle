@@ -69,6 +69,7 @@ class filter_activitynames extends moodle_text_filter {
                         if (!empty($title)) {
                             $href_tag_begin = html_writer::start_tag('a',
                                     array('class' => 'autolink', 'title' => $title,
+                                        'target' => '_top',
                                         'href' => $cm->get_url()));
                             self::$activitylist[$cm->id] = new filterobject($currentname, $href_tag_begin, '</a>', false, true);
                             if ($currentname != $entitisedname) { /// If name has some entity (&amp; &quot; &lt; &gt;) add that filter too. MDL-17545
