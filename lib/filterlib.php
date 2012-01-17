@@ -1357,6 +1357,144 @@ function filter_phrases($text, &$link_array, $ignoretagsopen=NULL, $ignoretagscl
 }
 
 /**
+ * Process links found within a HTML links.
+ *
+ * @staticvar array $usedphrases
+ * @param string $text             the text that we are filtering
+ * @param array $link_array       an array of filterobjects
+ * @return string
+ **/
+function filter_link_attributes($text, &$link_array) {
+//print_object($link_array);
+    global $CFG;
+
+    static $usedphrases;
+
+    $filterignoretagsopen  = array('<a(\s[^>]*?)?>');
+    $filterignoretagsclose = array('</a>');
+
+    //// Double up some magic chars to avoid "accidental matches"
+    $text = preg_replace('/([#*%])/','\1\1',$text);
+/// Extract a tags from $text by "saving" them and using the "ignored" $atags
+    $atags = array();
+    filter_save_ignore_tags($text,$filterignoretagsopen,$filterignoretagsclose,$atags);
+
+/// Time to cycle through each phrase to be linked
+    $size = sizeof($link_array);
+    for ($n=0; $n < $size; $n++) {
+        $linkobject =& $link_array[$n];
+
+    /// Set some defaults if certain properties are missing
+    /// Properties may be missing if the filterobject class has not been used to construct the object
+        if (empty($linkobject->phrase)) {
+            continue;
+        }
+
+    /// Avoid integers < 1000 to be linked. See bug 1446.
+        $intcurrent = intval($linkobject->phrase);
+        if (!empty($intcurrent) && strval($intcurrent) == $linkobject->phrase && $intcurrent < 1000) {
+            continue;
+        }
+
+    /// All this work has to be done ONLY it it hasn't been done before
+    if (!$linkobject->work_calculated) {
+            if (!isset($linkobject->hreftagbegin) or !isset($linkobject->hreftagend)) {
+                $linkobject->work_hreftagbegin = '<span class="highlight"';
+                $linkobject->work_hreftagend   = '</span>';
+            } else {
+                $linkobject->work_hreftagbegin = $linkobject->hreftagbegin;
+                $linkobject->work_hreftagend   = $linkobject->hreftagend;
+            }
+
+        /// Double up chars to protect true duplicates
+        /// be cleared up before returning to the user.
+            $linkobject->work_hreftagbegin = preg_replace('/([#*%])/','\1\1',$linkobject->work_hreftagbegin);
+
+            if (empty($linkobject->casesensitive)) {
+                $linkobject->work_casesensitive = false;
+            } else {
+                $linkobject->work_casesensitive = true;
+            }
+            if (empty($linkobject->fullmatch)) {
+                $linkobject->work_fullmatch = false;
+            } else {
+                $linkobject->work_fullmatch = true;
+            }
+
+        /// Strip tags out of the phrase
+            $linkobject->work_phrase = strip_tags($linkobject->phrase);
+
+        /// Double up chars that might cause a false match -- the duplicates will
+        /// be cleared up before returning to the user.
+            $linkobject->work_phrase = preg_replace('/([#*%])/','\1\1',$linkobject->work_phrase);
+
+        /// Set the replacement phrase properly
+            if ($linkobject->replacementphrase) {    //We have specified a replacement phrase
+            /// Strip tags
+                $linkobject->work_replacementphrase = strip_tags($linkobject->replacementphrase);
+            } else {                                 //The replacement is the original phrase as matched below
+                $linkobject->work_replacementphrase = '$1';
+            }
+
+        /// Quote any regular expression characters and the delimiter in the work phrase to be searched
+            $linkobject->work_phrase = preg_quote($linkobject->work_phrase, '/');
+
+        /// Work calculated
+            $linkobject->work_calculated = true;
+
+        }
+
+    /// If $CFG->filtermatchoneperpage, avoid previously (request) linked phrases
+        if (!empty($CFG->filtermatchoneperpage)) {
+            if (!empty($usedphrases) && in_array($linkobject->work_phrase,$usedphrases)) {
+                continue;
+            }
+        }
+
+    /// Regular expression modifiers
+        $modifiers = ($linkobject->work_casesensitive) ? 's' : 'isu'; // works in unicode mode!
+
+        // Replace the target URL.
+        $regex = '/(href=")'.$linkobject->work_phrase.'(.+?)"/six';
+        foreach ($atags as &$tag) {
+            $matches = array();
+            preg_match($regex, $tag, $matches);
+            if (sizeof($matches) > 2) {
+                // We have a link matching the currnet $linkobject, so do the replace
+                $oldurl = $matches[2];
+                $tag = preg_replace(
+                    $regex,
+                    'href="'.$linkobject->replacementphrase . urlencode($oldurl).'"',
+                    $tag
+                );
+            }
+        }
+
+    /// Replace the not full matches before cycling to next link object
+        if (!empty($notfullmatches)) {
+            $text = str_replace(array_keys($notfullmatches),$notfullmatches,$text);
+            unset($notfullmatches);
+        }
+    }
+
+/// Rebuild the text with all the modified links
+
+    if (!empty($atags)) {
+        $atags = array_reverse($atags); /// Reversed so "progressive" str_replace() will solve some nesting problems.
+        $text = str_replace(array_keys($atags),$atags,$text);
+    }
+
+    //// Remove the protective doubleups
+    $text =  preg_replace('/([#*%])(\1)/','\1',$text);
+
+/// Add missing javascript for popus
+    $text = filter_add_javascript($text);
+
+
+    return $text;
+}
+
+/**
  * @todo Document this function
  * @param array $linkarray
  * @return array
