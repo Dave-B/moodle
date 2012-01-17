@@ -462,6 +462,10 @@ $CFG->admin = 'admin';
 // config.php file
 //      $CFG->preventexecpath = true;
 //
+// Log basic details of sent emails to $CFG->dataroot/emaillog/
+$CFG->emaillog = true;
+
+
 //=========================================================================
 // 7. SETTINGS FOR DEVELOPMENT SERVERS - not intended for production use!!!
 //=========================================================================

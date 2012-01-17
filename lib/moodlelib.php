@@ -5669,6 +5669,7 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml='', $a
         if (!empty($mail->SMTPDebug)) {
             echo '</pre>';
         }
+        log_sent_email($user->email, $mail);
         return true;
     } else {
         add_to_log(SITEID, 'library', 'mailer', qualified_me(), 'ERROR: '. $mail->ErrorInfo);
@@ -5679,6 +5680,32 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml='', $a
             echo '</pre>';
         }
         return false;
+    }
+}
+
+function log_sent_email($to, $mailobj) {
+    global $CFG;
+
+    //print_object($to);
+    //print_object($mailobj);
+    if ($CFG->emaillog) {
+        // Append basic email details to logfile
+        $dir = $CFG->dataroot.'/emaillog';
+
+        if (!file_exists($dir)) {
+            mkdir($dir);
+        }
+        $file = '/'.date('Y-m-d').'.txt';
+
+        // Fields: datetime, to, from, subject
+        $line = date('Y-m-d\TH.i.s').",'".
+               $to."','".
+               $mailobj->From."','".
+               $mailobj->Subject."'\n";
+
+        $log = fopen($dir.$file, 'a');
+        fwrite($log, $line);
+        fclose($log);
     }
 }
 
