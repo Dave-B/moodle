@@ -35,7 +35,7 @@
 // Output
     echo $OUTPUT->header();
 
-    $tablestart = "<table><thead><tr><th>Setting</th><th>Old value</th><th>Value to apply</th></tr></thead><tbody>\n";
+    $tablestart = "<table><thead><tr><th>Setting</th><th>Current value</th><th>Value to apply</th></tr></thead><tbody>\n";
     $tableend = "</tbody></table>\n";
 
     echo '<div class="tallsettings">';
@@ -83,8 +83,8 @@
 function show_settings($settings) {
     $tablerows = '';
     foreach ($settings as $setting => $value) {
-        $oldvalue = get_config('', $setting);
-        $tablerows .= '<tr><td>'.$setting.':</td><td>'.$oldvalue.'</td><td>'.$value."</td></tr>\n";
+        $currnetvalue = get_config('', $setting);
+        $tablerows .= '<tr><td>'.$setting.':</td><td>'.$currentvalue.'</td><td>'.$value."</td></tr>\n";
     }
     return $tablerows;
 }
