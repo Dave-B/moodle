@@ -1,5 +1,5 @@
 html, body#tinymce {background-color:#FFF;}
-body {padding:0; font-size: 14px;}
+body {padding:0; font-size: 14.5px;}
 body.lang-vi {font-family:Arial, Verdana, Helvetica, sans-serif !important;}
 
  /**
@@ -7,6 +7,7 @@ body.lang-vi {font-family:Arial, Verdana, Helvetica, sans-serif !important;}
   */
 a {text-decoration:none;color:#002D62;}
 a:hover {text-decoration:underline;color:#476A8F;}
+a.autolink {background-color: #f9f9f9;}
 
 #page-header a {text-decoration:none;color:#FFF;font-weight:bold;}
 #page-header a:hover {text-decoration:underline;color:#FFF;}
@@ -92,11 +93,16 @@ fieldset {border:1px solid #D5D5D5;}
  /**
   * Course spine page
   */
- h3.sectionname {margin:.5em;font-size:140%;}
- #section-0 h3.sectionname {margin:.5em;font-size:180%;}
- .course-content div.summary {margin-left:2em;}
- .section div.right {margin-top:2px;}
+h2.sectionname {margin:.5em .5em 0 .5em; font-size:140%;}
+#section-0 h2.sectionname {margin:.5em;font-size:180%;}
+.course-content div.summary {margin-left:2em;}
+.section div.right {margin-top:2px;}
 .course-content ul.section li.activity {line-height:1.7em;}
+
+.section ul.section {margin-top:0;}
+.section div.summary {margin-top:1em;}
+
+li.activity.label hr {border: 0; border-bottom: 1px solid #ddd;}
 
 img.iconsmall {
   height: 12px;
