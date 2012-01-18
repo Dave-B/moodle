@@ -5688,7 +5688,7 @@ function log_sent_email($to, $mailobj) {
 
     //print_object($to);
     //print_object($mailobj);
-    if ($CFG->emaillog) {
+    if (!empty($CFG->emaillog)) {
         // Append basic email details to logfile
         $dir = $CFG->dataroot.'/emaillog';
 
