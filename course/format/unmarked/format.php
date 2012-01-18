@@ -86,7 +86,7 @@ if ($thissection->summary or $thissection->sequence or $PAGE->user_is_editing())
     echo '<div class="right side" >&nbsp;</div>';
     echo '<div class="content">';
     if (!is_null($thissection->name)) {
-        echo $OUTPUT->heading($thissection->name, 3, 'sectionname');
+        echo $OUTPUT->heading($thissection->name, 2, 'sectionname');
     }
     echo '<div class="summary">';
 
@@ -205,9 +205,13 @@ while ($section <= $course->numsections) {
             echo get_string('notavailable');
         } else {
             if (!is_null($thissection->name)) {
-                echo $OUTPUT->heading($thissection->name, 3, 'sectionname');
+                echo $OUTPUT->heading($thissection->name, 2, 'sectionname');
             }
-            echo '<div class="summary">';
+
+            $summaryediting = $PAGE->user_is_editing() && has_capability('moodle/course:update', get_context_instance(CONTEXT_COURSE, $course->id));
+            if ($thissection->summary or $summaryediting) {
+                echo '<div class="summary">';
+            }
             if ($thissection->summary) {
                 $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
                 $summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
@@ -219,11 +223,13 @@ while ($section <= $course->numsections) {
                echo '&nbsp;';
             }
 
-            if ($PAGE->user_is_editing() && has_capability('moodle/course:update', get_context_instance(CONTEXT_COURSE, $course->id))) {
+            if ($summaryediting) {
                 echo ' <a title="'.$streditsummary.'" href="editsection.php?id='.$thissection->id.'">'.
                      '<img src="'.$OUTPUT->pix_url('t/edit') . '" class="icon edit" alt="'.$streditsummary.'" /></a><br /><br />';
             }
-            echo '</div>';
+            if ($thissection->summary or $summaryediting) {
+                echo '</div>';
+            }
 
             print_section($course, $thissection, $mods, $modnamesused);
             echo '<br />';
@@ -256,7 +262,7 @@ if (!$displaysection and $PAGE->user_is_editing() and has_capability('moodle/cou
         echo '<div class="right side">';
         echo '</div>';
         echo '<div class="content">';
-        echo $OUTPUT->heading(get_string('orphanedactivities'), 3, 'sectionname');
+        echo $OUTPUT->heading(get_string('orphanedactivities'), 2, 'sectionname');
         print_section($course, $thissection, $mods, $modnamesused);
         echo '</div>';
         echo "</li>\n";
