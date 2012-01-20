@@ -42,6 +42,8 @@ $THEME->sheets = array(
     'question',
     'oxford2011'
 );
+$THEME->editor_sheets = array('editor');
+
 $THEME->enable_dock = true;
 
 $THEME->layouts = array(
