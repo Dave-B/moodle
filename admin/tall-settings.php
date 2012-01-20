@@ -20,7 +20,8 @@
         'custommenuitems'=>'Online support|http://onlinesupport.conted.ox.ac.uk/
 -Courseware Guide|http://onlinesupport.conted.ox.ac.uk/CoursewareGuide/
 -Learning Support|http://onlinesupport.conted.ox.ac.uk/nml/
--Technical support|http://onlinesupport.conted.ox.ac.uk/TechnicalSupport/'
+-Technical support|http://onlinesupport.conted.ox.ac.uk/TechnicalSupport/',
+        'smtphosts'=>'smtp.ox.ac.uk'
     );
 
     $modulesettings = array(
