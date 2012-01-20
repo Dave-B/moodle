@@ -6,130 +6,186 @@
 
     admin_externalpage_setup('tallsettings');
 
-    // Setup
 
-    $site  = optional_param('sitesettings', 0, PARAM_BOOL);
-    $module  = optional_param('modulesettings', 0, PARAM_BOOL);
-    $profile  = optional_param('profile', 0, PARAM_BOOL);
+/// Create Profile field "Administration" category
+    $courseidsdata->shortname = 'courseids';
+    $courseidsdata->name = 'Course id numbers';
+    $courseidsdata->datatype = 'text';
+    $courseidsdata->description = 'A list of course id numbers reflecting the InfoSys record.';
+    $courseidsdata->categoryid = 'Administration'; // Specify category name here, then convert to categoryid when we've looked it up/created it.
+    $courseidsdata->sortorder = '1';
+    $courseidsdata->required = '0';
+    $courseidsdata->locked = '1';
+    $courseidsdata->visible = '1';
+    $courseidsdata->forceunique = '0';
+    $courseidsdata->signup = '0';
+    $courseidsdata->defaultdata = '';
+    $courseidsdata->param1 = '30';
+    $courseidsdata->param2 = '512';
+    $courseidsdata->param3 = '0';
 
-    $sitesettings = array(
-        'allowcoursethemes'=>'1',
-//        'bloglevel'=>'1',
-        'cachetext'=>'1800',
-        'filteruploadedfiles'=>'2',
-        'custommenuitems'=>'Online support|http://onlinesupport.conted.ox.ac.uk/
+// Array of settings
+    $settings = array(
+        // Site settings. Each setting has a has, and is an array of: 
+        //   0 - component, pluginname, 'profilefield', or '' for core settings
+        //   1 - setting name
+        //   2 - value(s)
+        'core:allowcoursethemes'=>array('core', 'allowcoursethemes', '1'),
+        'core:bloglevel'=>array('core', 'bloglevel', '4'),
+        'core:cachetext'=>array('core', 'cachetext', '1800'),
+        'core:custommenuitems'=>array('core', 'custommenuitems', 'Online support|http://onlinesupport.conted.ox.ac.uk/
 -Courseware Guide|http://onlinesupport.conted.ox.ac.uk/CoursewareGuide/
 -Learning Support|http://onlinesupport.conted.ox.ac.uk/nml/
--Technical support|http://onlinesupport.conted.ox.ac.uk/TechnicalSupport/',
-        'smtphosts'=>'smtp.ox.ac.uk'
+-Technical support|http://onlinesupport.conted.ox.ac.uk/TechnicalSupport/'),
+        'core:filteruploadedfiles'=>array('core', 'filteruploadedfiles', '0'),
+        'resource:framesize'=>array('resource', 'framesize', '108'),
+        'url:framesize'=>array('url', 'framesize', '108'),
+        'profilefield:courseids'=>array('profilefield', 'courseids', $courseidsdata),
+        'core:smtphosts'=>array('core', 'smtphosts', 'smtp.ox.ac.uk'),
     );
 
-    $modulesettings = array(
-        'allowcoursethemes'=>'1',
-    );
+    if(isset($_POST['apply'])) {
+        $updates = array();
 
-    if($site) {
-        apply_settings($sitesettings);
+        foreach($_POST as $key=>$var) {
+            if (array_key_exists($key, $settings)) {
+                $a_setting = $settings[$key];
+                $updates[$key][0] = $a_setting;
+
+                if ($a_setting[0] == 'profilefield') {
+                    // Set up a profile field 
+                    $updates[$key][1] = add_profile_field($a_setting[1], $a_setting[2]);
+                } else if ($a_setting[0] == 'core') {
+                    // Set up a core setting
+                    $updates[$key][1] = set_config($a_setting[1], $a_setting[2]);
+                } else {
+                    // Set a plugin setting
+                    $updates[$key][1] = set_config($a_setting[1], $a_setting[2], $a_setting[0]);
+                }
+            }
+        }
     }
-
 
 // Output
     echo $OUTPUT->header();
 
-    $tablestart = "<table><thead><tr><th>Setting</th><th>Current value</th><th>Value to apply</th></tr></thead><tbody>\n";
+    $tablestart  = '<table><thead><tr><th>Apply <input type="checkbox" id="selectall" value="1" title="Select/Clear all"/></th>';
+    $tablestart .= '<th>Component</th><th>Setting</th><th>Current value</th><th>Value to apply</th></tr></thead><tbody>';
     $tableend = "</tbody></table>\n";
 
-    echo '<div class="tallsettings">';
+    ?>
+    
+    <div class="tallsettings">
 
-    echo '<h1>TALL settings</h1>';
-    echo '<form action="" method="get">';
+    <script type="text/javascript">
+YUI().use('node', function (Y) {
+    var settingcheckboxes = Y.all('input.setting');
+    Y.one("#selectall").on("click", function(e) {
+        if (e.target.get('checked')) {
+            settingcheckboxes.set('checked', 'checked');
+        } else {
+            settingcheckboxes.set('checked', '');
+        }
+    });
+});
+    </script>
 
-    if(!($site || $module || $profile)) {
-        echo '<p>Select a settings group to apply it.</p>';
+    <h1>TALL settings</h1>
+
+    <?php
+
+    if(isset($updates)) {
+        $updatehtml = '<ul>';
+        foreach ($updates as $update) {
+            $updatehtml .= '<li>';
+            if ($update[1]) {
+                $updatehtml .= 'Success: ';
+            } else {
+                $updatehtml .= 'Failure: ';
+            }
+            $updatehtml .= $update[0][0].', '.
+            $update[0][1];
+            $updatehtml .= "</li>\n";
+        }
+        $updatehtml .= '</ul>';
+        echo $updatehtml;
     }
 
-    echo '<h2>Site-wide settings</h2>';
-    $tablerows = show_settings($sitesettings);
-    echo $tablestart.$tablerows.$tableend;
-    echo '<p><label><input type="checkbox" name="sitesettings" value="1"/> Site-wide settings</label></p>';
-
-    echo '<hr/>';
-
-    echo '<h2>Module settings</h2>';
-    $tablerows = show_settings($modulesettings);
-    echo $tablestart.$tablerows.$tableend;
-    echo '<p><label><input type="checkbox" name="modulesettings" value="1"/> Module settings</label></p>';
-
-    echo '<hr/>';
-
-
-    echo '<h2>Profile fields</h2>';
-    if($profile) {
-        add_profile_fields();
+    echo '<form action="" method="post">';
+    echo '<fieldset><legend>Settings</legend>';
+    $tablerows = '';
+    foreach ($settings as $key=>$a_setting) {
+        if ($a_setting[0] == 'profilefield') {
+            if ($catid = find_profile_field($a_setting[1])) {
+                $currentvalue = "[Profile field '$name' exists (id $catid)]";
+            } else {
+                $currentvalue = '[Profile field does not exist]';
+            }
+        } else {
+            $currentvalue = get_config($a_setting[0], $a_setting[1]);
+        }
+        $tablerows .= '<tr><td><input type="checkbox" name="'.$key.'" value="1" class="setting"/></td><td>'.$a_setting[0].'</td><td>'.$a_setting[1];
+        $tablerows .= '</td><td>'.$currentvalue.'</td><td>';
+        if ($a_setting[0] == 'profilefield') {
+            $tablerows .= '[Create profile field]';
+        } else {
+            $tablerows .= $a_setting[2];
+        }
+        $tablerows .= "</td></tr>\n";
     }
-    echo '<p><label><input type="checkbox" name="profile" value="1"/> Course ids ("courseids")</label></p>';
+    echo $tablestart.$tablerows.$tableend;
+    echo '</fieldset>';
 
-?>
-<br/>
-<input type="submit" id="apply" value="Apply settings"/>
-</form>
-<?php
+    echo '<p><input type="submit" name="apply" value="Apply settings"/></p>';
 
-    echo '</div>';
+    echo '</form></div>';
+
     echo $OUTPUT->footer();
 
 
 // Functions
+function find_profile_field($name) {
+    global $DB;
 
-function show_settings($settings) {
-    $tablerows = '';
-    foreach ($settings as $setting => $value) {
-        $currnetvalue = get_config('', $setting);
-        $tablerows .= '<tr><td>'.$setting.':</td><td>'.$currentvalue.'</td><td>'.$value."</td></tr>\n";
-    }
-    return $tablerows;
+    $record = $DB->get_record('user_info_category', array('name'=>$name), 'id');
+    echo $record;
+    
+    return $record;
 }
 
-function apply_settings($settings) {
-    foreach ($settings as $setting => $value) {
-        set_config($setting, $value);
+
+
+function add_profile_category($name, $sortorder=1) {
+    global $DB;
+
+    $data->name = $name;
+    $data->sortorder = $sortorder;
+
+    // Check if Category exists
+    if($catid = find_profile_field($name)) {
+        return $catid;
+    } else if ($catid = $DB->insert_record('user_info_category', $data)) {
+        return $catid;
+    } else {
+        return false;
     }
 }
 
-function add_profile_fields() {
+function add_profile_field($data) {
 /// Create Profile field "Administration" category
     global $DB;
 
-    $data->name = 'Administration';
-    $data->sortorder = 1;
-
-    if (!$catid = $DB->insert_record('user_info_category', $data, true)) {
-        error('There was a problem adding "Administration" Profile category.<br/>');
+    if (!$catid = add_profile_category($data->categoryid, true)) {
+        error('There was a problem adding "'.$data->categoryid.'" Profile category.<br/>');
     } else {
-        print("Added \"Administration\" Profile category, id: $catid.<br/>\n");
+        print('Using "'.$data->categoryid." Profile category (id: $catid.)<br/>\n");
+        $data->categoryid = $catid;
+
+        if (!$DB->insert_record('user_info_field', $data, false)) {
+            error('There was a problem adding "'.$data->name.'" Profile field.<br/>');
+        } else {
+            print ('Added "'.$data->name.'" Profile field.<br/>');
+        }
     }
-
-/// Create Profile field "Administration" category
-    $data->shortname = 'courseids';
-    $data->name = 'Course id numbers';
-    $data->datatype = 'text';
-    $data->description = 'A list of course id numbers reflecting the InfoSys record.';
-    $data->categoryid = $catid;
-    $data->sortorder = '1';
-    $data->required = '0';
-    $data->locked = '1';
-    $data->visible = '1';
-    $data->forceunique = '0';
-    $data->signup = '0';
-    $data->defaultdata = '';
-    $data->param1 = '30';
-    $data->param2 = '512';
-    $data->param3 = '0';
-
-    if (!$DB->insert_record('user_info_field', $data, false)) {
-        error('There was a problem adding "Course id numbers" Profile field.<br/>');
-    } else {
-        print ('Added "Course id numbers" Profile field.<br/>');
-    }    
 }
 

@@ -48,7 +48,7 @@ div.header,
 .block .header {background-color:#F5F6FA;padding:2px 4px;}
 .block .content {background-color:#FFF;border-top:1px solid #D5D5D5;}
 .block .content hr {border-top-color:#D5D5D5;}
-fieldset {border:1px solid #D5D5D5;}
+fieldset {border:1px solid #D5D5D5; padding: .5em;}
 
 .header,
 .navbar {background:none;}
