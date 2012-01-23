@@ -28,7 +28,7 @@ if (strpos($CFG->wwwroot, 'study.conted.ox.ac.uk') ||
 
 if (strpos($CFG->wwwroot, 'localmoodle') || strpos($CFG->wwwroot, 'm2')) {
     // Testing
-    $usingMNet = true;
+    //$usingMNet = true;
     //$usingShib = true;
     //$showExtraMessage = true;
 }
@@ -165,6 +165,7 @@ if($usingMNet) { ?>
       </div>
 <?php } ?>
      </div>
+    </div>
 <?php if ($show_instructions) { ?>
     <div class="signuppanel">
       <h2><?php print_string("firsttime") ?></h2>
@@ -193,7 +194,6 @@ if($usingMNet) { ?>
               echo format_text($CFG->auth_instructions);
           } ?>
       </div>
-    </div>
 <?php } ?>
 <?php if (!empty($potentialidps)) { ?>
     <div class="subcontent potentialidps">
