@@ -54,7 +54,7 @@
 
                 if ($a_setting[0] == 'profilefield') {
                     // Set up a profile field 
-                    $updates[$key][1] = add_profile_field($a_setting[1], $a_setting[2]);
+                    $updates[$key][1] = add_profile_field($a_setting[2]);
                 } else if ($a_setting[0] == 'core') {
                     // Set up a core setting
                     $updates[$key][1] = set_config($a_setting[1], $a_setting[2]);
@@ -117,7 +117,7 @@ YUI().use('node', function (Y) {
     foreach ($settings as $key=>$a_setting) {
         if ($a_setting[0] == 'profilefield') {
             if ($catid = find_profile_field($a_setting[1])) {
-                $currentvalue = "[Profile field '$name' exists (id $catid)]";
+                $currentvalue = '[Profile field "'.$a_setting[2]->name.'" exists (id '.$catid.')]';
             } else {
                 $currentvalue = '[Profile field does not exist]';
             }
@@ -147,13 +147,12 @@ YUI().use('node', function (Y) {
 function find_profile_field($name) {
     global $DB;
 
-    $record = $DB->get_record('user_info_category', array('name'=>$name), 'id');
-    echo $record;
-    
-    return $record;
+    if($record = $DB->get_record('user_info_field', array('shortname'=>$name), 'id')) {
+        return $record->id;
+    } else {
+        return false;
+    }
 }
-
-
 
 function add_profile_category($name, $sortorder=1) {
     global $DB;
@@ -176,15 +175,14 @@ function add_profile_field($data) {
     global $DB;
 
     if (!$catid = add_profile_category($data->categoryid, true)) {
-        error('There was a problem adding "'.$data->categoryid.'" Profile category.<br/>');
+        return false;
     } else {
-        print('Using "'.$data->categoryid." Profile category (id: $catid.)<br/>\n");
         $data->categoryid = $catid;
 
         if (!$DB->insert_record('user_info_field', $data, false)) {
-            error('There was a problem adding "'.$data->name.'" Profile field.<br/>');
+            return false;
         } else {
-            print ('Added "'.$data->name.'" Profile field.<br/>');
+            return true;
         }
     }
 }
