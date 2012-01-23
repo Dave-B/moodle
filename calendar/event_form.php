@@ -46,7 +46,7 @@ class event_form extends moodleform {
         global $CFG, $USER, $OUTPUT;
         $mform = $this->_form;
         $newevent = (empty($this->_customdata->event) || empty($this->_customdata->event->id));
-        $repeatedevents = (!empty($this->_customdata->event->eventrepeats) && $this->_customdata->event->eventrepeats>0);
+        $repeatedevents = empty($this->_customdata->event->eventrepeats) ? false : $this->_customdata->event->eventrepeats;
         $hasduration = (!empty($this->_customdata->hasduration) && $this->_customdata->hasduration);
         $mform->addElement('header', 'general', get_string('general'));
 
