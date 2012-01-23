@@ -73,5 +73,11 @@ $PAGE->set_title($newaccount);
 $PAGE->set_heading($SITE->fullname);
 
 echo $OUTPUT->header();
+
+if ($SITE->shortname == 'climateeducation.net') {
+    echo '<br/>';
+    echo $OUTPUT->box('Before creating a new account please read our <a href="'.$SITE->shortname.'/privacypolicy.php" target="privacy">privacy policy</a> and <a href="'.$SITE->shortname.'/termsofuse.php" target="terms">terms of use</a>. By registering for an account you will be agreeing to both of these policies.', 'generalbox boxwidthnormal boxaligncenter');
+}
+
 $mform_signup->display();
 echo $OUTPUT->footer();
