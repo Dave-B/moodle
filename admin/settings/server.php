@@ -5,7 +5,7 @@
 if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
 
 // TALL settings
-$ADMIN->add("server", new admin_externalpage('tallsettings', "TALL settings", "$CFG->wwwroot/$CFG->admin/tall-settings.php"));
+$ADMIN->add("server", new admin_externalpage('localdefaults', "Local defaults", "$CFG->wwwroot/$CFG->admin/localdefaults.php"));
 
 // "systempaths" settingpage
 $temp = new admin_settingpage('systempaths', new lang_string('systempaths','admin'));

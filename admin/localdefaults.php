@@ -1,48 +1,17 @@
 <?php
-       // phpinfo.php - shows phpinfo for the current server
+    // localdefaults.php - Selectively apply collated settings 
 
     require_once("../config.php");
     require_once($CFG->libdir.'/adminlib.php');
 
-    admin_externalpage_setup('tallsettings');
+    require_login();
+    $systemcontext = get_context_instance(CONTEXT_SYSTEM);
+    require_capability('moodle/site:config', $systemcontext);
 
+    admin_externalpage_setup('localdefaults');
 
-/// Create Profile field "Administration" category
-    $courseidsdata->shortname = 'courseids';
-    $courseidsdata->name = 'Course id numbers';
-    $courseidsdata->datatype = 'text';
-    $courseidsdata->description = 'A list of course id numbers reflecting the InfoSys record.';
-    $courseidsdata->categoryid = 'Administration'; // Specify category name here, then convert to categoryid when we've looked it up/created it.
-    $courseidsdata->sortorder = '1';
-    $courseidsdata->required = '0';
-    $courseidsdata->locked = '1';
-    $courseidsdata->visible = '1';
-    $courseidsdata->forceunique = '0';
-    $courseidsdata->signup = '0';
-    $courseidsdata->defaultdata = '';
-    $courseidsdata->param1 = '30';
-    $courseidsdata->param2 = '512';
-    $courseidsdata->param3 = '0';
-
-// Array of settings
-    $settings = array(
-        // Site settings. Each setting has a has, and is an array of: 
-        //   0 - component, pluginname, 'profilefield', or '' for core settings
-        //   1 - setting name
-        //   2 - value(s)
-        'core:allowcoursethemes'=>array('core', 'allowcoursethemes', '1'),
-        'core:bloglevel'=>array('core', 'bloglevel', '4'),
-        'core:cachetext'=>array('core', 'cachetext', '1800'),
-        'core:custommenuitems'=>array('core', 'custommenuitems', 'Online support|http://onlinesupport.conted.ox.ac.uk/
--Courseware Guide|http://onlinesupport.conted.ox.ac.uk/CoursewareGuide/
--Learning Support|http://onlinesupport.conted.ox.ac.uk/nml/
--Technical support|http://onlinesupport.conted.ox.ac.uk/TechnicalSupport/'),
-        'core:filteruploadedfiles'=>array('core', 'filteruploadedfiles', '0'),
-        'resource:framesize'=>array('resource', 'framesize', '108'),
-        'url:framesize'=>array('url', 'framesize', '108'),
-        'profilefield:courseids'=>array('profilefield', 'courseids', $courseidsdata),
-        'core:smtphosts'=>array('core', 'smtphosts', 'smtp.ox.ac.uk'),
-    );
+    // Load the values
+    require_once("localdefaultvalues.php");
 
     if(isset($_POST['apply'])) {
         $updates = array();
@@ -75,7 +44,7 @@
 
     ?>
     
-    <div class="tallsettings">
+    <div class="localsettings">
 
     <script type="text/javascript">
 YUI().use('node', function (Y) {
@@ -90,7 +59,7 @@ YUI().use('node', function (Y) {
 });
     </script>
 
-    <h1>TALL settings</h1>
+    <h1>Local defaults</h1>
 
     <?php
 
