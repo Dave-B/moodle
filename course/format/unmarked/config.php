@@ -6,7 +6,6 @@
 // format.
 //
 // The default blocks layout for this course format:
-    $format['defaultblocks'] = 'participants,calendar_upcoming,recent_activity,'.
-                               'activity_modules,'.
-                               'search_forums,blog_menu,admin';
-// To reinstate: oxref
+$format['defaultblocks'] = 'participants,calendar_month,recent_activity,'.
+                           'activity_modules,blog_menu,oxref,'.
+                           'calendar_upcoming,search_forums';
