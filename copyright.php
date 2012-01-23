@@ -5,16 +5,16 @@ require_once("config.php");
 $PAGE->set_context(get_context_instance(CONTEXT_SYSTEM));
 $PAGE->set_url('/copyright.php');
 
-$copyright = 'Copyright statement';
+$title = 'Copyright statement';
 
-$PAGE->set_title($SITE->fullname.': '.$copyright);
+$PAGE->set_title($SITE->fullname.': '.$title);
 
 $PAGE->set_heading($SITE->fullname);
-$PAGE->navbar->add($copyright);
+$PAGE->navbar->add($title);
 
 echo $OUTPUT->header();
 
-echo $OUTPUT->heading($copyright);
+echo $OUTPUT->heading($title);
 
 echo $OUTPUT->box_start('generalbox', 'intro');
 ?>
