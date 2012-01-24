@@ -51,6 +51,10 @@ require_course_login($course->id, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/glossary:view', $context);
 
+if ($course->shortname == 'CriticalReading' and $mode == '') {
+    $mode = 'cat';
+}
+
 // Prepare format_string/text options
 $fmtoptions = array(
     'context' => $context);
