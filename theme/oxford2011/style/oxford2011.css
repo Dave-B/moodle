@@ -104,7 +104,7 @@ h2.sectionname {margin:.5em .5em 0 .5em; font-size:140%;}
 
 li.activity.label hr {border: 0; border-bottom: 1px solid #ddd;}
 
-img.iconsmall {
+.commands img.iconsmall {
   height: 12px;
   margin-right: 6px;
   vertical-align: middle;
@@ -120,6 +120,19 @@ body#course-view .unread {
   background-color: #F5F6FA;
   border: 1px solid #D5D5D5;
   border-bottom: 2px solid #476A8F;
+}
+
+.calendartable .hasevent {
+  border: 1px solid #999;
+}
+
+.calendartable .today {
+  border: 1px solid #444;
+  font-weight: bold;
+}
+
+td.eventskey {
+  padding: .3em;
 }
 
 /**
