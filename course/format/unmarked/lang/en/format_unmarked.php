@@ -24,7 +24,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['sectionname'] = 'Unmarked';
+$string['sectionname'] = 'section';
 $string['unmarked'] = 'Unmarked';
 $string['pluginname'] = 'Unmarked format';
 $string['section0name'] = 'General';

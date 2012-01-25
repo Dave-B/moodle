@@ -38,7 +38,7 @@ function callback_unmarked_uses_sections() {
  * Used to display the course structure for a course where format=unmarked
  *
  * This is called automatically by {@link load_course()} if the current course
- * format = weeks.
+ * format = unmarked.
  *
  * @param array $path An array of keys to the course node in the navigation
  * @param stdClass $modinfo The mod info object for the current course
@@ -50,7 +50,6 @@ function callback_unmarked_load_content(&$navigation, $course, $coursenode) {
 
 /**
  * The string that is used to describe a section of the course
- * e.g. Topic, Week...
  *
  * @return string
  */
