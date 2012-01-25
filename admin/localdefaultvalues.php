@@ -37,9 +37,12 @@
         'core:smtphosts'=>array('core', 'smtphosts', 'smtp.ox.ac.uk'),
         'moodlecourse:format'=>array('moodlecourse', 'format', 'unmarked'),
         'profilefield:courseids'=>array('profilefield', 'courseids', $courseidsdata),
+        'page:requiremodintro'=>array('page', 'requiremodintro', '0'),
         'resource:display'=>array('resource', 'display', '2'),
         'resource:displayoptions'=>array('resource', 'displayoptions', '0,1,2,4,5,6'),
         'resource:filterfiles'=>array('resource', 'filterfiles', '2'),
         'resource:framesize'=>array('resource', 'framesize', '108'),
+        'resource:requiremodintro'=>array('resource', 'requiremodintro', '0'),
         'url:framesize'=>array('url', 'framesize', '108'),
+        'url:requiremodintro'=>array('url', 'requiremodintro', '0'),
     );
