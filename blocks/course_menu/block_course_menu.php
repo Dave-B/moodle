@@ -99,7 +99,7 @@ class block_course_menu extends block_base
         $sections = $this->get_sections();
         
         // courseFormat
-        $courseFormat = $this->course->format == 'topics' ? 'topic' : 'week';
+        $courseFormat = $this->course->format;
         
         $this->page->navigation->initialise();
     	$navigation = array(clone($this->page->navigation));
@@ -218,15 +218,15 @@ class block_course_menu extends block_base
                             break;
                         case 'showallsections':
                             //show element just in case there is only one topic / week visible
-                            $courseFormat = $this->course->format == 'topics' ? 'topic' : 'week';
+                            $courseFormat = $this->course->format;
                             if ($displaysection) {
                                 $_SESSION['cm_tree'][$this->instance->id]['last_active'] = $displaysection;
-                                $element['name'] = get_string("showall{$courseFormat}s", $this->blockname);
+                                $element['name'] = get_string("showevery", $this->blockname) . get_string('sectionname', 'format_'.$this->course->format);
                                 $element['url'] = "$CFG->wwwroot/course/view.php?id={$this->course->id}&{$courseFormat}=all#section-{$displaysection}";
                                 $lis .= $renderer->render_leaf($element['name'], $icon, array('id' => 'showallsections'), $element['url'], false, '', !$first);
                             } else {
                                 $ss = !empty($_SESSION['cm_tree'][$this->instance->id]['last_active']) ? $_SESSION['cm_tree'][$this->instance->id]['last_active'] : '1';
-                                $element['name'] = get_string("showonly{$courseFormat}", $this->blockname) . " ";
+                                $element['name'] = get_string("showonly", $this->blockname) . get_string('sectionname', 'format_'.$this->course->format) . " ";
                                 $element['url'] = "$CFG->wwwroot/course/view.php?id={$this->course->id}&{$courseFormat}={$ss}";
                                 $weekNr = html_writer::tag('span', $ss, array('id' => 'showonlysection_nr'));
                                 $lis .= $renderer->render_leaf($element['name'], $icon, array('id' => 'showallsections'), $element['url'], false, $weekNr, !$first);
@@ -641,7 +641,7 @@ class block_course_menu extends block_base
         	$context = get_context_instance(CONTEXT_COURSE, $this->course->id);
             $isteacher = has_capability('moodle/course:update', $context);
             
-        	$courseFormat = $this->course->format == 'topics' ? 'topic' : 'week';
+        	$courseFormat = $this->course->format;
 
             // displaysection - current section
     		$week = optional_param($courseFormat, -1, PARAM_INT);
@@ -655,7 +655,7 @@ class block_course_menu extends block_base
     		    }
     		}
 
-        	$genericName = get_string("name" . $this->course->format, $this->blockname);
+            $genericName = get_string('sectionname', 'format_'.$this->course->format);
             $allSections  = get_all_sections($this->course->id);
             
     		$sections = array();
@@ -924,7 +924,8 @@ class block_course_menu extends block_base
         if ($data->chapEnable == 0) {
         	$data->subChapEnable = 0;
         }
-        if ($this->page->course->id != SITEID) { //save chapters
+        //if ($this->page->course->id != SITEID) { //save chapters
+        if ($this->page->course->id != SITEID && !empty($_POST['chapterNames'])) { //save chapters
             foreach ($_POST['chapterNames'] as $k => $name) {
                 $chapter = array();
                 $chapter['name'] = $name;
@@ -975,14 +976,16 @@ class block_course_menu extends block_base
 
         // elements
 	    $data->elements = array();
-    	foreach ($_POST['ids'] as $k => $id) {
-    		$url     = $_POST['urls'][$k];
-    		$icon    = $_POST['icons'][$k];
-            $canHide = $_POST['canHides'][$k];
-    		$visible = $_POST['visibles'][$k];
-    		$name    = $this->get_name($id);
-    		$data->elements[] = $this->create_element($id, $name, $url, $icon, $canHide, $visible);
-    	}
+        if (!empty($_POST['ids'])) {
+            foreach ($_POST['ids'] as $k => $id) {
+                $url     = $_POST['urls'][$k];
+                $icon    = $_POST['icons'][$k];
+                $canHide = $_POST['canHides'][$k];
+                $visible = $_POST['visibles'][$k];
+                $name    = $this->get_name($id);
+                $data->elements[] = $this->create_element($id, $name, $url, $icon, $canHide, $visible);
+            }
+        }
         
         //links
         $data->links = array();

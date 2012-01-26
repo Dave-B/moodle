@@ -1334,7 +1334,7 @@ class block_manager {
                 // Explicitly set the default context
                 $bi->parentcontextid = $parentcontext->id;
 
-                if ($data->bui_editingatfrontpage) {   // The block is being edited on the front page
+                if (isset($data->bui_editingatfrontpage)) {   // The block is being edited on the front page
 
                     // The interface here is a special case because the pagetype pattern is
                     // totally derived from the context menu.  Here are the excpetions.   MDL-30340
