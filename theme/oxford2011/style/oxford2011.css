@@ -135,6 +135,10 @@ td.eventskey {
   padding: .3em;
 }
 
+.attention {
+  background-color: #d00;
+}
+
 /**
  * Mod theme tweaks
  */

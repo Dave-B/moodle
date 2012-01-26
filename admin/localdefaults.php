@@ -84,17 +84,22 @@ YUI().use('node', function (Y) {
     echo '<fieldset><legend>Settings</legend>';
     $tablerows = '';
     foreach ($settings as $key=>$a_setting) {
+        $class='';
         if ($a_setting[0] == 'profilefield') {
             if ($catid = find_profile_field($a_setting[1])) {
                 $currentvalue = '[Profile field "'.$a_setting[2]->name.'" exists (id '.$catid.')]';
             } else {
                 $currentvalue = '[Profile field does not exist]';
+                $class=' class="attention"';
             }
         } else {
             $currentvalue = get_config($a_setting[0], $a_setting[1]);
+            if ($currentvalue != $a_setting[2]) {
+                $class=' class="attention"';
+            }
         }
         $tablerows .= '<tr><td><input type="checkbox" name="'.$key.'" value="1" class="setting"/></td><td>'.$a_setting[0].'</td><td>'.$a_setting[1];
-        $tablerows .= '</td><td>'.$currentvalue.'</td><td>';
+        $tablerows .= '</td><td>'.$currentvalue.'</td><td'.$class.'>';
         if ($a_setting[0] == 'profilefield') {
             $tablerows .= '[Create profile field]';
         } else {
