@@ -219,9 +219,12 @@ while ($section <= $course->numsections) {
                 $summaryformatoptions->noclean = true;
                 $summaryformatoptions->overflowdiv = true;
                 echo format_text($summarytext, $thissection->summaryformat, $summaryformatoptions);
-            } else {
-               echo '&nbsp;';
             }
+/* Disabled, as it adds unwanted empty space under section names.
+            } else {
+               echo '&nbsp;'; 
+            }
+*/
 
             if ($summaryediting) {
                 echo ' <a title="'.$streditsummary.'" href="editsection.php?id='.$thissection->id.'">'.

@@ -24,14 +24,14 @@ h2,
 h3,
 h4,
 h5,
-h6 {color:#00043A;}
+h6 {color:#282855;}
 
 h1.main,
 h2.main,
 h3.main,
 h4.main,
 h5.main,
-h6.main {text-align:center;font-weight:bold;color:#002B5F;}
+h6.main {text-align:center;font-weight:bold;}
 
 .coursebox {border-radius: 1em; background: #fff; padding: .3em; width:  auto;}
 #page-content .region-content {padding: 0;}
@@ -51,7 +51,7 @@ div.header,
 .block .content {border-bottom-left-radius: 1em; border-bottom-right-radius: 1em; overflow: clip; background-color: #fff; border-top:1px solid #D5D5D5; padding-bottom: .5em}
 #region-pre .block {border-bottom-left-radius: 1em; border-bottom-right-radius: 1em;}
 #region-pre .block.hidden {border-radius: 0; padding: 0;}
-.block .content hr {border-top-color:#D5D5D5;}
+hr {border: 0; border-top: 1px solid #D5D5D5;}
 
 .sitetopic {border: 0; padding: 0 5px;}
 .sitetopic h1 {margin-top: 0;}
@@ -74,8 +74,9 @@ h2.headingblock.header {padding: .3em; font-size: 120%;}
   */
 #page-header {
   color: #005;
-  background: #FFD400 url("[[pix:theme|oy_grad]]") repeat-y left;}
-.pagelayout-frontpage #page-header {border:0;margin:0;width:100%;}
+  background: #FFD400 url("[[pix:theme|oy_grad]]") repeat-y left;
+}
+.pagelayout-frontpage #page-header {border-bottom:1px solid #000;margin:0;width:100%;}
 
 .headermain,
 #page-header .headermenu {margin-left:15px;float:none;text-align:left;}
@@ -95,10 +96,9 @@ h2.headingblock.header {padding: .3em; font-size: 120%;}
   padding: 0 1em;
   }
 .navbar .breadcrumb {
-  margin: 7px 5px 0 5px;
+  margin: 7px 5px;
 }
 .navbar .navbutton {
-  background: url("[[pix:theme|fade2]]") repeat-x bottom;
   margin: 3px 0;
 }
 
@@ -115,9 +115,11 @@ h2.headingblock.header {padding: .3em; font-size: 120%;}
  /**
   * Course spine page
   */
-h3.sectionname {margin:.5em;font-size:140%;}
-#section-0 h3.sectionname {margin:.5em;font-size:180%;}
+h1.sectionname {margin: 0; font-size:180%;}
+h2.sectionname {margin:.5em;font-size:140%;}
+#section-0 h2.sectionname {margin:.5em;font-size:180%;}
 .course-content div.summary {margin-left:2em;}
+.course-content ul.section {margin-top: 0;}
 .course-content ul.section li.activity {line-height:1.7em;}
 .section div.right {margin-top:2px;}
 

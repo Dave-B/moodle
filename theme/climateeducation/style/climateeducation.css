@@ -99,6 +99,7 @@ h3.sectionname {margin:.5em;font-size:140%;}
 #section-0 h3.sectionname {margin:.5em;font-size:180%;}
 .course-content div.summary {margin-left:2em;}
 .section div.right {margin-top:2px;}
+.course-content ul.section {margin-top: 0;}
 .course-content ul.section li.activity {line-height:1.7em;}
 
 img.iconsmall {

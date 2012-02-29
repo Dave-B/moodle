@@ -74,7 +74,7 @@ fieldset {border:1px solid #D5D5D5; padding: .5em;}
   padding: 0 1em;
   }
 .navbar .breadcrumb {
-  margin: 7px 5px 0 5px;
+  margin: 7px 5px;
 }
 .navbar .navbutton {
   margin: 3px 0;
@@ -93,6 +93,7 @@ fieldset {border:1px solid #D5D5D5; padding: .5em;}
  /**
   * Course spine page
   */
+h1.sectionname {margin: 0; font-size:180%;}
 h2.sectionname {margin:.5em .5em 0 .5em; font-size:140%;}
 #section-0 h2.sectionname {margin:.5em;font-size:180%;}
 .course-content div.summary {margin-left:2em;}
@@ -156,3 +157,8 @@ td.eventskey {
 .que .formulation {background-color:#FFF;border:1px solid #D5D5D5}
 
 .sponsor {font-size: .8em; margin: -.2em 15px;}
+
+.yui-skin-sam .yui-layout {background-color: #F2F2F2;}
+#page-mod-imscp-view .yui-layout-hd h2 {font-size:125%;background-color:#F5F6FA;color: #002B5F;}
+.yui-skin-sam .yui-layout .yui-layout-clip{background-color:#F5F6FA;}
+.yui-skin-sam .yui-layout .yui-layout-unit div.yui-layout-bd {background-color:#FFF;}
