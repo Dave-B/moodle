@@ -5,8 +5,8 @@ body.lang-vi {font-family:Arial, Verdana, Helvetica, sans-serif !important;}
  /**
   * Links
   */
-a {text-decoration:none;color:#002D62;}
-a:hover {text-decoration:underline;color:#476A8F;}
+a, .fakelink {text-decoration:none;color:#002D62;}
+a:hover, .fakelink:hover {text-decoration:underline;color:#476A8F;}
 a.autolink {background-color: #f9f9f9;}
 
 #page-header a {text-decoration:none;color:#FFF;font-weight:bold;}
@@ -160,5 +160,6 @@ td.eventskey {
 
 .yui-skin-sam .yui-layout {background-color: #F2F2F2;}
 #page-mod-imscp-view .yui-layout-hd h2 {font-size:125%;background-color:#F5F6FA;color: #002B5F;}
-.yui-skin-sam .yui-layout .yui-layout-clip{background-color:#F5F6FA;}
+.yui-skin-sam .yui-layout .yui-layout-clip {background-color:#F5F6FA;}
 .yui-skin-sam .yui-layout .yui-layout-unit div.yui-layout-bd {background-color:#FFF;}
+.ygtvfocus, .ygtvfocus .ygtvlabel, .ygtvfocus .ygtvlabel:link, .ygtvfocus .ygtvlabel:visited {background-color:#F5F6FA;}

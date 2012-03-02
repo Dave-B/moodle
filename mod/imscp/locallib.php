@@ -61,11 +61,15 @@ function imscp_print_content($imscp, $cm, $course) {
 function imscp_htmllize_item($item, $imscp, $cm) {
     global $CFG;
 
-    $context = context_module::instance($cm->id);
-    $urlbase = "$CFG->wwwroot/pluginfile.php";
-    $path = '/'.$context->id.'/mod_imscp/content/'.$imscp->revision.'/'.$item['href'];
-    $url = file_encode_url($urlbase, $path, false);
-    $result = "<li><a href=\"$url\">".$item['title'].'</a>';
+    if ($item['href']) {
+        $context = context_module::instance($cm->id);
+        $urlbase = "$CFG->wwwroot/pluginfile.php";
+        $path = '/'.$context->id.'/mod_imscp/content/'.$imscp->revision.'/'.$item['href'];
+        $url = file_encode_url($urlbase, $path, false);
+        $result = "<li><a href=\"$url\">".$item['title'].'</a>';
+    } else {
+        $result = '<li>'.$item['title'];
+    }
     if ($item['subitems']) {
         $result .= '<ul>';
         foreach ($item['subitems'] as $subitem) {
