@@ -90,9 +90,22 @@ if($certificate->printhours == 1) {
     $info->credit = '';
 }
 
-$info->score = $grade;
 $info->code = $COURSE->shortname;
-$info->expiry = "31/03/2012";
+$info->score = $grade;
+$info->issuedate = date('j F Y', $certrecord->timecreated);
+
+// Use the first expirydate where timestamp is smaller than when the cert was created.
+$expirydates = array(
+    array('effectivefrom' => 1333242061, 'expirydate' => '31/03/2013'), // Effectivefrom  = 2012-04-01T01:01:01
+    array('effectivefrom' => 1312160461, 'expirydate' => '31/03/2012'), // Effectivefrom  = 2011-08-01T01:01:01
+    array('effectivefrom' => 0, 'expirydate' => '16/03/2011'), // Effectivefrom  = before we started hosting
+);
+foreach ($expirydates as $val) {
+    if ($certrecord->timecreated > $val['effectivefrom']) {
+        $info->expiry = $val['expirydate'];
+        break;
+    }
+}
 
     $customtext = $certificate->customtext;
     $orientation = 'P';
@@ -193,7 +206,9 @@ $info->expiry = "31/03/2012";
     }
 
     // Score and details
-    $text = 'with a score of '.$info->score.'. This module has been approved for Distance-Learning Credits for the CPD scheme of the federation of Royal College of Physicians of the UK. The approval code is '.$info->code.$info->credit.'. The expiry date is for CPD approval is '.$info->expiry.'. Issued '.date('j F Y');
+    $text = 'with a score of '.$info->score.'. ';
+    $text .= 'This module has been approved for Distance-Learning Credits for the CPD scheme of the federation of Royal College of Physicians of the UK. ';
+    $text .= 'The approval code is '.$info->code.$info->credit.'. The expiry date is for CPD approval is '.$info->expiry.'. Issued '.$info->issuedate;
 
     $pdf->SetTextColor(79,118,156);
     $pdf->SetFillColor(255, 255, 255);
