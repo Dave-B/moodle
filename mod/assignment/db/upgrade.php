@@ -74,6 +74,23 @@ function xmldb_assignment_upgrade($oldversion) {
     // Put any upgrade step following this
 
 
+
+    if ($oldversion < 2011112901) {
+
+        // Define field requiredeclaration to be added to assignment
+        $table = new xmldb_table('assignment');
+        $field = new xmldb_field('requiredeclaration', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'timemodified');
+
+        // Conditionally launch add field requiredeclaration
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // assignment savepoint reached
+        upgrade_mod_savepoint(true, 2011112901, 'assignment');
+    }
+
+
     return true;
 }
 

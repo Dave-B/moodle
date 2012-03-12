@@ -2446,6 +2446,48 @@ class assignment_base {
         return true;
     }
 
+    function presubmitquestions() {
+        global $OUTPUT, $CFG, $DB, $COURSE, $USER;
+
+        include_once('mod_presubmit_form.php');
+        $mform = new mod_presubmit_form();
+
+        if ($mform->is_cancelled()){
+            // You need this section if you have a cancel button on your form
+            $this->view_header();
+            redirect("$CFG->wwwroot/mod/assignment/view.php?id=".$this->cm->id, get_string('cancelled'));
+            $this->view_footer();
+        } else if ($fromform=$mform->get_data()){
+            // This branch is where you process validated data.
+            $submission = $this->get_submission($USER->id);
+            $updated = new object();
+            $updated->id = $submission->id;
+            $updated->timemodified = time();
+
+            if (!$DB->update_record('assignment_submissions', $updated)) {
+                error(get_string('error'));
+            } else {
+                // Finalize assignment
+                $this->finalize();
+            }
+        } else {
+            // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
+            // or on the first display of the form.
+            // Put data you want to fill out in the form into array $toform here:
+            $toform = array();
+            $mform->set_data($toform);
+
+            $this->view_header();
+
+            $OUTPUT->heading(get_string('submitformarking', 'assignment'));
+            $OUTPUT->box(get_string('files').': '.$this->print_user_files($USER->id, true, 'text').'.', 'boxaligncenter boxwidthnormal centerpara');
+
+            $mform->display();
+
+            $this->view_footer();
+        }
+    }
+
 } ////// End of the assignment_base class
 
 

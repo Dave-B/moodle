@@ -168,6 +168,13 @@ class assignment_upload extends assignment_base {
     function view_final_submission() {
         global $CFG, $USER, $OUTPUT;
 
+        // Check if we need to ask extra questions before finalizing
+        if ($this->assignment->requiredeclaration && !empty($CFG->assignment_uploadtext)) {
+            $prequestions = true;
+        } else {
+            $prequestions = false;
+        }
+
         $submission = $this->get_submission($USER->id);
 
         if ($this->isopen() and $this->can_finalize($submission)) {
@@ -178,7 +185,11 @@ class assignment_upload extends assignment_base {
             echo '<fieldset class="invisiblefieldset">';
             echo '<input type="hidden" name="id" value="'.$this->cm->id.'" />';
             echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
-            echo '<input type="hidden" name="action" value="finalize" />';
+            if($prequestions) {
+                echo '<input type="hidden" name="action" value="presubmitquestions" />';
+            } else {
+                echo '<input type="hidden" name="action" value="finalize" />';
+            }
             echo '<input type="submit" name="formarking" value="'.get_string('sendformarking', 'assignment').'" />';
             echo '</fieldset>';
             echo '</form>';
@@ -383,6 +394,9 @@ class assignment_upload extends assignment_base {
     function upload($mform = null, $filemanager_options = null) {
         $action = required_param('action', PARAM_ALPHA);
         switch ($action) {
+            case 'presubmitquestions':
+                $this->presubmitquestions();
+                break;
             case 'finalize':
                 $this->finalize();
                 break;

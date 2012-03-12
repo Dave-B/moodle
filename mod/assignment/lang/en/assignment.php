@@ -23,6 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['additionalfields'] = 'Additional fields';
 $string['activityoverview'] = 'You have assignments that need attention';
 $string['allowdeleting'] = 'Allow deleting';
 $string['allowdeleting_help'] = 'If enabled, students may delete uploaded files at any time before submitting for grading.';
@@ -65,7 +66,10 @@ $string['commentinline_help'] = 'If enabled, the submission text will be copied 
 $string['configitemstocount'] = 'Nature of items to be counted for student submissions in online assignments.';
 $string['configmaxbytes'] = 'Default maximum assignment size for all assignments on the site (subject to course limits and other local settings)';
 $string['configshowrecentsubmissions'] = 'Everyone can see notifications of submissions in recent activity reports.';
+$string['configuploadtext'] = 'If text is entered here, the user will be required to confirm their agreement to the statement before uploading. Use for site wide uploaded assignment policy.';
 $string['confirmdeletefile'] = 'Are you absolutely sure you want to delete this file?<br /><strong>{$a}</strong>';
+$string['confirmerror'] = 'You cannot upload your assignment until you have agreed to the statement by ticking the box.';
+$string['confirmstatement'] = 'Confirm statement';
 $string['coursemisconf'] = 'Course is misconfigured';
 $string['currentgrade'] = 'Current grade in gradebook';
 $string['deleteallsubmissions'] = 'Delete all submissions';
@@ -175,9 +179,11 @@ $string['pluginname'] = 'Assignment (2.2)';
 $string['preventlate'] = 'Prevent late submissions';
 $string['quickgrade'] = 'Allow quick grading';
 $string['quickgrade_help'] = 'If enabled, multiple assignments can be graded on one page. Add grades and comments then click the "Save all my feedback" button to save all changes for that page.';
+$string['readconfirm'] = 'I confirm that I have read, understood, and complied with the statement.';
 $string['requiregrading'] = 'Require grading';
 $string['responsefiles'] = 'Response files';
 $string['reviewed'] = 'Reviewed';
+$string['requiredeclaration'] = 'Require declaration';
 $string['saveallfeedback'] = 'Save all my feedback';
 $string['selectblog'] = 'Select which blog entry you wish to submit';
 $string['sendformarking'] = 'Send for marking';
@@ -216,6 +222,7 @@ $string['uploadfiletoobig'] = 'Sorry, but that file is too big (limit is {$a} by
 $string['uploadnofilefound'] = 'No file was found - are you sure you selected one to upload?';
 $string['uploadnotregistered'] = '\'{$a}\' was uploaded OK but submission did not register!';
 $string['uploadsuccess'] = 'Uploaded \'{$a}\' successfully';
+$string['uploadtext'] = 'Must agree before upload';
 $string['usermisconf'] = 'User is misconfigured';
 $string['usernosubmit'] = 'Sorry, you are not allowed to submit an assignment.';
 $string['viewassignmentupgradetool'] = 'View the assignment upgrade tool';

@@ -74,6 +74,14 @@ class mod_assignment_mod_form extends moodleform_mod {
 
         $assignmentinstance->setup_elements($mform);
 
+        // Optional extra fields
+        $mform->addElement('header', 'typedesc', get_string('additionalfields', 'assignment'));
+        if (!empty($CFG->assignment_uploadtext)) {
+            $mform->addElement('selectyesno', 'requiredeclaration', get_string('requiredeclaration', 'assignment'));
+            //$mform->setHelpButton('showgrades', array('coursegrades', get_string('grades')), true);
+            $mform->setDefault('requiredeclaration', 1);
+        }
+
         $this->standard_coursemodule_elements();
 
         $this->add_action_buttons();
