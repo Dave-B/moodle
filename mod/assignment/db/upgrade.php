@@ -91,6 +91,32 @@ function xmldb_assignment_upgrade($oldversion) {
     }
 
 
+    if ($oldversion < 2011112902) {
+
+        // Define field requirewordcount to be added to assignment
+        $table = new xmldb_table('assignment');
+        $field = new xmldb_field('requirewordcount', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0, 'requiredeclaration');
+
+        // Conditionally launch add field requirewordcount
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // Define field wordcount to be added to assignment_submissions
+        $table = new xmldb_table('assignment_submissions');
+        $field = new xmldb_field('wordcount', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'mailed');
+
+        // Conditionally launch add field wordcount
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // assignment savepoint reached
+        upgrade_mod_savepoint(true, 2011112902, 'assignment');
+    }
+
     return true;
 }
 

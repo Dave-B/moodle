@@ -81,6 +81,10 @@ class mod_assignment_mod_form extends moodleform_mod {
             //$mform->setHelpButton('showgrades', array('coursegrades', get_string('grades')), true);
             $mform->setDefault('requiredeclaration', 1);
         }
+ 
+        // Word count options
+        $mform->addElement('select', 'requirewordcount', get_string('requirewordcount', 'assignment'), $ynoptions);
+        $mform->setDefault('requirewordcount', 1);
 
         $this->standard_coursemodule_elements();
 

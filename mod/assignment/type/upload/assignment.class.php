@@ -169,7 +169,8 @@ class assignment_upload extends assignment_base {
         global $CFG, $USER, $OUTPUT;
 
         // Check if we need to ask extra questions before finalizing
-        if ($this->assignment->requiredeclaration && !empty($CFG->assignment_uploadtext)) {
+        if ($this->assignment->requiredeclaration && !empty($CFG->assignment_uploadtext) ||
+            $this->assignment->requirewordcount) {
             $prequestions = true;
         } else {
             $prequestions = false;
@@ -187,6 +188,9 @@ class assignment_upload extends assignment_base {
             echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
             if($prequestions) {
                 echo '<input type="hidden" name="action" value="presubmitquestions" />';
+                if(isset($submission->wordcount) && $submission->wordcount) {
+                    echo '<input type="hidden" name="wordcount" value="'.$submission->wordcount.'" />';
+                }
             } else {
                 echo '<input type="hidden" name="action" value="finalize" />';
             }

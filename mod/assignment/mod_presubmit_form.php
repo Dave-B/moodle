@@ -21,6 +21,17 @@ class mod_presubmit_form extends moodleform {
             $mform->addRule('confirmuploadtext', null, 'required', null, 'client');
         }
 
+        if($assignment->requirewordcount){
+            // Word count options
+            $mform->addElement('header', 'typedesc', get_string('wordcount', 'assignment'));
+            $mform->addElement('text', 'wordcount', get_string('wordcount', 'assignment'), array('size'=>'10'));
+
+            $mform->addRule('wordcount', null, 'required', null, 'client');
+
+            $mform->registerRule('positivenum','regex', '/^[\d]+$/');
+            $mform->addRule('wordcount', get_string('positivenumber', 'assignment'), 'positivenum', null, 'client');
+        }
+
         // Buttons
         $this->add_action_buttons(true, get_string('sendformarking', 'assignment'));
     }

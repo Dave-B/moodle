@@ -1050,9 +1050,14 @@ class assignment_base {
         }
 
         if ($users) {
+             if($this->assignment->requirewordcount) {
+                 $wordcountselect = 's.wordcount, ';
+             } else {
+                 $wordcountselect = '';
+             }
             $userfields = user_picture::fields('u', array('lastaccess'));
             $select = "SELECT $userfields,
-                              s.id AS submissionid, s.grade, s.submissioncomment,
+                              s.id AS submissionid, s.grade, s.submissioncomment,$wordcountselect
                               s.timemodified, s.timemarked,
                               CASE WHEN s.timemarked > 0 AND s.timemarked >= s.timemodified THEN 1
                                    ELSE 0 END AS status ";
@@ -1338,6 +1343,11 @@ class assignment_base {
         $extrafields = get_extra_user_fields($context);
         $tablecolumns = array_merge(array('picture', 'fullname'), $extrafields,
                 array('grade', 'submissioncomment', 'timemodified', 'timemarked', 'status', 'finalgrade'));
+        if($this->assignment->requirewordcount) {
+            // Index to insert after student timemodified
+            $wordcountindex = array_search('timemodified', $tablecolumns) + 1;
+            array_splice($tablecolumns, $wordcountindex, 0, 'wordcount');
+        }
         if ($uses_outcomes) {
             $tablecolumns[] = 'outcome'; // no sorting based on outcomes column
         }
@@ -1357,6 +1367,9 @@ class assignment_base {
                     get_string('status'),
                     get_string('finalgrade', 'grades'),
                 ));
+        if($this->assignment->requirewordcount) {
+            array_splice($tableheaders, $wordcountindex, 0, get_string('wordcount', 'assignment'));
+        }
         if ($uses_outcomes) {
             $tableheaders[] = get_string('outcome', 'grades');
         }
@@ -1421,10 +1434,16 @@ class assignment_base {
             $sort = ' ORDER BY '.$sort;
         }
 
+        if($this->assignment->requirewordcount) {
+            $wordcountselect = 's.wordcount, ';
+        } else {
+            $wordcountselect = '';
+        }
+
         $ufields = user_picture::fields('u', $extrafields);
         if (!empty($users)) {
             $select = "SELECT $ufields,
-                              s.id AS submissionid, s.grade, s.submissioncomment,
+                              s.id AS submissionid, s.grade, s.submissioncomment,$wordcountselect
                               s.timemodified, s.timemarked,
                               CASE WHEN s.timemarked > 0 AND s.timemarked >= s.timemodified THEN 1
                                    ELSE 0 END AS status ";
@@ -1484,6 +1503,10 @@ class assignment_base {
                                 $studentmodifiedcontent = '&nbsp;';
                             }
                             $studentmodified = html_writer::tag('div', $studentmodifiedcontent, array('id' => 'ts' . $auser->id));
+                        ///Print wordcount
+                            if($this->assignment->requirewordcount) {
+                                $wordcount = $auser->wordcount;
+                            }
                         ///Print grade, dropdown or text
                             if ($auser->timemarked > 0) {
                                 $teachermodified = '<div id="tt'.$auser->id.'">'.userdate($auser->timemarked).'</div>';
@@ -1529,6 +1552,11 @@ class assignment_base {
                             $studentmodified = '<div id="ts'.$auser->id.'">&nbsp;</div>';
                             $teachermodified = '<div id="tt'.$auser->id.'">&nbsp;</div>';
                             $status          = '<div id="st'.$auser->id.'">&nbsp;</div>';
+
+                            // Print wordcount
+                            if($this->assignment->requirewordcount) {
+                                $wordcount = '-';
+                            }
 
                             if ($final_grade->locked or $final_grade->overridden) {
                                 $grade = '<div id="g'.$auser->id.'">'.$final_grade->formatted_grade . '</div>';
@@ -1605,6 +1633,9 @@ class assignment_base {
                         $row = array_merge(array($picture, $userlink), $extradata,
                                 array($grade, $comment, $studentmodified, $teachermodified,
                                 $status, $finalgrade));
+                        if($this->assignment->requirewordcount) {
+                            array_splice($row, $wordcountindex, 0, $wordcount);
+                        }
                         if ($uses_outcomes) {
                             $row[] = $outcomes;
                         }
@@ -2464,6 +2495,11 @@ class assignment_base {
             $updated->id = $submission->id;
             $updated->timemodified = time();
 
+            // Save word count
+            if($this->assignment->requirewordcount) {
+                $updated->wordcount = $fromform->wordcount;
+            }
+
             if (!$DB->update_record('assignment_submissions', $updated)) {
                 error(get_string('error'));
             } else {
@@ -2475,6 +2511,10 @@ class assignment_base {
             // or on the first display of the form.
             // Put data you want to fill out in the form into array $toform here:
             $toform = array();
+            $wordcount  = optional_param('wordcount', 0, PARAM_INT);
+            if($wordcount) {
+                $toform['wordcount'] = $wordcount;
+            }
             $mform->set_data($toform);
 
             $this->view_header();
@@ -2676,6 +2716,9 @@ class assignment_grading_form extends moodleform {
         $mform =& $this->_form;
         $mform->addElement('header', 'Submission', get_string('submission', 'assignment'));
         $mform->addElement('static', '', '' , $this->_customdata->submission_content );
+        if (!empty($this->_customdata->submission->wordcount)) {
+            $mform->addElement('static', '', get_string('wordcount', 'assignment').':', $this->_customdata->submission->wordcount);
+        }
     }
 
     protected function get_editor_options() {
