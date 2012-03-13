@@ -3947,6 +3947,87 @@ function assignment_pack_files($filesforzipping) {
         return false;
 }
 
+
+/**
+ * creates a list of all assignment submission files, suitable for zipping with assignment_pack_files.
+ */
+function list_submission_files($assignment) {
+    global $CFG, $DB;
+    require_once($CFG->libdir.'/filelib.php');
+
+    $submissions = $assignment->get_submissions('','');
+    if (empty($submissions)) {
+        print_error('errornosubmissions', 'assignment');
+    }
+
+    $filesforzipping = array();
+    $fs = get_file_storage();
+
+    $groupmode = groups_get_activity_groupmode($assignment->cm);
+    $groupid = 0;   // All users
+    $groupname = '';
+    if ($groupmode) {
+        $groupid = groups_get_activity_group($assignment->cm, true);
+        $groupname = groups_get_group_name($groupid);
+    }
+
+    // Path elements inside zip
+    $dirnamecourse = clean_filename($assignment->course->shortname).'/';
+    $dirnameassignment = clean_filename($assignment->assignment->name).'/';
+
+    foreach ($submissions as $submission) {
+        $a_userid = $submission->userid; //get userid
+        if ((groups_is_member($groupid,$a_userid)or !$groupmode or !$groupid)) {
+            $a_assignid = $submission->assignment; //get name of this assignment for use in the file names.
+            $a_user = $DB->get_record("user", array("id"=>$a_userid),'id,username,firstname,lastname'); //get user firstname/lastname
+
+            $dirnamestudent = clean_filename($a_user->lastname.'_'.$a_user->firstname.'_'.$a_userid);
+
+            $files = $fs->get_area_files($assignment->context->id, 'mod_assignment', 'submission', $submission->id, "timemodified", false);
+            foreach ($files as $file) {
+                $fileforzipname = $dirnamecourse . $dirnameassignment . $dirnamestudent .
+                                  clean_param($file->get_filepath(),PARAM_PATH) . clean_filename($file->get_filename());
+                //save file name to array for zipping.
+                $filesforzipping[$fileforzipname] = $file;
+            }
+        }
+    } // end of foreach loop
+
+    return $filesforzipping;
+}
+
+/**
+ * creates a zip of all Upload and Upload single assignment submissions and sends a zip to the browser
+ */
+function assignment_download_course_submissions($course, $id) {
+    global $CFG, $DB;
+
+    // Name of new zip file.
+    $filename = str_replace(' ', '_', clean_filename($course->shortname.date('_Y-m-d\THi').".zip"));
+
+    // Get all of the course's assignment details
+    $modinfo = get_fast_modinfo($course);
+    $filesforzipping = array();
+
+    foreach($modinfo->cms as $cmid => $cm) {
+        if($cm->modname == 'assignment') {
+            $assignment = $DB->get_record("assignment", array('id' => $cm->instance));
+
+            require_once ("$CFG->dirroot/mod/assignment/type/$assignment->assignmenttype/assignment.class.php");
+            $assignmentclass = "assignment_$assignment->assignmenttype";
+            $assignmentinstance = new $assignmentclass($cm->id, $assignment, $cm, $course);
+
+            // Submission files
+            $filesforzipping = array_merge($filesforzipping, list_submission_files($assignmentinstance));
+
+        }
+    }
+
+    if ($zipfile = assignment_pack_files($filesforzipping)) {
+        send_temp_file($zipfile, $filename); //send file and delete after sending.
+    }
+}
+
 /**
  * Lists all file areas current user may browse
  *

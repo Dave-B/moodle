@@ -5,12 +5,20 @@ require_once("lib.php");
 require_once($CFG->libdir.'/gradelib.php');
 
 $id = required_param('id', PARAM_INT);   // course
+$download = optional_param('download' , 'none', PARAM_ALPHA); //ZIP download asked for?
 
 if (!$course = $DB->get_record('course', array('id'=>$id))) {
     print_error('invalidcourseid');
 }
 
 require_course_login($course);
+
+// Download all assignment files
+if ($download == "zip") {
+    assignment_download_course_submissions($course, $id);
+    add_to_log($course->id, "assignment", "download all in zip", "index.php?id=$course->id", "");
+}
+
 $PAGE->set_pagelayout('incourse');
 
 add_to_log($course->id, "assignment", "view all", "index.php?id=$course->id", "");
@@ -122,5 +130,10 @@ foreach ($modinfo->instances['assignment'] as $cm) {
 echo "<br />";
 
 echo html_writer::table($table);
+
+// print button offering zip file function to teacher
+echo '<div align="center">';
+echo html_writer::link(new moodle_url('index.php', array('id' => $course->id, 'download' => 'zip')), get_string('downloadall', 'assignment'));
+echo '</div>';
 
 echo $OUTPUT->footer();
