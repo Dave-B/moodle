@@ -1643,12 +1643,12 @@ class assignment_base {
                     }
                     $currentposition++;
                 }
+                $table->print_html();  /// Print the whole table
                 if ($hassubmission && method_exists($this, 'download_submissions')) {
                     echo html_writer::start_tag('div', array('class' => 'mod-assignment-download-link'));
                     echo html_writer::link(new moodle_url('/mod/assignment/submissions.php', array('id' => $this->cm->id, 'download' => 'zip')), get_string('downloadall', 'assignment'));
                     echo html_writer::end_tag('div');
                 }
-                $table->print_html();  /// Print the whole table
             } else {
                 if ($filter == self::FILTER_SUBMITTED) {
                     echo html_writer::tag('div', get_string('nosubmisson', 'assignment'), array('class'=>'nosubmisson'));
