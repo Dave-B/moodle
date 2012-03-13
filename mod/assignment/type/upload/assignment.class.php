@@ -1085,45 +1085,12 @@ class assignment_upload extends assignment_base {
      * creates a zip of all assignment submissions and sends a zip to the browser
      */
     public function download_submissions() {
-        global $CFG,$DB;
-        require_once($CFG->libdir.'/filelib.php');
-        $submissions = $this->get_submissions('','');
-        if (empty($submissions)) {
-            print_error('errornosubmissions', 'assignment', new moodle_url('/mod/assignment/submissions.php', array('id'=>$this->cm->id)));
-        }
-        $filesforzipping = array();
-        $fs = get_file_storage();
+        // Name of new zip file.
+        $filename = $this->course->shortname.'-'.$this->assignment->name.'-'.$this->assignment->id.date('_Y-m-d\THi').".zip";
+        $filename = str_replace(' ', '_', clean_filename($filename));
 
-        $groupmode = groups_get_activity_groupmode($this->cm);
-        $groupid = 0;   // All users
-        $groupname = '';
-        if ($groupmode) {
-            $groupid = groups_get_activity_group($this->cm, true);
-            $groupname = groups_get_group_name($groupid).'-';
-        }
-        $filename = str_replace(' ', '_', clean_filename($this->course->shortname.'-'.$this->assignment->name.'-'.$groupname.$this->assignment->id.".zip")); //name of new zip file.
-        foreach ($submissions as $submission) {
-            // If assignment is open and submission is not finalized and marking button enabled then don't add it to zip.
-            $submissionstatus = $this->is_finalized($submission);
-            if ($this->isopen() && empty($submissionstatus) && !empty($this->assignment->var4)) {
-                continue;
-            }
-            $a_userid = $submission->userid; //get userid
-            if ((groups_is_member($groupid,$a_userid)or !$groupmode or !$groupid)) {
-                $a_assignid = $submission->assignment; //get name of this assignment for use in the file names.
-                $a_user = $DB->get_record("user", array("id"=>$a_userid),'id,username,firstname,lastname'); //get user firstname/lastname
-
-                $files = $fs->get_area_files($this->context->id, 'mod_assignment', 'submission', $submission->id, "timemodified", false);
-                foreach ($files as $file) {
-                    //get files new name.
-                    $fileext = strstr($file->get_filename(), '.');
-                    $fileoriginal = str_replace($fileext, '', $file->get_filename());
-                    $fileforzipname =  clean_filename(fullname($a_user) . "_" . $fileoriginal."_".$a_userid.$fileext);
-                    //save file name to array for zipping.
-                    $filesforzipping[$fileforzipname] = $file;
-                }
-            }
-        } // end of foreach loop
+        // Submission files
+        $filesforzipping = list_submission_files($this);
 
         // Throw error if no files are added.
         if (empty($filesforzipping)) {
