@@ -1255,6 +1255,18 @@ class assignment_base {
             echo html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'mode',    'value'=> 'fastgrade'));
             echo html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'page',    'value'=> $page));
             echo html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'sesskey', 'value'=> sesskey()));
+        } else {
+            // Print selective Zip & Download form around the table
+            $formattrs = array();
+            $formattrs['action'] = new moodle_url('/mod/assignment/submissions.php');
+            $formattrs['id'] = 'selectivezip';
+            $formattrs['method'] = 'post';
+
+            echo html_writer::start_tag('form', $formattrs);
+            echo html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'id',      'value'=> $this->cm->id));
+            echo html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'download','value'=> 'selectivezip'));
+            echo html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'page',    'value'=> $page));
+            echo html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'sesskey', 'value'=> sesskey()));
         }
 
         /// Get all ppl that are allowed to submit assignments
@@ -1309,6 +1321,9 @@ class assignment_base {
         if ($uses_outcomes) {
             $tablecolumns[] = 'outcome'; // no sorting based on outcomes column
         }
+        if (!$quickgrade) {
+            $tablecolumns[] = ''; // Column for actions (e.g. selective zip)
+        }
 
         $extrafieldnames = array();
         foreach ($extrafields as $field) {
@@ -1327,6 +1342,9 @@ class assignment_base {
                 ));
         if ($uses_outcomes) {
             $tableheaders[] = get_string('outcome', 'grades');
+        }
+        if (!$quickgrade) {
+            $tableheaders[] = ''; // Header for actions (e.g. selective zip)
         }
 
         require_once($CFG->libdir.'/tablelib.php');
@@ -1568,16 +1586,27 @@ class assignment_base {
                         if ($uses_outcomes) {
                             $row[] = $outcomes;
                         }
+
+                        if (!$quickgrade) {
+                            // Checkbox for selective Zip & Download of specified submissions.
+                            $rowactions = '<input name="selecteddownloads['.$auser->id.']" type="checkbox" value="'.$auser->id.'" title="'.get_string('selectsubmissionforzip', 'assignment').'"/>';
+                            $row[] = $rowactions;
+                        }
+
                         $table->add_data($row, $rowclass);
                     }
                     $currentposition++;
+                }
+                $table->print_html();  /// Print the whole table
+                if (!$quickgrade) {
+                    $selectivedownload = html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'selectivezip', 'value'=>get_string('downloadselected', 'assignment')));
+                    echo html_writer::tag('div', $selectivedownload, array('class'=>'mod-assignment-download-link'));
                 }
                 if ($hassubmission && ($this->assignment->assignmenttype=='upload' || $this->assignment->assignmenttype=='online' || $this->assignment->assignmenttype=='uploadsingle')) { //TODO: this is an ugly hack, where is the plugin spirit? (skodak)
                     echo html_writer::start_tag('div', array('class' => 'mod-assignment-download-link'));
                     echo html_writer::link(new moodle_url('/mod/assignment/submissions.php', array('id' => $this->cm->id, 'download' => 'zip')), get_string('downloadall', 'assignment'));
                     echo html_writer::end_tag('div');
                 }
-                $table->print_html();  /// Print the whole table
             } else {
                 if ($filter == self::FILTER_SUBMITTED) {
                     echo html_writer::tag('div', get_string('nosubmisson', 'assignment'), array('class'=>'nosubmisson'));
@@ -3951,7 +3980,7 @@ function assignment_pack_files($filesforzipping) {
 /**
  * creates a list of all assignment submission files, suitable for zipping with assignment_pack_files.
  */
-function list_submission_files($assignment) {
+function list_submission_files($assignment, $selectedusers) {
     global $CFG, $DB;
     require_once($CFG->libdir.'/filelib.php');
 
@@ -3977,7 +4006,13 @@ function list_submission_files($assignment) {
 
     foreach ($submissions as $submission) {
         $a_userid = $submission->userid; //get userid
-        if ((groups_is_member($groupid,$a_userid)or !$groupmode or !$groupid)) {
+        if ($selectedusers) {
+            $selecteduser = in_array($a_userid, $selectedusers);
+        } else {
+            $selecteduser = true;
+        }
+
+        if ($selecteduser && (groups_is_member($groupid,$a_userid)or !$groupmode or !$groupid)) {
             $a_assignid = $submission->assignment; //get name of this assignment for use in the file names.
             $a_user = $DB->get_record("user", array("id"=>$a_userid),'id,username,firstname,lastname'); //get user firstname/lastname
 

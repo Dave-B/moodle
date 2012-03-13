@@ -1139,13 +1139,14 @@ class assignment_upload extends assignment_base {
     /**
      * creates a zip of all assignment submissions and sends a zip to the browser
      */
-    public function download_submissions() {
+    public function download_submissions($selectedusers = NULL) {
+        echo "howdy";
         // Name of new zip file.
         $filename = $this->course->shortname.'-'.$this->assignment->name.'-'.$this->assignment->id.date('_Y-m-d\THi').".zip";
         $filename = str_replace(' ', '_', clean_filename($filename));
 
         // Submission files
-        $filesforzipping = list_submission_files($this);
+        $filesforzipping = list_submission_files($this, $selectedusers);
 
         if ($zipfile = assignment_pack_files($filesforzipping)) {
             send_temp_file($zipfile, $filename); //send file and delete after sending.
