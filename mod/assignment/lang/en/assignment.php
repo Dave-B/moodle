@@ -36,6 +36,37 @@ $string['allowresubmit_help'] = 'If enabled, students will be allowed to resubmi
 $string['alreadygraded'] = 'Your assignment has already been graded and resubmission is not allowed.';
 $string['assignment:addinstance'] = 'Add a new assignment';
 $string['assignmentdetails'] = 'Assignment details';
+$string['assignmenthtmlsummary'] = '<!DOCTYPE html><html>
+<head><title>Assignment summary for {$a->assignment}, Student: $a->student</title>
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />
+<link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABIIgAASyQAAFEqBQBYNRUAYkQlAHpfSACfh3QAq5OAALOmmgDBrp8Av7GlAMe6rgDQx78A5dzUAOnm4QAAAAAAAAAAAAAAAAAAAAANwAAAAAAAAAeAAAAAAABGiqhkAAAABYo0Q6hQAABIxk3kbIQAAGqwAjAKpgAAjCru7nLIAACrCe7ucLoAAKsI7u5wugAAjABwBwDIAABsPemt08YAAEvDIAI8tAAABbqruqtQAAAARoqoZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" />
+<style type=\"text/css\">
+th {vertical-align: top; text-align: right}
+.groupend {border-bottom: 1px solid #eee;}
+</style>
+</head>
+<body><h1>Assignment summary</h1>
+<p>Summary generated on {$a->time}.</p>
+
+<table>
+<tbody>
+    <tr><th>Course:</th><td>{$a->course}</td></tr>
+    <tr class=\"groupend\"><th>Assignment:</th><td>{$a->assignment}</td></tr>
+</tbody>
+<tbody>
+    <tr><th>Student:</th><td>{$a->student}</td></tr>
+    <tr><th>Due date:</th><td>{$a->duedate}</td></tr>
+    <tr><th>Submission date:</th><td>{$a->submissiontimemodified}</td></tr>
+    <tr><th>Files:</th><td>{$a->files}</td></tr>
+</tbody>
+<tbody>
+    <tr><th>Date marked:</th><td>{$a->timemarked}</td></tr>
+    <tr><th>Grade:</th><td>{$a->grade}</td></tr>
+    <tr class=\"groupend\"><th>Comment:</th><td>{$a->comment}</td></tr>
+</tbody>
+</table>
+</body></html>
+';
 $string['assignment:exportownsubmission'] = 'Export own submission';
 $string['assignment:exportsubmission'] = 'Export submission';
 $string['assignment:grade'] = 'Grade assignment';
@@ -81,6 +112,7 @@ $string['draft'] = 'Draft';
 $string['due'] = 'Assignment due';
 $string['duedate'] = 'Due date';
 $string['duedateno'] = 'No due date';
+$string['downloadsummary'] = 'Download summary';
 $string['early'] = '{$a} early';
 $string['editmysubmission'] = 'Edit my submission';
 $string['editthesefiles'] = 'Edit these files';

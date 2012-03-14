@@ -383,6 +383,42 @@ class assignment_base {
     }
 
     /**
+     * Return text containing key assignment information as plain text
+     * E.g. name, submission date, grade, etc. for one student's submission
+     *
+     * @param object $assignment object
+     * @return object assignment
+     */
+    function get_html_summary($user, $submission) {
+        $details = new object();
+        $time = time();
+        $details->time = userdate($time).' ('.date('c', $time).')';
+        $details->course = $this->course->fullname.' ('.$this->course->shortname.')';
+        $details->assignment = $this->assignment->name;
+        $details->student = $user->lastname.', '.$user->firstname.' ('.$user->username.')';
+        $details->duedate = userdate($this->assignment->timedue).' ('.date('c', $this->assignment->timedue).')';
+
+        if ($submission->timemodified) {
+            $details->submissiontimemodified = userdate($submission->timemodified).' ('.date('c', $submission->timemodified).')';
+        } else {
+            $details->submissiontimemodified = '-';
+        }
+        $details->files = $this->print_user_files_text($user->id, true);
+
+        if(isset($submission->wordcount)) {
+            $details->wordcount = $submission->wordcount;
+        } else {
+            $details->wordcount = '-';
+        }
+
+        $details->timemarked = $submission->timemarked ? userdate($submission->timemarked).' ('.date('c', $submission->timemodified).')' : '-';
+        $details->grade = $submission->grade == -1 ? '-' : $submission->grade;
+        $details->comment = $submission->submissioncomment ? $submission->submissioncomment : '-';
+
+        return get_string('assignmenthtmlsummary', 'assignment', $details);
+    }
+
+    /**
      * Returns a link with info about the state of the assignment submissions
      *
      * This is used by view_header to put this link at the top right of the page.
@@ -1388,9 +1424,7 @@ class assignment_base {
         if ($uses_outcomes) {
             $tableheaders[] = get_string('outcome', 'grades');
         }
-        if (!$quickgrade) {
-            $tableheaders[] = ''; // Header for actions (e.g. selective zip)
-        }
+        $tableheaders[] = ''; // Header for actions (e.g. selective zip)
 
         require_once($CFG->libdir.'/tablelib.php');
         $table = new flexible_table('mod-assignment-submissions');
@@ -1429,6 +1463,7 @@ class assignment_base {
         $table->no_sorting('finalgrade');
         $table->no_sorting('outcome');
         $table->text_sorting('submissioncomment');
+        $table->no_sorting('summarylink');
 
         // Start working -- this is necessary as soon as the niceties are over
         $table->setup();
@@ -1658,11 +1693,12 @@ class assignment_base {
                             $row[] = $outcomes;
                         }
 
+                        $rowactions = '<a href="summary.php?id='.$this->cm->id.'&amp;userid='.$auser->id.'"><img src="'.$OUTPUT->pix_url('f/text').'" class="icon" alt="" title="'.get_string('downloadsummary', 'assignment').'" /></a>';
                         if (!$quickgrade) {
                             // Checkbox for selective Zip & Download of specified submissions.
-                            $rowactions = '<input name="selecteddownloads['.$auser->id.']" type="checkbox" value="'.$auser->id.'" title="'.get_string('selectsubmissionforzip', 'assignment').'"/>';
-                            $row[] = $rowactions;
+                            $rowactions .= ' <input name="selecteddownloads['.$auser->id.']" type="checkbox" value="'.$auser->id.'" title="'.get_string('selectsubmissionforzip', 'assignment').'"/>';
                         }
+                        $row[] = $rowactions;
 
                         $table->add_data($row, $rowclass);
                     }
@@ -2233,6 +2269,47 @@ class assignment_base {
     }
 
     /**
+     * Produces a list of files uploaded by a user in plain text
+     *
+     * @param $userid int optional id of the user. If 0 then $USER->id is used.
+     * @param $return boolean optional defaults to false. If true the list is returned rather than printed
+     * @return string optional
+     */
+    function print_user_files_text($userid=0, $return=false) {
+        global $CFG, $USER;
+
+        if (!$userid) {
+            if (!isloggedin()) {
+                return '';
+            }
+            $userid = $USER->id;
+        }
+
+        $output = '';
+
+        $submission = $this->get_submission($userid);
+        if (!$submission) {
+            return $output;
+        }
+
+        $fs = get_file_storage();
+        $files = $fs->get_area_files($this->context->id, 'mod_assignment', 'submission', $submission->id, "timemodified", false);
+        if (!empty($files)) {
+            require_once($CFG->dirroot . '/mod/assignment/locallib.php');
+            foreach ($files as $file) {
+                $output .= s($file->get_filename()).', ';
+            }
+        }
+
+        $output = substr($output, 0, -2);
+
+        if ($return) {
+            return $output;
+        }
+        echo $output;
+    }
+
+    /**
      * Count the files uploaded by a given user
      *
      * @param $itemid int The submission's id as the file's itemid.
@@ -2612,6 +2689,8 @@ class assignment_grading_form extends moodleform {
                                                     fullname($this->_customdata->teacher,true).
                                                     '<br/>'.$datestring);
         }
+        $mform->closeHeaderBefore('summarylink');
+        $mform->addElement('static', 'summarylink', '<p><a href="summary.php?id='.$this->_customdata->cm->id.'&amp;userid='.$this->_customdata->userid.'"><img src="'.$OUTPUT->pix_url('f/text').'" alt="Assignment summary" width="16" height="16"/> '.get_string('downloadsummary', 'assignment').'</a></p>');
         // buttons
         $this->add_action_buttons();
 
