@@ -4236,6 +4236,10 @@ function list_submission_files($assignment, $selectedusers) {
                 //save file name to array for zipping.
                 $filesforzipping[$fileforzipname] = $file;
             }
+
+            // Include Assignment summary HTML file
+            $summaryzipname = $dirnamecourse . $dirnameassignment . $dirnamestudent . '/submission_details.html';
+            $filesforzipping[$summaryzipname] = array($assignment->get_html_summary($a_user, $submission));
         }
     } // end of foreach loop
 
