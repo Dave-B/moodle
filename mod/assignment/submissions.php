@@ -53,7 +53,7 @@ $assignmentinstance = new $assignmentclass($cm->id, $assignment, $cm, $course);
 
 if($download == "zip") {
     $assignmentinstance->download_submissions();
-} else if ($download == "selectivezip") {
+} else if ($download == "selectivezip" && !empty($_POST['selecteddownloads'])) {
     $assignmentinstance->download_submissions($_POST['selecteddownloads']);
 } else {
     $assignmentinstance->submissions($mode);   // Display or process the submissions
