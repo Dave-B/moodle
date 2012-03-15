@@ -97,6 +97,7 @@ div.logininfo, div.loginfailures {display: inline; margin-right: 1em;}
   */
 h1.sectionname {margin: 0; font-size:180%;}
 h2.sectionname {margin:.5em; font-size:140%;}
+#section-0 {margin: 0;}
 #section-0 h2.sectionname {margin:.5em;font-size:180%;}
 .course-content div.summary {margin-left:2em;}
 .section div.right {margin-top:2px;}
@@ -167,3 +168,6 @@ td.eventskey {
 .yui-skin-sam .yui-layout .yui-layout-clip {background-color:#F5F6FA;}
 .yui-skin-sam .yui-layout .yui-layout-unit div.yui-layout-bd {background-color:#FFF;}
 .ygtvfocus, .ygtvfocus .ygtvlabel, .ygtvfocus .ygtvlabel:link, .ygtvfocus .ygtvlabel:visited {background-color:#F5F6FA;}
+
+div.feedback_item_number_left {padding: 11px;}
+div.box.feedback_form fieldset, div.box.feedback_complete_cancel fieldset {border: 0;}

@@ -131,3 +131,5 @@ img.iconsmall {
 #page-mod-quiz-edit div.questionbank,
 #page-mod-quiz-edit div.container div.generalbox {background-color:#FFF;border:1px solid #D5D5D5;padding: 2px;}
 .que .formulation {background-color:#FFF;border:1px solid #D5D5D5}
+
+div.feedback_item_number_left {padding: 11px;}

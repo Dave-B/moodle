@@ -33,6 +33,7 @@ h4.main,
 h5.main,
 h6.main {text-align:center;font-weight:bold;}
 
+body.pagelayout-incourse #region-main div.region-content {border: 1px solid #ddd; background-color: #fff; margin: 0 1em; padding: 1em;}
 .coursebox {border-radius: 1em; background: #fff; padding: .3em; width:  auto;}
 #page-content .region-content {padding: 0;}
 #page-site-index #page-content .region-content {padding: .5em;}
@@ -153,3 +154,5 @@ img.iconsmall {
 #page-mod-quiz-edit div.questionbank,
 #page-mod-quiz-edit div.container div.generalbox {background-color:#FFF;border:1px solid #D5D5D5;padding: 2px;}
 .que .formulation {background-color:#FFF;border:1px solid #D5D5D5}
+
+div.feedback_item_number_left {padding: 11px;}
