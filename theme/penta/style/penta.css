@@ -82,6 +82,8 @@ h2.headingblock.header {padding: .3em; font-size: 120%;}
 #page-header .headermenu {margin-left:15px;float:none;text-align:left;}
 #page-header .logo {float:right;margin:.5em;}
 
+div.logininfo, div.loginfailures {display: inline; margin-right: 1em;}
+
 .navbar {
   color: white;
   font-size: 0.8em;

@@ -63,6 +63,8 @@ fieldset {border:1px solid #D5D5D5; padding: .5em;}
 #page-header .headermenu {margin-left:15px;float:none;text-align:left;}
 #page-header .logo {float:right;margin:1em;}
 
+div.logininfo, div.loginfailures {display: inline; margin-right: 1em;}
+
 .navbar {margin:0;padding-left:10px;border:0;border-top: 1px solid #3f5774;}
 
 .navbar {
@@ -94,7 +96,7 @@ fieldset {border:1px solid #D5D5D5; padding: .5em;}
   * Course spine page
   */
 h1.sectionname {margin: 0; font-size:180%;}
-h2.sectionname {margin:.5em .5em 0 .5em; font-size:140%;}
+h2.sectionname {margin:.5em; font-size:140%;}
 #section-0 h2.sectionname {margin:.5em;font-size:180%;}
 .course-content div.summary {margin-left:2em;}
 .section div.right {margin-top:2px;}
