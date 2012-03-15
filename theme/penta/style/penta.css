@@ -132,6 +132,10 @@ img.iconsmall {
   width: 12px;
 }
 
+.attention {
+  background-color: #d00;
+}
+
 /**
  * Mod theme tweaks
  */

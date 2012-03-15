@@ -110,6 +110,10 @@ img.iconsmall {
 }
 .course-content ul.topics li.section { margin: 1em 0;}
 
+.attention {
+  background-color: #d00;
+}
+
 /**
  * Mod theme tweaks
  */
