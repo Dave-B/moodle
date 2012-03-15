@@ -12,7 +12,7 @@ a.autolink {background-color: #f9f9f9;}
 #page-header a {text-decoration:none;color:#FFF;font-weight:bold;}
 #page-header a:hover {text-decoration:underline;color:#FFF;}
 
-.loginbox a:link, a:visited {
+.loginbox a:link {
   text-decoration: underline;
 }
 
@@ -113,6 +113,8 @@ li.activity.label hr {border: 0; border-bottom: 1px solid #ddd;}
   vertical-align: middle;
   width: 12px;
 }
+
+.availabilityinfo {margin-top: -3px;}
 
 body#course-view .unread {
   margin-left: .5em;

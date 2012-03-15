@@ -132,6 +132,8 @@ img.iconsmall {
   width: 12px;
 }
 
+.availabilityinfo {margin-top: -3px;}
+
 .attention {
   background-color: #d00;
 }

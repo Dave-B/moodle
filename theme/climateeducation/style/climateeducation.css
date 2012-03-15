@@ -110,6 +110,8 @@ img.iconsmall {
 }
 .course-content ul.topics li.section { margin: 1em 0;}
 
+.availabilityinfo {margin-top: -3px;}
+
 .attention {
   background-color: #d00;
 }
