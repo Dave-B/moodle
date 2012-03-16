@@ -75,9 +75,8 @@ M.mod_imscp.init = function(Y) {
                     li.appendChild(document.createTextNode(childnode.label));
                     li.setAttribute('class', 'fakelink');
                     li.setAttribute('id', 'ref_'+childnode.index);
-                    YAHOO.util.Event.addListener(li, "click", function (oArgs) {
-                        console.log(oArgs.target.id.substr(-1));
-                        imscp_activate_item_by_index(oArgs.target.id.substr(-1));
+                    YAHOO.util.Event.addListener(li, "click", function () {
+                        imscp_activate_item_by_index(this.id.substr(4));
                     });
                     ul.appendChild(li);
                     i++;
