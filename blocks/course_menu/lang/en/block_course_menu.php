@@ -75,10 +75,8 @@ $string['wrongsubchapnumber'] = 'Number of sub-chapters must be a correct number
 $string['rolesdesc'] = 'Use this link to add or remove students from your course. For the first 3 weeks of the semester, students are added automatically by the Banner enrollment, after the 3rd week of classes this will stop and then you can remove students who have dropped the course. ';
 $string['chaptering'] = 'Activate Chapter Grouping';
 $string['subchaptering'] = 'Activate Sub-Chapter Grouping';
-/*
 $string['topics'] = 'Topics';
 $string['weeks'] = 'Weeks';
-*/
 $string['topicsweeks'] = 'Topics / Weeks';
 $string['changename'] = 'Edit name';
 $string['warningchapnochange'] = 'By changing the number of chapters all your chaptering and subchaptering settings will be restored to default! Continue anyway?';
@@ -122,6 +120,10 @@ $string['showstatusbar'] = 'Show the status bar';
 $string['defaultwidth'] = 'Default window width (in pixels)';
 $string['defaultheight'] = 'Default window height (in pixels)';
 
+$string['nameweeks'] = "Week";
+$string['nametopics'] = "Topic";
+$string['namesocial'] = "Social";
+$string['namescorm'] = "SCORM";
 $string['namesite'] = "Site";
 
 $string['blockgeneralsettings'] = "Block general settings";
@@ -144,11 +146,13 @@ $string['myprofile'] = "My profile";
 $string['myprofilesettings'] = "My profile settings";
 $string['courseadministration'] = "Course administration";
 
-$string['showevery'] = 'Show every ';
-$string['showonly'] = 'Show only ';
+$string['showalltopics'] = 'Show All Topics';
+$string['showallweeks'] = 'Show All Weeks';
+$string['showonlyweek'] = 'Show only week';
+$string['showonlytopic'] = 'Show only topic';
 
 $string['namesitelevel'] = "Site level name";
-$string['namesiteleveldescription'] = "Alternative name to be shown in the block header when displayed at the site level";
+$string['namesiteleveldescription'] = "Alternarive name to be shown in the block header when displayed at the site level";
 $string['dockedbg'] = "Bg. color in docked mode";
 $string['dockedbgdesc'] = "Background color for the block title when docked";
 $string['notapplicable'] = "Not applicable";
