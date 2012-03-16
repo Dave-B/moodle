@@ -35,6 +35,8 @@
         'core:filteruploadedfiles'=>array('core', 'filteruploadedfiles', '2'),
         'core:legacyfilesinnewcourses'=>array('core', 'legacyfilesinnewcourses', '1'),
         'core:smtphosts'=>array('core', 'smtphosts', 'smtp.ox.ac.uk'),
+        'folder:requiremodintro'=>array('folder', 'requiremodintro', '0'),
+        'imscp:requiremodintro'=>array('imscp', 'requiremodintro', '0'),
         'moodlecourse:format'=>array('moodlecourse', 'format', 'unmarked'),
         'profilefield:courseids'=>array('profilefield', 'courseids', $courseidsdata),
         'page:requiremodintro'=>array('page', 'requiremodintro', '0'),
