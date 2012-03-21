@@ -95,8 +95,8 @@ h6.main {text-align:center;font-weight:bold;color:#333;}
 
 tbody.empty td {border: #999;}
 
-h3.sectionname {margin:.5em;font-size:140%;}
-#section-0 h3.sectionname {margin:.5em;font-size:180%;}
+h2.sectionname {margin: 0 0 .5em 0; font-size:120%;}
+#section-0 h2.sectionname {margin:0 0 .5em 0; font-size:140%;}
 .course-content div.summary {margin-left:2em;}
 .section div.right {margin-top:2px;}
 .course-content ul.section {margin-top: 0;}
@@ -108,7 +108,9 @@ img.iconsmall {
   vertical-align: middle;
   width: 12px;
 }
-.course-content ul.topics li.section { margin: 1em 0;}
+
+.course-content ul.topics li.section { margin-bottom: 1em; border-width: 0 0 1px 0;}
+div.coursebox {border-width: 0 0 1px 0;}
 
 .availabilityinfo {margin-top: -3px;}
 
