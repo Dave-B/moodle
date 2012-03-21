@@ -41,7 +41,7 @@ class block_course_contents extends block_base {
      * @return array
      */
     public function applicable_formats() {
-        return (array('course-view-weeks' => true, 'course-view-topics' => true));
+        return (array('course-view-weeks' => true, 'course-view-topics' => true, 'course-view-unmarked' => true));
     }
 
     /**
