@@ -5,6 +5,7 @@ body {
   font-size: .9em;
   padding: 1.5em;
 }
+body.pagelayout-frametop {padding: .5em 1.5em 0 1.5em;}
 body#tinymce {background-color:#FFF;}
 body.lang-vi {font-family:Arial, Verdana, Helvetica, sans-serif !important;}
 
@@ -36,7 +37,7 @@ h2,
 h3,
 h4,
 h5,
-h6 {color:#002B5F;}
+h6 {color:#333;}
 
 #page-header h1 {color:#FFF;}
 
@@ -46,6 +47,24 @@ h3.main,
 h4.main,
 h5.main,
 h6.main {text-align:center;font-weight:bold;color:#333;}
+
+#page-content #region-main {margin-left: 564px;}
+#page-content #region-main-box {left: 116px;}
+#page-content #region-pre {left: 284px; width: 284px;}
+#page-content #region-post {width: 284px;}
+
+/** Only side pre **/
+.side-pre-only #page-content #region-post-box {margin-left:-116px;}
+.side-pre-only #page-content #region-main {margin-left:284px;}
+.side-pre-only #page-content #region-pre {left:0px;}
+.side-pre-only #page-content #region-post {width:0px;}
+
+/** Only side post **/
+.side-post-only #page-content #region-main-box {left:0px;}
+.side-post-only #page-content #region-post-box {margin-left:-116px;}
+.side-post-only #page-content #region-main {margin-left:284px;}
+.side-post-only #page-content #region-pre {width:0px;}
+.has_dock.side-post-only .page-middle #region-main {margin-left:284px;}
 
 .path-site #page-content {margin-top: 1em;}
 #page-content .region-content {padding: 0 1em;}
