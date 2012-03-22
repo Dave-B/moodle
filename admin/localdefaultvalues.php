@@ -21,9 +21,10 @@
 // Array of settings
     $settings = array(
         // Site settings. Each setting has a has, and is an array of: 
-        //   0 - component, pluginname, 'profilefield', or 'core'
+        //   0 - component, pluginname, 'profilefield', 'block' (0/1 for visibility), or 'core'
         //   1 - setting name
         //   2 - value(s)
+        'block:navigation'=>array('block', 'navigation', '0'),
         'core:allowcoursethemes'=>array('core', 'allowcoursethemes', '1'),
         'core:bloglevel'=>array('core', 'bloglevel', '4'),
         'core:cachetext'=>array('core', 'cachetext', '1800'),
