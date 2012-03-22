@@ -192,3 +192,17 @@ a#mod-scorm-log-toggle {font-size: 0.7em;font-weight: bold;}
 #page-mod-survey-report .studentreport,
 #page-mod-survey-report .reportbuttons,
 #page-mod-survey-report .centerpara {text-align:center;}
+
+/** Quiz */
+#page-mod-quiz-edit * {border-radius:0;}
+#page-mod-quiz-edit .questionbankwindow div.header {background-color:#F5F6FA;}
+#page-mod-quiz-edit div.quizpage .pagecontent {background-color:#F5F6FA;border:1px solid #D5D5D5;}
+#page-mod-quiz-edit div.question div.content div.questioncontrols {background-color:#FFF;positon:static;width:auto;}
+#page-mod-quiz-edit div.question div.content div.points {background-color:#F5F6FA;border:1px solid #D5D5D5;float:right;margin:20px 0 2px 0;position:static;width:auto;}
+#page-mod-quiz-edit .editq div.question div.content  {background-color:#FFF;}
+#page-mod-quiz-edit .questionbankwindow div.header a {text-decoration:none;color:#002D62;font-weight:normal;}
+#page-mod-quiz-edit .questionbankwindow div.header a:hover {text-decoration:underline;color:#476A8F;}
+#page-mod-quiz-edit div.questionbank,
+#page-mod-quiz-edit div.container div.generalbox {background-color:#FFF;border:1px solid #D5D5D5;padding: 2px;}
+.que .formulation {background-color:#FFF;border:1px solid #D5D5D5}
+#page-mod-quiz-attempt div.answer input[type=radio] {margin: 0 .3em;}
