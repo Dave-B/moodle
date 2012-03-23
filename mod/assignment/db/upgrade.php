@@ -117,6 +117,83 @@ function xmldb_assignment_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2011112902, 'assignment');
     }
 
+    if ($oldversion < 2011112903) {
+
+        // Define field allowextension to be added to assignment
+        $table = new xmldb_table('assignment');
+        $field = new xmldb_field('allowextension', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'timemodified');
+
+        // Conditionally launch add field allowextension
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // Define field extensionunits to be added to assignment
+        $table = new xmldb_table('assignment');
+        $field = new xmldb_field('extensionunits', XMLDB_TYPE_CHAR, '10', null, null, null, 'days', 'allowextension');
+
+        // Conditionally launch add field extensionunits
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // Define field maxextensionstandard to be added to assignment
+        $table = new xmldb_table('assignment');
+        $field = new xmldb_field('maxextensionstandard', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '14', 'extensionunits');
+
+        // Conditionally launch add field maxextensionstandard
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // Define field maxextensionexceptional to be added to assignment
+        $table = new xmldb_table('assignment');
+        $field = new xmldb_field('maxextensionexceptional', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '30', 'maxextensionstandard');
+
+        // Conditionally launch add field maxextensionexceptional
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+
+        // Define field reasonlate to be added to assignment_submissions
+        $table = new xmldb_table('assignment_submissions');
+        $field = new xmldb_field('reasonlate', XMLDB_TYPE_TEXT, 'medium', null, null, null, null, 'timemodified');
+
+        // Conditionally launch add field reasonlate
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // Define field provisionalgrade to be added to assignment_submissions
+        $table = new xmldb_table('assignment_submissions');
+        $field = new xmldb_field('provisionalgrade', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '-1', 'data2');
+
+        // Conditionally launch add field provisionalgrade
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // Define field timeconfirmed to be added to assignment_submissions
+        $table = new xmldb_table('assignment_submissions');
+        $field = new xmldb_field('timeconfirmed', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'timemarked');
+
+        // Conditionally launch add field timeconfirmed
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // assignment savepoint reached
+        upgrade_mod_savepoint(true, 2011112903, 'assignment');
+    }
+
     return true;
 }
 

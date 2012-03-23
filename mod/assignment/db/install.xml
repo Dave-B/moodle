@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/assignment/db" VERSION="20120312" COMMENT="XMLDB file for Moodle mod/assignment"
+<XMLDB PATH="mod/assignment/db" VERSION="20120320" COMMENT="XMLDB file for Moodle mod/assignment"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -25,7 +25,12 @@
         <FIELD NAME="timeavailable" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="allowextension" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether to allow time extensions on assignments"/>
+        <FIELD NAME="extensionunits" TYPE="char" LENGTH="10" NOTNULL="false" DEFAULT="days" SEQUENCE="false" COMMENT="Units that extensions are counted in, i.e. - minutes, hours, days"/>
+        <FIELD NAME="maxextensionstandard" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="14" SEQUENCE="false" COMMENT="Standard maximum number of extension time units offered."/>
+        <FIELD NAME="maxextensionexceptional" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="30" SEQUENCE="false" COMMENT="Exceptional maximum number of extension time units offered."/>
         <FIELD NAME="requiredeclaration" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" ENUM="false" COMMENT="Require the students check a box to confirm that they comply with a non-plagiarism statement."/>
+        <FIELD NAME="requirewordcount" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Per assignment setting, whether an assignment word count is required for submission."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -41,14 +46,17 @@
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="reasonlate" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" COMMENT="Student justification for late submission." PREVIOUS="timemodified"/>
         <FIELD NAME="numfiles" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="data1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="data2" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="provisionalgrade" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="-1" SEQUENCE="false" COMMENT="Temporary store for grade before registry confirmation then alerting student." PREVIOUS="data2"/>
         <FIELD NAME="grade" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="submissioncomment" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="format" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="teacher" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemarked" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timeconfirmed" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time grade confirmed." PREVIOUS="timemarked"/>
         <FIELD NAME="mailed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="wordcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Student-submitted number of words in the assignment."/>
       </FIELDS>
