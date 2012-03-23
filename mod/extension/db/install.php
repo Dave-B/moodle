@@ -31,6 +31,17 @@
  * @see upgrade_plugins_modules()
  */
 function xmldb_extension_install() {
+    /*
+  <STATEMENTS>
+    <STATEMENT NAME="insert log_display" TYPE="insert" TABLE="log_display" COMMENT="Initial insert of records on table log_display. Each record describes how data will be showed by log reports.">
+      <SENTENCES>
+        <SENTENCE TEXT="(module, action, mtable, field) VALUES ('extension', 'add', 'extension', 'name')" />
+        <SENTENCE TEXT="(module, action, mtable, field) VALUES ('extension', 'update', 'extension', 'name')" />
+        <SENTENCE TEXT="(module, action, mtable, field) VALUES ('extension', 'view', 'extension', 'name')" />
+      </SENTENCES>
+    </STATEMENT>
+  </STATEMENTS>
+  * */
 }
 
 /**
