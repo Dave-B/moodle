@@ -1,6 +1,0 @@
-Long list of missing functionality:
-
- * Backup/Restore of extensions
- * Tidy up.
- * Implement extension deletion?
- * Any additional logging that would be useful
