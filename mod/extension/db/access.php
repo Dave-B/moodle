@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Capability definitions for the newmodule module
+ * Capability definitions for the extension module
  *
  * The capabilities are loaded into the database table when the module is
  * installed or updated. Whenever the capability definitions are updated,
@@ -41,8 +41,9 @@
  * The variable name for the capability definitions array is $capabilities
  *
  * @package    mod
- * @subpackage newmodule
- * @copyright  2011 Your Name
+ * @subpackage extension
+ * @author     David Balch <david.balch@conted.ox.ac.uk>
+ * @copyright  2012 The University of Oxford
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -50,27 +51,59 @@ defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
 
-/***************************** remove these comment marks and modify the code as needed
-    'mod/newmodule:view' => array(
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_MODULE,
-        'legacy' => array(
-            'guest' => CAP_ALLOW,
-            'student' => CAP_ALLOW,
-            'teacher' => CAP_ALLOW,
+    'mod/extension:request' => array(
+        'captype'      => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+            'legacy' => array(
+            'guest'          => CAP_PREVENT,
+            'student'        => CAP_ALLOW,
+            'admin'          => CAP_ALLOW
+        )
+    ),
+
+    'mod/extension:viewanyextension' => array(
+        'riskbitmask' => RISK_PERSONAL,
+        'captype'      => 'read',
+        'contextlevel' => CONTEXT_COURSE,
+            'legacy' => array(
+            'guest'          => CAP_PREVENT,
+            'student'        => CAP_PREVENT,
+            'teacher'        => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-            'admin' => CAP_ALLOW
+            'admin'          => CAP_ALLOW
         )
     ),
 
-    'mod/newmodule:submit' => array(
-        'riskbitmask' => RISK_SPAM,
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_MODULE,
-        'legacy' => array(
-            'student' => CAP_ALLOW
+    'mod/extension:viewownextension' => array(
+        'captype'      => 'read',
+        'contextlevel' => CONTEXT_COURSE,
+            'legacy' => array(
+            'guest'          => CAP_PREVENT,
+            'student'        => CAP_ALLOW,
+            'admin'          => CAP_ALLOW
         )
     ),
-******************************/
+
+    'mod/extension:approveextension' => array(
+        'riskbitmask' => RISK_PERSONAL,
+        'captype'      => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+            'legacy' => array(
+            'guest'          => CAP_PREVENT,
+            'student'        => CAP_PREVENT,
+            'admin'          => CAP_ALLOW
+        )
+    ),
+
+    'mod/extension:confirmextension' => array(
+        'riskbitmask' => RISK_PERSONAL,
+        'captype'      => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+            'legacy' => array(
+            'guest'          => CAP_PREVENT,
+            'student'        => CAP_PREVENT,
+            'admin'          => CAP_ALLOW
+        )
+    )
+
 );
-

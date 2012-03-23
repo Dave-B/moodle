@@ -16,17 +16,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Library of interface functions and constants for module newmodule
+ * Library of interface functions and constants for module extension
  *
  * All the core Moodle functions, neeeded to allow the module to work
  * integrated in Moodle should be placed here.
- * All the newmodule specific functions, needed to implement all the module
+ * All the extension specific functions, needed to implement all the module
  * logic, should go to locallib.php. This will help to save some memory when
  * Moodle is performing actions across all modules.
  *
  * @package    mod
- * @subpackage newmodule
- * @copyright  2011 Your Name
+ * @subpackage extension
+ * @author     David Balch <david.balch@conted.ox.ac.uk>
+ * @copyright  2012 The University of Oxford
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -46,7 +47,7 @@ defined('MOODLE_INTERNAL') || die();
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed true if the feature is supported, null if unknown
  */
-function newmodule_supports($feature) {
+function extension_supports($feature) {
     switch($feature) {
         case FEATURE_MOD_INTRO:         return true;
         default:                        return null;
@@ -54,51 +55,51 @@ function newmodule_supports($feature) {
 }
 
 /**
- * Saves a new instance of the newmodule into the database
+ * Saves a new instance of the extension into the database
  *
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
  * will create a new instance and return the id number
  * of the new instance.
  *
- * @param object $newmodule An object from the form in mod_form.php
- * @param mod_newmodule_mod_form $mform
- * @return int The id of the newly inserted newmodule record
+ * @param object $extension An object from the form in mod_form.php
+ * @param mod_extension_mod_form $mform
+ * @return int The id of the newly inserted extension record
  */
-function newmodule_add_instance(stdClass $newmodule, mod_newmodule_mod_form $mform = null) {
+function extension_add_instance(stdClass $extension, mod_extension_mod_form $mform = null) {
     global $DB;
 
-    $newmodule->timecreated = time();
+    $extension->timecreated = time();
 
     # You may have to add extra stuff in here #
 
-    return $DB->insert_record('newmodule', $newmodule);
+    return $DB->insert_record('extension', $extension);
 }
 
 /**
- * Updates an instance of the newmodule in the database
+ * Updates an instance of the extension in the database
  *
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
  * will update an existing instance with new data.
  *
- * @param object $newmodule An object from the form in mod_form.php
- * @param mod_newmodule_mod_form $mform
+ * @param object $extension An object from the form in mod_form.php
+ * @param mod_extension_mod_form $mform
  * @return boolean Success/Fail
  */
-function newmodule_update_instance(stdClass $newmodule, mod_newmodule_mod_form $mform = null) {
+function extension_update_instance(stdClass $extension, mod_extension_mod_form $mform = null) {
     global $DB;
 
-    $newmodule->timemodified = time();
-    $newmodule->id = $newmodule->instance;
+    $extension->timemodified = time();
+    $extension->id = $extension->instance;
 
     # You may have to add extra stuff in here #
 
-    return $DB->update_record('newmodule', $newmodule);
+    return $DB->update_record('extension', $extension);
 }
 
 /**
- * Removes an instance of the newmodule from the database
+ * Removes an instance of the extension from the database
  *
  * Given an ID of an instance of this module,
  * this function will permanently delete the instance
@@ -107,16 +108,16 @@ function newmodule_update_instance(stdClass $newmodule, mod_newmodule_mod_form $
  * @param int $id Id of the module instance
  * @return boolean Success/Failure
  */
-function newmodule_delete_instance($id) {
+function extension_delete_instance($id) {
     global $DB;
 
-    if (! $newmodule = $DB->get_record('newmodule', array('id' => $id))) {
+    if (! $extension = $DB->get_record('extension', array('id' => $id))) {
         return false;
     }
 
     # Delete any dependent records here #
 
-    $DB->delete_records('newmodule', array('id' => $newmodule->id));
+    $DB->delete_records('extension', array('id' => $extension->id));
 
     return true;
 }
@@ -130,7 +131,7 @@ function newmodule_delete_instance($id) {
  *
  * @return stdClass|null
  */
-function newmodule_user_outline($course, $user, $mod, $newmodule) {
+function extension_user_outline($course, $user, $mod, $extension) {
 
     $return = new stdClass();
     $return->time = 0;
@@ -145,20 +146,20 @@ function newmodule_user_outline($course, $user, $mod, $newmodule) {
  * @param stdClass $course the current course record
  * @param stdClass $user the record of the user we are generating report for
  * @param cm_info $mod course module info
- * @param stdClass $newmodule the module instance record
+ * @param stdClass $extension the module instance record
  * @return void, is supposed to echp directly
  */
-function newmodule_user_complete($course, $user, $mod, $newmodule) {
+function extension_user_complete($course, $user, $mod, $extension) {
 }
 
 /**
  * Given a course and a time, this module should find recent activity
- * that has occurred in newmodule activities and print it out.
+ * that has occurred in extension activities and print it out.
  * Return true if there was output, or false is there was none.
  *
  * @return boolean
  */
-function newmodule_print_recent_activity($course, $viewfullnames, $timestart) {
+function extension_print_recent_activity($course, $viewfullnames, $timestart) {
     return false;  //  True if anything was printed, otherwise false
 }
 
@@ -167,7 +168,7 @@ function newmodule_print_recent_activity($course, $viewfullnames, $timestart) {
  *
  * This callback function is supposed to populate the passed array with
  * custom activity records. These records are then rendered into HTML via
- * {@link newmodule_print_recent_mod_activity()}.
+ * {@link extension_print_recent_mod_activity()}.
  *
  * @param array $activities sequentially indexed array of objects with the 'cmid' property
  * @param int $index the index in the $activities to use for the next record
@@ -178,15 +179,15 @@ function newmodule_print_recent_activity($course, $viewfullnames, $timestart) {
  * @param int $groupid check for a particular group's activity only, defaults to 0 (all groups)
  * @return void adds items into $activities and increases $index
  */
-function newmodule_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid=0, $groupid=0) {
+function extension_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid=0, $groupid=0) {
 }
 
 /**
- * Prints single activity item prepared by {@see newmodule_get_recent_mod_activity()}
+ * Prints single activity item prepared by {@see extension_get_recent_mod_activity()}
 
  * @return void
  */
-function newmodule_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames) {
+function extension_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames) {
 }
 
 /**
@@ -197,23 +198,23 @@ function newmodule_print_recent_mod_activity($activity, $courseid, $detail, $mod
  * @return boolean
  * @todo Finish documenting this function
  **/
-function newmodule_cron () {
+function extension_cron () {
     return true;
 }
 
 /**
- * Returns an array of users who are participanting in this newmodule
+ * Returns an array of users who are participanting in this extension
  *
  * Must return an array of users who are participants for a given instance
- * of newmodule. Must include every user involved in the instance,
+ * of extension. Must include every user involved in the instance,
  * independient of his role (student, teacher, admin...). The returned
  * objects must contain at least id property.
  * See other modules as example.
  *
- * @param int $newmoduleid ID of an instance of this module
+ * @param int $extensionid ID of an instance of this module
  * @return boolean|array false if no participants, array of objects otherwise
  */
-function newmodule_get_participants($newmoduleid) {
+function extension_get_participants($extensionid) {
     return false;
 }
 
@@ -223,7 +224,7 @@ function newmodule_get_participants($newmoduleid) {
  * @example return array('moodle/site:accessallgroups');
  * @return array
  */
-function newmodule_get_extra_capabilities() {
+function extension_get_extra_capabilities() {
     return array();
 }
 
@@ -232,21 +233,21 @@ function newmodule_get_extra_capabilities() {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Is a given scale used by the instance of newmodule?
+ * Is a given scale used by the instance of extension?
  *
- * This function returns if a scale is being used by one newmodule
+ * This function returns if a scale is being used by one extension
  * if it has support for grading and scales. Commented code should be
  * modified if necessary. See forum, glossary or journal modules
  * as reference.
  *
- * @param int $newmoduleid ID of an instance of this module
- * @return bool true if the scale is used by the given newmodule instance
+ * @param int $extensionid ID of an instance of this module
+ * @return bool true if the scale is used by the given extension instance
  */
-function newmodule_scale_used($newmoduleid, $scaleid) {
+function extension_scale_used($extensionid, $scaleid) {
     global $DB;
 
     /** @example */
-    if ($scaleid and $DB->record_exists('newmodule', array('id' => $newmoduleid, 'grade' => -$scaleid))) {
+    if ($scaleid and $DB->record_exists('extension', array('id' => $extensionid, 'grade' => -$scaleid))) {
         return true;
     } else {
         return false;
@@ -254,18 +255,18 @@ function newmodule_scale_used($newmoduleid, $scaleid) {
 }
 
 /**
- * Checks if scale is being used by any instance of newmodule.
+ * Checks if scale is being used by any instance of extension.
  *
  * This is used to find out if scale used anywhere.
  *
  * @param $scaleid int
- * @return boolean true if the scale is used by any newmodule instance
+ * @return boolean true if the scale is used by any extension instance
  */
-function newmodule_scale_used_anywhere($scaleid) {
+function extension_scale_used_anywhere($scaleid) {
     global $DB;
 
     /** @example */
-    if ($scaleid and $DB->record_exists('newmodule', array('grade' => -$scaleid))) {
+    if ($scaleid and $DB->record_exists('extension', array('grade' => -$scaleid))) {
         return true;
     } else {
         return false;
@@ -273,44 +274,44 @@ function newmodule_scale_used_anywhere($scaleid) {
 }
 
 /**
- * Creates or updates grade item for the give newmodule instance
+ * Creates or updates grade item for the give extension instance
  *
  * Needed by grade_update_mod_grades() in lib/gradelib.php
  *
- * @param stdClass $newmodule instance object with extra cmidnumber and modname property
+ * @param stdClass $extension instance object with extra cmidnumber and modname property
  * @return void
  */
-function newmodule_grade_item_update(stdClass $newmodule) {
+function extension_grade_item_update(stdClass $extension) {
     global $CFG;
     require_once($CFG->libdir.'/gradelib.php');
 
     /** @example */
     $item = array();
-    $item['itemname'] = clean_param($newmodule->name, PARAM_NOTAGS);
+    $item['itemname'] = clean_param($extension->name, PARAM_NOTAGS);
     $item['gradetype'] = GRADE_TYPE_VALUE;
-    $item['grademax']  = $newmodule->grade;
+    $item['grademax']  = $extension->grade;
     $item['grademin']  = 0;
 
-    grade_update('mod/newmodule', $newmodule->course, 'mod', 'newmodule', $newmodule->id, 0, null, $item);
+    grade_update('mod/extension', $extension->course, 'mod', 'extension', $extension->id, 0, null, $item);
 }
 
 /**
- * Update newmodule grades in the gradebook
+ * Update extension grades in the gradebook
  *
  * Needed by grade_update_mod_grades() in lib/gradelib.php
  *
- * @param stdClass $newmodule instance object with extra cmidnumber and modname property
+ * @param stdClass $extension instance object with extra cmidnumber and modname property
  * @param int $userid update grade of specific user only, 0 means all participants
  * @return void
  */
-function newmodule_update_grades(stdClass $newmodule, $userid = 0) {
+function extension_update_grades(stdClass $extension, $userid = 0) {
     global $CFG, $DB;
     require_once($CFG->libdir.'/gradelib.php');
 
     /** @example */
     $grades = array(); // populate array of grade objects indexed by userid
 
-    grade_update('mod/newmodule', $newmodule->course, 'mod', 'newmodule', $newmodule->id, 0, $grades);
+    grade_update('mod/extension', $extension->course, 'mod', 'extension', $extension->id, 0, $grades);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -328,12 +329,12 @@ function newmodule_update_grades(stdClass $newmodule, $userid = 0) {
  * @param stdClass $context
  * @return array of [(string)filearea] => (string)description
  */
-function newmodule_get_file_areas($course, $cm, $context) {
+function extension_get_file_areas($course, $cm, $context) {
     return array();
 }
 
 /**
- * Serves the files from the newmodule file areas
+ * Serves the files from the extension file areas
  *
  * @param stdClass $course
  * @param stdClass $cm
@@ -343,7 +344,7 @@ function newmodule_get_file_areas($course, $cm, $context) {
  * @param bool $forcedownload
  * @return void this should never return to the caller
  */
-function newmodule_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload) {
+function extension_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload) {
     global $DB, $CFG;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
@@ -360,26 +361,26 @@ function newmodule_pluginfile($course, $cm, $context, $filearea, array $args, $f
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Extends the global navigation tree by adding newmodule nodes if there is a relevant content
+ * Extends the global navigation tree by adding extension nodes if there is a relevant content
  *
  * This can be called by an AJAX request so do not rely on $PAGE as it might not be set up properly.
  *
- * @param navigation_node $navref An object representing the navigation tree node of the newmodule module instance
+ * @param navigation_node $navref An object representing the navigation tree node of the extension module instance
  * @param stdClass $course
  * @param stdClass $module
  * @param cm_info $cm
  */
-function newmodule_extend_navigation(navigation_node $navref, stdclass $course, stdclass $module, cm_info $cm) {
+function extension_extend_navigation(navigation_node $navref, stdclass $course, stdclass $module, cm_info $cm) {
 }
 
 /**
- * Extends the settings navigation with the newmodule settings
+ * Extends the settings navigation with the extension settings
  *
- * This function is called when the context for the page is a newmodule module. This is not called by AJAX
+ * This function is called when the context for the page is a extension module. This is not called by AJAX
  * so it is safe to rely on the $PAGE.
  *
  * @param settings_navigation $settingsnav {@link settings_navigation}
- * @param navigation_node $newmodulenode {@link navigation_node}
+ * @param navigation_node $extensionnode {@link navigation_node}
  */
-function newmodule_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $newmodulenode=null) {
+function extension_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $extensionnode=null) {
 }
