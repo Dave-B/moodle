@@ -2139,5 +2139,20 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2013042300.00);
     }
 
+    if ($oldversion < 2011120502.01) {
+
+        // Define field registryworkflow to be added to course
+        $table = new xmldb_table('course');
+        $field = new xmldb_field('registryworkflow', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'completionnotify');
+
+        // Conditionally launch add field registryworkflow
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Main savepoint reached
+        upgrade_main_savepoint(true, 2011120502.01);
+    }
+
     return true;
 }
