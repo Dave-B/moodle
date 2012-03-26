@@ -1,11 +1,15 @@
 <?php
 
-/*
- This is the Oxford Reference Online block - providing an intoduction to the
- service, and a link to the lauch page.
-
- Author:  David Balch
- Date:    2007 02 09
+/**
+ * This is the Oxford Reference Online block - providing an intoduction to the
+ * service, and a link to the lauch page.
+ *
+ * Version information
+ *
+ * @package    block
+ * @subpackage extension
+ * @copyright  2012 University of Oxford
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 */
 
 class block_oxref extends block_base {
