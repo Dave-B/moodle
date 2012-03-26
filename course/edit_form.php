@@ -196,6 +196,9 @@ class course_edit_form extends moodleform {
         $mform->addHelpButton('newsitems', 'newsitemsnumber');
         $mform->setDefault('newsitems', $courseconfig->newsitems);
 
+        $mform->addElement('selectyesno', 'registryworkflow', get_string('useregistryworkflow', 'assignment'));
+        $mform->setDefault('registryworkflow', 1);
+
         $mform->addElement('selectyesno', 'showgrades', get_string('showgrades'));
         $mform->addHelpButton('showgrades', 'showgrades');
         $mform->setDefault('showgrades', $courseconfig->showgrades);
