@@ -31,7 +31,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['allcourseextensions'] = 'All extension in this course';
+$string['allcourseextensions'] = 'All extensions in this course';
 $string['allowextension'] = 'Allow extension';
 $string['approved'] = 'Approved';
 $string['awaitingconfirmation'] = 'Awaiting confirmation';
