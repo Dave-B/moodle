@@ -58,6 +58,8 @@ class assignment_base {
     var $coursecontext;
     /** @var object */
     var $assignment;
+    /** @var object */
+    var $extensiongroup;
     /** @var string */
     var $strassignment;
     /** @var string */
@@ -96,8 +98,8 @@ class assignment_base {
      * @param object $cm usually null, but if we have it we pass it to save db access
      * @param object $course usually null, but if we have it we pass it to save db access
      */
-    function assignment_base($cmid='staticonly', $assignment=NULL, $cm=NULL, $course=NULL) {
-        global $COURSE, $DB;
+    function assignment_base($cmid='staticonly', $assignment=NULL, $cm=NULL, $course=NULL, $extensionsuser=NULL) {
+        global $USER, $COURSE, $DB;
 
         if ($cmid == 'staticonly') {
             //use static functions only!
@@ -132,6 +134,37 @@ class assignment_base {
 
         $this->assignment->cmidnumber = $this->cm->idnumber; // compatibility with modedit assignment obj
         $this->assignment->courseid   = $this->course->id; // compatibility with modedit assignment obj
+
+        // Check for extensions
+        if($this->assignment->allowextension) {
+            // Lookup the current users's extensions for this assignment
+            require_once(dirname(dirname(__FILE__)).'/extension/locallib.php');
+
+            $context = get_context_instance(CONTEXT_COURSE, $this->cm->course);
+            if (has_capability('mod/extension:viewanyextension', $context)) {
+                // Can view any extensions
+                // View specified user, or leave as NULL to see all
+                $userid = $extensionsuser ? $extensionsuser : NULL;
+            } else {
+                // Can view own extensions
+                $userid = $USER->id;
+            }
+
+            // Create group object to hold all the extensions
+            $extensiongroup = new extension_group($this->cm->id, $userid, NULL, &$this->assignment);
+            $this->extensiongroup = $extensiongroup;
+
+            // Add extension tally
+            $this->assignment->extensiontally = $this->extensiongroup->get_extension_counts();
+
+            // Add any extension length and effective due date
+            // XXX: Needs review - does this handle individuals vs groups of users correctly?
+            if($this->assignment->timeextension = $this->extensiongroup->get_effective_date(null, true)) {
+                $this->assignment->extensionlength = $this->extensiongroup->get_extension_length();
+                $this->assignment->extendedtimedue = $this->assignment->timedue + $this->assignment->timeextension;
+            }
+            //print_object($this->extensiongroup);
+        }
 
         $this->strassignment = get_string('modulename', 'assignment');
         $this->strassignments = get_string('modulenameplural', 'assignment');
@@ -226,7 +259,7 @@ class assignment_base {
      * This will be suitable for most assignment types
      */
     function view_dates() {
-        global $OUTPUT;
+        global $OUTPUT, $CFG, $USER;
         if (!$this->assignment->timeavailable && !$this->assignment->timedue) {
             return;
         }
@@ -240,6 +273,67 @@ class assignment_base {
         if ($this->assignment->timedue) {
             echo '<tr><td class="c0">'.get_string('duedate','assignment').':</td>';
             echo '    <td class="c1">'.userdate($this->assignment->timedue).'</td></tr>';
+
+            // Request extension link
+            if ($this->assignment->allowextension) {
+
+                $context = get_context_instance(CONTEXT_COURSE, $this->cm->course);
+                $canRequest = has_capability('mod/extension:request', $context);
+
+                if ($canRequest && $this->isopen()) {
+                    // If extensions are allowed, provide a link to the add extension page
+                    echo '<tr><td class="c0">'.get_string('extensions','extension').':</td>';
+                    echo '    <td class="c1">';
+                    echo '<a href="/mod/extension/add.php?course='.$this->course->id;
+                    echo '&amp;type=assignment';
+                    echo '&amp;id='.$this->cm->id.'">';
+                    echo get_string('requestextension', 'extension').'</a>';
+                    if(isset($this->assignment->extensiontally)) {
+                        // Link to list of any extensions
+                        echo ' ('.$this->extensiongroup->get_extension_summary();
+                        echo ')';
+                    }
+                    echo '.</td></tr>';
+                }
+
+                if ($canRequest) {
+                    // Extensions allowed, so check for extended due date
+                    if(isset($this->assignment->extendedtimedue)) {
+                        echo '<tr><td class="c0">'.get_string('newduedate','extension').':</td>';
+
+                        if($this->assignment->extensiontally[1] > 0) {
+                            // Found approved extension, display new due date
+                            echo '    <td class="c1">'.userdate($this->assignment->extendedtimedue);
+                            // Describe total approved extensions
+                            echo ' (<a href="/mod/extension/index.php?id='.$this->course->id.'&amp;a='.$this->cm->id.'&amp;status=1">';
+
+                            if($this->assignment->extensiontally[1] == 1) {
+                                //singular
+                                echo get_string('includes1extensionfor', 'extension');
+                           } else {
+                                // Plural
+                                echo get_string('includesextensionstotaling', 'extension', $this->assignment->extensiontally[1]);
+                            }
+                            echo $this->assignment->extensionlength.' ';
+                            if($this->assignment->extensionlength == 1) {
+                                //singular
+                                echo get_string(substr($this->extensiongroup->activity->extensionunits, 0, -1), 'extension');
+                            } else  {
+                                // Plural
+                                echo get_string($this->extensiongroup->activity->extensionunits, 'extension');
+                            }
+
+                            echo '</a>)</td></tr>';
+
+                        } else {
+                            // No approved extensions
+                            echo '    <td class="c1"><a href="/mod/extension/index.php?id='.$this->course->id.'&amp;a='.$this->cm->id.'">'.get_string('noextensionsapproved', 'extension').'</a></td></tr>';
+                        }
+                    }
+                }
+
+            }
+
         }
         echo '</table>';
         echo $OUTPUT->box_end();
@@ -769,9 +863,41 @@ class assignment_base {
                     $updatedb = false;
 
                     if ($grading) {
-                        $grade = $_POST['menu'][$id];
-                        $updatedb = $updatedb || ($submission->grade != $grade);
-                        $submission->grade = $grade;
+
+                        if($this->course->registryworkflow) {
+                            // Any change to provisionalgrade
+                            if (isset($_POST['provisionalgrade'][$id])) {
+                                $provisionalgrade = $_POST['provisionalgrade'][$id];
+                                // Has prov grade changed?
+                                $updatedb = $updatedb || ($submission->provisionalgrade != $provisionalgrade);
+                                // Update prov grade
+                                $submission->provisionalgrade = $provisionalgrade;
+                            }
+                            $changedprovisional = $updatedb;
+
+                            $context = get_context_instance(CONTEXT_COURSE, $this->cm->course);
+                            $grade = $_POST['menu'][$id];
+                            if(has_capability('mod/assignment:confirmgrade', $context)) {
+                                // Record actual grade
+                                $updatedb = $updatedb || ($submission->grade != $grade);
+                                $submission->grade = $grade;
+                                if(($submission->grade != $grade) && !empty($this->assignment->emailteachers)) {
+                                    // If graded, and tutor email is enabled - notify tutor
+                                    // TODO: Restrict tutor notifications to groups
+                                    $this->assignment_notify_provisional_grade_approved($submission);
+                                }
+                            }
+                            if ($changedprovisional && ($submission->grade == -1 || $submission->grade == $grade)) {
+                                // If provisional grade change but no grade change,
+                                // notify Registry of provisional grade
+                                $this->assignment_notify_provisional_grade($submission);
+                            }
+                        } else {
+                            $grade = $_POST['menu'][$id];
+                            $updatedb = $updatedb || ($submission->grade != $grade);
+                            $submission->grade = $grade;
+                        }
+
                     } else {
                         if (!$newsubmission) {
                             unset($submission->grade);  // Don't need to update this.
@@ -885,7 +1011,7 @@ class assignment_base {
      * @param $submission object The submission whose data is to be updated on the main page
      */
     function update_main_listing($submission) {
-        global $SESSION, $CFG, $OUTPUT;
+        global $SESSION, $CFG, $OUTPUT, $COURSE;
 
         $output = '';
 
@@ -897,9 +1023,22 @@ class assignment_base {
         $output .= '<script type="text/javascript">'."\n<!--\n";
         if (empty($SESSION->flextable['mod-assignment-submissions']->collapse['submissioncomment'])) {
             if ($quickgrade){
-                $output.= 'opener.document.getElementById("submissioncomment'.$submission->userid.'").value="'
-                .trim($submission->submissioncomment).'";'."\n";
+                if($COURSE->registryworkflow) {
+                    $output.= 'opener.document.getElementById("menuprovisionalgrade'.$submission->userid.
+                    '").selectedIndex="'.optional_param('provindex', 0, PARAM_INT).'";'."\n";
+                    if(!$submission->onlyprovisionalgrade) {
+                        $output.= 'opener.document.getElementById("menumenu'.$submission->userid.
+                        '").selectedIndex="'.optional_param('menuindex', 0, PARAM_INT).'";'."\n";
+                    }
+                } else {
+                    $output.= 'opener.document.getElementById("submissioncomment'.$submission->userid.'").value="'
+                    .trim($submission->submissioncomment).'";'."\n";
+                }
              } else {
+                if($COURSE->registryworkflow) {
+                    $output.= 'opener.document.getElementById("pg'.$submission->userid.'").innerHTML="'.
+                    $this->display_grade($submission->provisionalgrade)."\";\n";
+                }
                 $output.= 'opener.document.getElementById("com'.$submission->userid.
                 '").innerHTML="'.shorten_text(trim(strip_tags($submission->submissioncomment)), 15)."\";\n";
             }
@@ -1058,6 +1197,11 @@ class assignment_base {
         $assignment = $this->assignment;
         $cm         = $this->cm;
         $context    = context_module::instance($cm->id);
+
+        if ($course->registryworkflow && !empty($submission->timeconfirmed)) {
+            // If grade confirmed in registry workflow, disable inputs
+            $disabled = 1;
+        }
 
         //reset filter to all for offline assignment
         if ($assignment->assignmenttype == 'offline' && $filter == self::FILTER_SUBMITTED) {

@@ -72,6 +72,16 @@ $capabilities = array(
         )
     ),
 
+    'mod/assignment:confirmgrade' => array(
+        'riskbitmask' => RISK_XSS,
+
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'admin' => CAP_ALLOW
+        )
+     ),
+
     'mod/assignment:exportownsubmission' => array(
 
         'captype' => 'read',

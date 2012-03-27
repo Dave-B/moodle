@@ -16,10 +16,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This is a one-line short description of the file
- *
- * You can have a rather longer description of the file as well,
- * if you like, and it can span multiple lines.
  *
  * @package    mod
  * @subpackage extension
@@ -28,62 +24,63 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/// Replace extension with the name of your module and remove this line
-
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
+require_once(dirname(__FILE__).'/locallib.php');
 
-$id = required_param('id', PARAM_INT);   // course
+$id = required_param('id', PARAM_INT);   // Course id
+$a = optional_param('a', NULL, PARAM_INT);   // Optional activity filter
+$status = optional_param('status', NULL, PARAM_INT);   // Optional extension status filter
+$excludeStatus = optional_param('exclude', NULL, PARAM_INT);   // Optional extension status exclusion filter
+$confirmed = optional_param('confirmed', NULL, PARAM_INT);   // Optional extension (un)confirmed filter
+$u = optional_param('u', NULL, PARAM_INT);   // Optional user filter
 
 $course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
 
 require_course_login($course);
+$context = get_context_instance(CONTEXT_COURSE, $id);
 
 add_to_log($course->id, 'extension', 'view all', 'index.php?id='.$course->id, '');
-
-$coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
 
 $PAGE->set_url('/mod/extension/index.php', array('id' => $id));
 $PAGE->set_title(format_string($course->fullname));
 $PAGE->set_heading(format_string($course->fullname));
-$PAGE->set_context($coursecontext);
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading($course->fullname.': '.get_string('extensions', 'extension'));
 
-if (! $extensions = get_all_instances_in_course('extension', $course)) {
-    notice(get_string('noextensions', 'extension'), new moodle_url('/course/view.php', array('id' => $course->id)));
-}
+/// Get strings
+$strextensions = get_string('modulenameplural', 'extension');
+$strextension  = get_string('modulename', 'extension');
 
-if ($course->format == 'weeks') {
-    $table->head  = array(get_string('week'), get_string('name'));
-    $table->align = array('center', 'left');
-} else if ($course->format == 'topics') {
-    $table->head  = array(get_string('topic'), get_string('name'));
-    $table->align = array('center', 'left', 'left', 'left');
+/// Get all the appropriate data
+if (has_capability('mod/extension:viewanyextension', $context)) {
+    // Can view any extensions
+    // View specified user, or leave as NULL to see all
+    $userid = $u ? $u : NULL;
+
+} else if (has_capability('mod/extension:viewownextension', $context)) {
+    // Can view own extensions
+    $userid = $USER->id;
 } else {
-    $table->head  = array(get_string('name'));
-    $table->align = array('left', 'left', 'left');
+    $userid = null;
 }
 
-foreach ($extensions as $extension) {
-    if (!$extension->visible) {
-        $link = html_writer::link(
-            new moodle_url('/mod/extension.php', array('id' => $extension->coursemodule)),
-            format_string($extension->name, true),
-            array('class' => 'dimmed'));
-    } else {
-        $link = html_writer::link(
-            new moodle_url('/mod/extension.php', array('id' => $extension->coursemodule)),
-            format_string($extension->name, true));
-    }
+$collection = new course_extension_collection($id, $a, $userid, $status, $confirmed);
+//print_object($collection);
 
-    if ($course->format == 'weeks' or $course->format == 'topics') {
-        $table->data[] = array($extension->section, $link);
-    } else {
-        $table->data[] = array($link);
-    }
+if (!$collection->assignments) {
+    notice('There are no extensions matching.', "../../course/view.php?id=$course->id");
+    die;
 }
 
-echo $OUTPUT->heading(get_string('modulenameplural', 'extension'), 2);
-echo html_writer::table($table);
+echo $OUTPUT->heading($strextensions);
+
+echo $OUTPUT->box_start('boxaligncenter boxwidthnormal centerpara informationbox');
+echo $collection->describe_filter($context);
+echo $OUTPUT->box_end();
+echo '<br/>';
+
+/// Print the table of instances
+$collection->view_table($context, $excludeStatus);
+
 echo $OUTPUT->footer();

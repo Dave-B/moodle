@@ -40,88 +40,88 @@ $string['clicktoviewapprove'] = 'Click to view/approve extension';
 $string['confirmed'] = 'Confirmed';
 $string['day'] = 'Day';
 $string['days'] = 'Days';
-$string['approvernewextensionmessage'] = 'Dear $a->approvername,\n
-The student $a->studentname has applied for an extension on the
+$string['approvernewextensionmessage'] = 'Dear {$a->approvername},\n
+The student {$a->studentname} has applied for an extension on the
 following assignment:
 
-      Course: $a->coursename
-  Assignment: $a->assignmentname
+      Course: {$a->coursename}
+  Assignment: {$a->assignmentname}
 
 Please check the course website to approve/reject the extension:
-  $a->extensionurl
+  {$a->extensionurl}
 
 All extensions for this assignment are listed here:
-  $a->extensionlisturl
+  {$a->extensionlisturl}
 
 Best regards,
 The Department for Continuing Education
 
-$a->siteurl
+{$a->siteurl}
 ';
-$string['approvernewextensionmessage_workflow'] = 'Dear $a->approvername,\n
-The student $a->studentname has applied for an extension on the
+$string['approvernewextensionmessage_workflow'] = 'Dear {$a->approvername},\n
+The student {$a->studentname} has applied for an extension on the
 following assignment:
 
-      Course: $a->coursename
-  Assignment: $a->assignmentname
+      Course: {$a->coursename}
+  Assignment: {$a->assignmentname}
 
 Please check the course website to approve/reject the extension:
-  $a->extensionurl
+  {$a->extensionurl}
 
 All extensions for this assignment are listed here:
-  $a->extensionlisturl
+  {$a->extensionlisturl}
 
-Once you have approved/rejected the extension, $a->confirmername
+Once you have approved/rejected the extension, {$a->confirmername}
 will be asked to confirm the extension, which will send the student
 notice of the decision.
 
 Best regards,
 The Department for Continuing Education
 
-$a->siteurl
+{$a->siteurl}
 ';
-$string['confirmernewextensionmessage_workflow'] = 'Dear $a->confirmername,\n
-The student $a->studentname has applied for an extension on the
+$string['confirmernewextensionmessage_workflow'] = 'Dear {$a->confirmername},\n
+The student {$a->studentname} has applied for an extension on the
 following assignment:
 
-      Course: $a->coursename
-  Assignment: $a->assignmentname
+      Course: {$a->coursename}
+  Assignment: {$a->assignmentname}
 
-$a->approvername has been asked to approve/reject the extension:
-  $a->extensionurl
+{$a->approvername} has been asked to approve/reject the extension:
+  {$a->extensionurl}
 
 Once they have done this, you will be asked to confirm the decision.
 
 All extensions for this assignment are listed here:
-  $a->extensionlisturl
+  {$a->extensionlisturl}
 
 Best regards,
 The Department for Continuing Education
 
-$a->siteurl
+{$a->siteurl}
 ';
 $string['excludestatus'] = 'Exclude status';
 $string['extensionapplicationdeadline'] = 'Deadline for extension application';
 $string['extension'] = 'Extension';
 $string['extensionapproved'] = 'Extension approved';
 $string['extensionawaitingconfirmation'] = 'Extension awaiting confirmation';
-$string['extensionawaitingconfirmationmessage'] = 'Dear $a->confirmername,\n
-The student $a->studentname\'s extension request has been $a->status by
-$a->approvername.
+$string['extensionawaitingconfirmationmessage'] = 'Dear {$a->confirmername},\n
+The student {$a->studentname}\'s extension request has been {$a->status} by
+{$a->approvername}.
 
-      Course: $a->coursename
-  Assignment: $a->assignmentname
-    Decision: $a->status
+      Course: {$a->coursename}
+  Assignment: {$a->assignmentname}
+    Decision: {$a->status}
 
 Please confirm the decision here:
-  $a->extensionurl
+  {$a->extensionurl}
 
 Once you have done this, the student will be notified of the decision.
 
 Best regards,
 The Department for Continuing Education
 
-$a->siteurl
+{$a->siteurl}
 ';
 $string['extensionfieldset'] = 'Custom example fieldset';
 $string['extensionintro'] = 'Extension Intro';
@@ -138,29 +138,31 @@ $string['extensiongranted'] = 'Extension granted';
 $string['extensionsubmitted'] = 'Extension submitted';
 $string['extensionunits'] = 'Extension units';
 $string['extensionsmatching'] = 'Extensions matching: ';
-$string['graderextensiondecisionmessage'] = 'Dear $a->gradername,\n
-A student\'s extension application has been confirmed as $a->status:
+$string['graderextensiondecisionmessage'] = 'Dear {$a->gradername},\n
+A student\'s extension application has been confirmed as {$a->status}:
 
-        Course: $a->coursename
-    Assignment: $a->assignmentname
-       Student: $a->studentname
-        Status: $a->status
+        Course: {$a->coursename}
+    Assignment: {$a->assignmentname}
+       Student: {$a->studentname}
+        Status: {$a->status}
 
-  New due date: $a->effectivedate
-      Comments: $a->studentmessage
+  New due date: {$a->effectivedate}
+      Comments: {$a->studentmessage}
 
 Details are available here:
-  $a->extensionurl
+  {$a->extensionurl}
 
 Best regards,
 The Department for Continuing Education
+
+{$a->siteurl}
 ';
 $string['grantextension'] = 'Grant extension';
 $string['hour'] = 'Hour';
 $string['hours'] = 'Hours';
 $string['includesextension'] = 'Includes an extension of ';
 $string['includes1extensionfor'] = 'Includes 1 extension for ';
-$string['includesextensionstotaling'] = 'Includes $a extensions totaling ';
+$string['includesextensionstotaling'] = 'Includes {$a} extensions totaling ';
 $string['incweekendsholidays'] = '(including weekends and holidays)';
 $string['inserterror'] = 'Could not record extension.';
 $string['invalidactivityq'] = ' Invalid activity? ';
@@ -193,25 +195,27 @@ $string['reasonforrequest'] = 'Reason for request';
 $string['rejected'] = 'Rejected';
 $string['requestdate'] = 'Request date';
 $string['requestextension'] = 'Request time extension';
-$string['requestspending'] = '$a extensions pending';
-$string['studentextensiondecisionmessage'] = 'Dear $a->studentname,\n
-Your application for an extension has been $a->status:
+$string['requestspending'] = '{$a} extensions pending';
+$string['studentextensiondecisionmessage'] = 'Dear {$a->studentname},\n
+Your application for an extension has been {$a->status}:
 
-        Course: $a->coursename
-    Assignment: $a->assignmentname
-        Status: $a->status
+        Course: {$a->coursename}
+    Assignment: {$a->assignmentname}
+        Status: {$a->status}
 
-Time requested: $a->lengthrequested
-  Time granted: $a->lengthgranted
+Time requested: {$a->lengthrequested}
+  Time granted: {$a->lengthgranted}
 
-  New due date: $a->effectivedate
-      Comments: $a->studentmessage
+  New due date: {$a->effectivedate}
+      Comments: {$a->studentmessage}
 
 Please check the course website to confirm the due date:
-  $a->extensionurl
+  {$a->extensionurl}
 
 Best regards,
 The Department for Continuing Education
+
+{$a->siteurl}
 ';
 $string['studentnotified'] = 'Student notified';
 $string['submitrequest'] = 'Submit extension request';

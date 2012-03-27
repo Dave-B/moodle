@@ -49,7 +49,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 function extension_supports($feature) {
     switch($feature) {
-        case FEATURE_MOD_INTRO:         return true;
+        case FEATURE_GROUPS:         return true;
         default:                        return null;
     }
 }
@@ -96,6 +96,29 @@ function extension_update_instance(stdClass $extension, mod_extension_mod_form $
     # You may have to add extra stuff in here #
 
     return $DB->update_record('extension', $extension);
+}
+
+/**
+ * Given an ID of an activity,
+ * this function will permanently delete all the related extensions
+ *
+ * @param object $activity An activity object
+ * @param string $modulename Name of the activity module
+ * @return boolean Success/Failure
+ */
+function extension_delete_by_activity($activity, $modulename) {
+
+    if (! $cm = get_coursemodule_from_instance($modulename, $activity->id, $activity->course)) {
+        return false;
+    }
+
+    $result = true;
+
+    if (! delete_records('extension', 'course', $cm->course, 'activitycmid', $cm->id)) {
+        $result = false;
+    }
+
+    return $result;
 }
 
 /**

@@ -125,7 +125,7 @@
                     $val = '<a href="/mod/assignment/view.php?id='.$extension->activitycmid.'">'.$val.'</a>';
                 }
                 else if ($key == 'timecreated') {
-                    $val = userdate($val, get_string('strftimedatetimeshort', 'moodle'));
+                    $val = userdate($val, get_string('strftimedatetimeshort'));
                 }
                 else if ($key == 'status') {
                     if($courses[$extension->course]->registryworkflow) {

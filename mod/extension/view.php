@@ -31,49 +31,59 @@
 /// (Replace extension with the name of your module and remove this line)
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
+require_once(dirname(__FILE__).'/locallib.php');
 
-$id = optional_param('id', 0, PARAM_INT); // course_module ID, or
-$n  = optional_param('n', 0, PARAM_INT);  // extension instance ID - it should be named as the first character of the module
+$id = required_param('id', PARAM_INT);  // Extension ID
 
 if ($id) {
-    $cm         = get_coursemodule_from_id('extension', $id, 0, false, MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $extension  = $DB->get_record('extension', array('id' => $cm->instance), '*', MUST_EXIST);
-} elseif ($n) {
-    $extension  = $DB->get_record('extension', array('id' => $n), '*', MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $extension->course), '*', MUST_EXIST);
-    $cm         = get_coursemodule_from_instance('extension', $extension->id, $course->id, false, MUST_EXIST);
+    if (! $cm = extension_get_cm_by_id($id)) {
+        error("Extension ID was incorrect");
+    }
 } else {
-    error('You must specify a course_module ID or an instance ID');
+    error('You must specify an extension ID');
 }
+//print_object($cm);
 
-require_login($course, true, $cm);
-$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+require_login($cm->course, false);
+$context = get_context_instance(CONTEXT_COURSE, $cm->course);
 
-add_to_log($course->id, 'extension', 'view', "view.php?id={$cm->id}", $extension->name, $cm->id);
+$strextensions = get_string('modulenameplural', 'extension');
+
+$can_viewanyextension = has_capability('mod/extension:viewanyextension', $context);
+$can_grade = has_capability('mod/assignment:grade', $context);
+$can_viewownextension = has_capability('mod/extension:viewownextension', $context);
+
 
 /// Print the page header
 
 $PAGE->set_url('/mod/extension/view.php', array('id' => $cm->id));
-$PAGE->set_title(format_string($extension->name));
-$PAGE->set_heading(format_string($course->fullname));
+$PAGE->set_title(format_string($cm->extension->name));
+$PAGE->set_heading(format_string($COURSE->fullname));
 $PAGE->set_context($context);
 
-// other things you may want to set - remove if not needed
-//$PAGE->set_cacheable(false);
-//$PAGE->set_focuscontrol('some-html-id');
-//$PAGE->add_body_class('extension-'.$somevar);
 
 // Output starts here
 echo $OUTPUT->header();
 
-if ($extension->intro) { // Conditions to show the intro can change to look for own settings or whatever
-    echo $OUTPUT->box(format_module_intro('extension', $extension, $cm->id), 'generalbox mod_introbox', 'extensionintro');
-}
+if ( ! ($can_viewanyextension || $can_grade ||
+        ($can_viewownextension && $USER->id == $cm->extension->userid))
+    ) {
+     // No permission to view this extension
+     error(get_string('nopermission', 'extension'));
 
-// Replace the following lines with you own code
-echo $OUTPUT->heading('Yay! It works!');
+} else {
+    // View this extension
+    // log access
+    add_to_log($id, "extension", "view", "view.php?id=$id", '', $cm->id);
+
+    /// Print the main part of the page
+    echo $OUTPUT->box_start('center', '', '', 0, 'generalbox', 'dates');
+    echo $cm->extension->view();
+    echo $OUTPUT->box_end();
+
+    echo $cm->extension->view_approval_form($context);
+
+}
 
 // Finish the page
 echo $OUTPUT->footer();

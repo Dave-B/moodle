@@ -74,6 +74,24 @@ class mod_assignment_mod_form extends moodleform_mod {
 
         $assignmentinstance->setup_elements($mform);
 
+        // Extension options
+        $mform->addElement('header', 'extension', get_string('extension', 'extension'));
+        $mform->addElement('select', 'allowextension', get_string('allowextension', 'extension'), $ynoptions);
+        $mform->setDefault('allowextension', 0);
+
+        $mform->addElement('select', 'extensionunits', get_string('extensionunits', 'extension'), array(
+                               'days'=>get_string('days', 'extension'),
+                               'hours'=>get_string('hours', 'extension'),
+                               'minutes'=>get_string('minutes', 'extension')
+                          ));
+        $mform->setDefault('extensionunits', 'days');
+
+        $range28 = range(1,28);
+        $mform->addElement('select', 'maxextensionstandard', get_string('maxextensionstandard', 'extension'), array_combine($range28, $range28));
+        $mform->setDefault('maxextensionstandard', 14);
+        $mform->addElement('select', 'maxextensionexceptional', get_string('maxextensionexceptional', 'extension'), array_combine($range28, $range28));
+        $mform->setDefault('maxextensionexceptional', 28);
+
         // Optional extra fields
         $mform->addElement('header', 'typedesc', get_string('additionalfields', 'assignment'));
         if (!empty($CFG->assignment_uploadtext)) {

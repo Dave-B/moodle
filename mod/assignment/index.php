@@ -29,6 +29,8 @@ $strassignmenttype = get_string("assignmenttype", "assignment");
 $strsectionname  = get_string('sectionname', 'format_'.$course->format);
 $strname = get_string("name");
 $strduedate = get_string("duedate", "assignment");
+$strextensions = get_string("extensions", "extension");
+$streffectivedate = get_string("newduedate", "extension");
 $strsubmitted = get_string("submitted", "assignment");
 $strgrade = get_string("grade");
 

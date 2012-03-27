@@ -84,7 +84,7 @@ class mod_extension_approval_form extends moodleform {
             $notified = '<div class="fitem"><div class="fitemtitle">'.
                       get_string('studentnotified', 'extension').
                       '</div><div class="felement ftextarea">'.
-                      userdate($cm->extension->timeconfirmed, get_string('strftimedatetime', 'moodle')).
+                      userdate($cm->extension->timeconfirmed, get_string('strftimedatetime')).
                       '</div></div>';
             $mform->addElement('html', $notified);
         } else if ($COURSE->registryworkflow) {

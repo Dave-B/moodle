@@ -259,6 +259,7 @@ $string['uploadnofilefound'] = 'No file was found - are you sure you selected on
 $string['uploadnotregistered'] = '\'{$a}\' was uploaded OK but submission did not register!';
 $string['uploadsuccess'] = 'Uploaded \'{$a}\' successfully';
 $string['uploadtext'] = 'Must agree before upload';
+$string['useregistryworkflow'] = 'Use Registry workflow';
 $string['usermisconf'] = 'User is misconfigured';
 $string['usernosubmit'] = 'Sorry, you are not allowed to submit an assignment.';
 $string['viewassignmentupgradetool'] = 'View the assignment upgrade tool';

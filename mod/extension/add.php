@@ -11,15 +11,16 @@
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
 
-$course = optional_param('id', 0, PARAM_INT);  // Course ID
+$courseid = optional_param('course', 0, PARAM_INT);  // Course ID
 $type = optional_param('type', 0, PARAM_ALPHA);  // Module type
 $id = optional_param('id', 0, PARAM_INT);  // Course Module ID
+
 if ($id) {
     if (! $cm = get_coursemodule_from_id($type, $id)) {
         error("Course Module ID was incorrect");
     }
 
-    if (! $assignment = get_record($type, "id", $cm->instance)) {
+    if (! $assignment = $DB->get_record($type, array("id" => $cm->instance))) {
         error("Activity ID was incorrect");
     }
 
@@ -30,33 +31,24 @@ if ($id) {
 require_login($cm->course, true, $cm);
 //require_capability('mod/extension:request', get_context_instance(CONTEXT_COURSE, $cm->id));
 
+$PAGE->set_url('/mod/extension/add.php', array('course' => $courseid, 'type' => $type, 'id' => $id));
+$PAGE->set_title(format_string($assignment->name).': '.get_string('requestextension', 'extension'));
+$PAGE->set_heading(format_string($COURSE->fullname));
+
+echo $OUTPUT->header();
+
 // log access
-add_to_log($course, "extension", "add", "add.php?course=$course&type=$type&id=$id", '', $cm->id, $USER->id);
-
-/// Print the page header
-$strextensions = get_string('modulenameplural', 'extension');
-$strextension  = get_string('modulename', 'extension');
-
-$navlinks = array();
-$navlinks[] = array('name' => $strextensions, 'link' => "index.php?id=$cm->course", 'type' => 'activity');
-$navlinks[] = array('name' => format_string($cm->name), 'link' => '', 'type' => 'activityinstance');
-
-$navigation = build_navigation($navlinks);
-
-print_header_simple(format_string($cm->name), '', $navigation, '', '', true,
-                    update_module_button($cm->id, $cm->course, $strextension)
-                    //,navmenu($cm->course, $cm)
-);
+add_to_log($courseid, "extension", "add", "add.php?course=$courseid&type=$type&id=$id", '', $cm->id, $USER->id);
 
 /// Print the main part of the page
-print_heading(get_string('requestextension', 'extension').': '.$cm->name);
+echo $OUTPUT->heading($cm->name.': '.get_string('requestextension', 'extension'));
 
 //print_object($cm);
 //print_object($assignment);
 //print_object($USER);
 //print_object($COURSE);
 
-print_simple_box_start('center', '', '', 0, 'generalbox', 'dates');
+echo $OUTPUT->box_start('center', '', '', 0, 'generalbox', 'dates');
 echo '<table>';
 if ($assignment->timeavailable) {
     echo '<tr><td class="c0">'.get_string('availabledate','assignment').':</td>';
@@ -68,9 +60,9 @@ if ($assignment->timedue) {
     echo '</td></tr>';
 }
 echo '</table>';
-print_simple_box_end();
+echo $OUTPUT->box_end();
 
-//include_once(dirname(dirname(dirname(__FILE__))).'/lib/formslib.php');
+include_once(dirname(dirname(dirname(__FILE__))).'/lib/formslib.php');
 include_once('mod_form.php');
 $mform = new mod_extension_form();
 
@@ -88,7 +80,7 @@ if ($mform->is_cancelled()){
     $fromform->timecreated = time();
     $fromform->userid = $USER->id;
     $fromform->activitycmid = $cm->id;
-    if($_FILES['evidenceupload']['name']) {
+    if(isset($_FILES['evidenceupload']['name'])) {
         // Save any uploaded file
         // TODO: Replace with a funciton in the Extension object
         $dest = $assignment->course.'/'.$CFG->moddata.'/extension/'.$fromform->activityid.'/'.$USER->id;
@@ -97,12 +89,12 @@ if ($mform->is_cancelled()){
     }
     //print_object($fromform);
 
-    $extensionid = insert_record('extension', $fromform, true);
+    $extensionid = $DB->insert_record('extension', $fromform, true);
     if(!$extensionid){
         error(get_string('inserterror' , 'extension'));
     } else {
         // Notify staff that extension requested
-        $student = get_record('user', 'id', $fromform->userid);
+        $student = $DB->get_record('user', array('id' => $fromform->userid));
         $studentname = $student->firstname.' '.$student->lastname;
         $from = $SITE->fullname.': '.get_string('modulenameplural', 'extension');
 
@@ -165,8 +157,8 @@ if ($mform->is_cancelled()){
         }
 
         // Redirect page
-        print_box(get_string('extensionsubmitted', 'extension'));
-        print_continue("$CFG->wwwroot/mod/assignment/view.php?id=$cm->id");
+        echo $OUTPUT->box(get_string('extensionsubmitted', 'extension'));
+        echo $OUTPUT->continue_button(new moodle_url($CFG->wwwroot.'/mod/assignment/view.php', array('id' => $cm->id)));
     }
 
 } else {
@@ -181,5 +173,5 @@ if ($mform->is_cancelled()){
 }
 
 /// Finish the page
-print_footer();
+echo $OUTPUT->footer();
 ?>

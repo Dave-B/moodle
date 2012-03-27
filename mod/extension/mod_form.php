@@ -30,50 +30,58 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once("../extension/lib.php");
 
 /**
  * Module instance settings form
  */
-class mod_extension_mod_form extends moodleform_mod {
 
-    /**
-     * Defines forms elements
-     */
-    public function definition() {
+class mod_extension_form extends moodleform {
 
-        $mform = $this->_form;
+    function definition() {
 
-        //-------------------------------------------------------------------------------
-        // Adding the "general" fieldset, where all the common settings are showed
-        $mform->addElement('header', 'general', get_string('general', 'form'));
+        global $COURSE, $USER, $cm, $assignment;
+        $mform =& $this->_form;
+    //print_object($mform->getRegisteredRules());
+    //print_object($assignment);
 
-        // Adding the standard "name" field
-        $mform->addElement('text', 'name', get_string('extensionname', 'extension'), array('size'=>'64'));
-        if (!empty($CFG->formatstringstriptags)) {
-            $mform->setType('name', PARAM_TEXT);
-        } else {
-            $mform->setType('name', PARAM_CLEAN);
-        }
-        $mform->addRule('name', null, 'required', null, 'client');
-        $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        $mform->addHelpButton('name', 'extensionname', 'extension');
+    /// State
+        $type = optional_param('type', 0, PARAM_ALPHA);   // Activity type
 
-        // Adding the standard "intro" and "introformat" fields
-        $this->add_intro_editor();
+        $mform->addElement('hidden', 'id', $cm->id);
+        $mform->addElement('hidden', 'type', $type);
+        $mform->addElement('hidden', 'activityid', $assignment->id);
 
-        //-------------------------------------------------------------------------------
-        // Adding the rest of extension settings, spreeading all them into this fieldset
-        // or adding more fieldsets ('header' elements) if needed for better logic
-        $mform->addElement('static', 'label1', 'extensionsetting1', 'Your extension fields go here. Replace me!');
+    /// Name
+        $mform->addElement('hidden', 'name', $cm->name);
 
-        $mform->addElement('header', 'extensionfieldset', get_string('extensionfieldset', 'extension'));
-        $mform->addElement('static', 'label2', 'extensionsetting2', 'Your extension fields go here. Replace me!');
+    /// Adding the field for extension length
+        // Max ext length
+        $range = range(1, max($assignment->maxextensionstandard, $assignment->maxextensionexceptional));
 
-        //-------------------------------------------------------------------------------
+        $mform->addElement('select', 'lengthrequested',
+            get_string('extensionlength', 'extension').' ('.get_string($assignment->extensionunits, 'extension').')',
+            array_combine($range, $range));
+        $mform->setType('lengthrequested', PARAM_INT, 'nonzero');
+        $mform->addRule('lengthrequested', null, 'required', null, 'client');
+        $mform->addRule('lengthrequested', get_string('maximumchars', '', 3), 'maxlength', 3, 'client', 'x');
+        $mform->addElement('html', '<div class="fitem"><div class="fitemtitle"> </div><div class="felement">'.get_string('extensionlengthguidance', 'extension').'</div></div.');
+
+    /// Reason for the extension
+        $mform->addElement('textarea', 'reason', get_string('reasonforrequest', 'extension'), 'wrap="virtual" rows="10" cols="70"');
+        $mform->addRule('reason', null, 'required', null, 'client');
+
+    /// Optional file upload to support the request
+        $mform->addElement('filepicker', 'evidenceupload', get_string('supportingevidence', 'extension'));
+        $mform->addElement('html', '<div class="fitem"><div class="fitemtitle"> </div><div class="felement">'.get_string('supportingevidenceguidance', 'extension').'</div></div.');
+
+
+//-------------------------------------------------------------------------------
         // add standard elements, common to all modules
-        $this->standard_coursemodule_elements();
-        //-------------------------------------------------------------------------------
+//        $this->standard_coursemodule_elements();
+//-------------------------------------------------------------------------------
         // add standard buttons, common to all modules
-        $this->add_action_buttons();
+        $this->add_action_buttons(true, get_string('submitrequest', 'extension'));
+
     }
 }
