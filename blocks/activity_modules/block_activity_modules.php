@@ -49,6 +49,10 @@ class block_activity_modules extends block_list {
             }
         }
 
+        // Horrible hack
+        // Add Extensions to the Module list
+        $modfullnames['extension'] = get_string('extensions', 'extension');
+
         collatorlib::asort($modfullnames);
 
         foreach ($modfullnames as $modname => $modfullname) {
