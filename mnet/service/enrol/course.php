@@ -54,6 +54,12 @@ if (empty($hosts[$hostid])) {
 $host   = $hosts[$hostid];
 $course = $DB->get_record('mnetservice_enrol_courses', array('id'=>$courseid, 'hostid'=>$host->id), '*', MUST_EXIST);
 
+if (!empty($course->idnumber)) {
+    $courseidstudents = optional_param('courseidstudents', 1, PARAM_BOOL);
+} else {
+    $courseidstudents = 0;
+}
+
 echo $OUTPUT->header();
 
 // course name
@@ -158,7 +164,7 @@ if (!empty($error)) {
       </td>
       <td id="potentialcell">
           <p><label for="addselect"><?php print_string('enrolcandidates', 'enrol'); ?></label></p>
-          <?php $potentialuserselector->display() ?>
+          <?php $potentialuserselector->display(false, $course->idnumber, $courseidstudents) ?>
       </td>
     </tr>
   </table>

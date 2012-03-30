@@ -199,7 +199,7 @@ abstract class user_selector_base {
      * @param boolean $return if true, return the HTML as a string instead of outputting it.
      * @return mixed if $return is true, returns the HTML as a string, otherwise returns nothing.
      */
-    public function display($return = false) {
+    public function display($return = false, $remotecourseidnumber = NULL, $courseidstudents = NULL) {
         global $PAGE;
 
         // Get the list of requested users.
@@ -207,7 +207,12 @@ abstract class user_selector_base {
         if (optional_param($this->name . '_clearbutton', false, PARAM_BOOL)) {
             $search = '';
         }
-        $groupedusers = $this->find_users($search);
+
+        if ($courseidstudents) {
+            $groupedusers = $this->find_users_filtered($search, $remotecourseidnumber);
+        } else {
+            $groupedusers = $this->find_users($search);
+        }
 
         // Output the select.
         $name = $this->name;
@@ -216,7 +221,26 @@ abstract class user_selector_base {
             $name .= '[]';
             $multiselect = 'multiple="multiple" ';
         }
+
+        if ($remotecourseidnumber) {
+            // If InfoSys course id
+            if($courseidstudents) {
+                $norestriction = '';
+                $restricttocourse = 'selected="yes"';
+            } else {
+                $norestriction = 'selected="yes"';
+                $restricttocourse = '';
+            }
+            $studentcourseselect = '<select name="courseidstudents" onchange="submit();">
+                <option value="0" '.$norestriction.'>No restriction</option>
+                <option value="1" '.$restricttocourse.'>Restrict to course (id: '.$remotecourseidnumber.')</option>
+              </select>';
+        } else {
+            $studentcourseselect = '';
+        }
+
         $output = '<div class="userselector" id="' . $this->name . '_wrapper">' . "\n" .
+                $studentcourseselect.
                 '<select name="' . $name . '" id="' . $this->name . '" ' .
                 $multiselect . 'size="' . $this->rows . '">' . "\n";
 
