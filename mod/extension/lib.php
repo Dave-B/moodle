@@ -50,7 +50,8 @@ defined('MOODLE_INTERNAL') || die();
 function extension_supports($feature) {
     switch($feature) {
         case FEATURE_GROUPS:         return true;
-        default:                        return null;
+        case FEATURE_MOD_ARCHETYPE:  return MOD_ARCHETYPE_EXTENSION;
+        default:                     return null;
     }
 }
 

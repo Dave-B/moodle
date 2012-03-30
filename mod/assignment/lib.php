@@ -151,7 +151,7 @@ class assignment_base {
             }
 
             // Create group object to hold all the extensions
-            $extensiongroup = new extension_group($this->cm->id, $userid, NULL, &$this->assignment);
+            $extensiongroup = new extension_group($this->cm->id, $userid, NULL, $this->assignment);
             $this->extensiongroup = $extensiongroup;
 
             // Add extension tally
