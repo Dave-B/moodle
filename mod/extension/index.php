@@ -53,7 +53,7 @@ if ($u || $a || isset($status) || isset($excludeStatus)) {
         $filter_parts[] = get_string('user');;
     }
     if ($a) {
-        $filter_parts[] = 'assignment';
+        $filter_parts[] = get_string('activity');
     }
     if (isset($status)) {
         $filter_parts[] = '"'.$extension_requeststatus[$status].'"';
