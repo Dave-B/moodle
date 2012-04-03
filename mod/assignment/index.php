@@ -50,12 +50,27 @@ $usesections = course_format_uses_sections($course->format);
 
 $timenow = time();
 
+$context = get_context_instance(CONTEXT_COURSE, $course->id);
+if (has_capability('mod/extension:viewanyextension', $PAGE->context)
+    || has_capability('mod/extension:approveextension', $PAGE->context)
+    || has_capability('mod/extension:confirmextension', $PAGE->context)
+   ) {
+    $includenewduedate = false;
+} else {
+    $includenewduedate = true;
+}
+
 $table = new html_table();
 
 if ($usesections) {
-    $table->head  = array ($strsectionname, $strname, $strassignmenttype, $strduedate, $strsubmitted, $strgrade);
+    $table->head  = array ($strsectionname, $strname, $strassignmenttype, $strduedate, $strextensions, $strsubmitted, $strgrade);
 } else {
-    $table->head  = array ($strname, $strassignmenttype, $strduedate, $strsubmitted, $strgrade);
+    $table->head  = array ($strname, $strassignmenttype, $strduedate, $strextensions, $strsubmitted, $strgrade);
+}
+
+if($includenewduedate) {
+    // If using extensions and user is student, show New due date column
+    array_splice($table->head, array_search($strextensions, $table->head) + 1, 0, $streffectivedate);
 }
 
 $currentsection = "";
@@ -119,11 +134,18 @@ foreach ($modinfo->instances['assignment'] as $cm) {
 
     $due = $cm->timedue ? userdate($cm->timedue) : '-';
 
-    if ($usesections) {
-        $table->data[] = array ($printsection, $link, $type, $due, $submitted, $grade);
-    } else {
-        $table->data[] = array ($link, $type, $due, $submitted, $grade);
+    $extensionsummary = $assignmentinstance->extensiongroup ? $assignmentinstance->extensiongroup->get_extension_summary() : get_string('notenabled', 'extension');
+
+    $data = array ($link, $type, $due, $extensionsummary, $submitted, $grade);
+    if($includenewduedate) {
+        // Date with approved extensions
+        $extendeddue = isset($assignmentinstance->assignment->extendedtimedue) ? userdate($assignmentinstance->assignment->extendedtimedue) : '-';
+        array_splice($data, 4, 0, $extendeddue);
     }
+    if ($usesections) {
+        array_unshift($data, $printsection);
+    }
+    $table->data[] = $data;
 }
 
 echo "<br />";

@@ -588,10 +588,10 @@ class extension_group {
             foreach($results as $key=>$val) {
                 if($val) {
                     $output .= '<a href="/mod/extension/index.php?id='.$this->course.'&amp;a='.$this->activitycmid.'&amp;status='.$key.'">'.
-                               $val.' '.get_string($this->requeststatus[$key], 'extension').'</a> ';
+                               $val.' '.get_string($this->requeststatus[$key], 'extension').'</a>, ';
                 }
             }
-            return trim($output);
+            return substr($output,0, -2);
         } else {
             return '-';
         }
