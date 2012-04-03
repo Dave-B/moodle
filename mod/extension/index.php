@@ -45,6 +45,27 @@ $PAGE->set_url('/mod/extension/index.php', array('id' => $id));
 $PAGE->set_title(format_string($course->fullname));
 $PAGE->set_heading(format_string($course->fullname));
 
+if ($a || isset($status) || isset($excludeStatus)) {
+    $PAGE->navbar->add(get_string('extensions', 'extension'), new moodle_url('/mod/extension/index.php', array('id' => $course->id)));
+
+    $filter_parts = array();
+    if ($a) {
+        $filter_parts[] = 'assignment';
+    }
+    if (isset($status)) {
+        $filter_parts[] = '"'.$extension_requeststatus[$status].'"';
+    }
+    if (isset($excludeStatus)) {
+        $filter_parts[] = get_string('not', 'extension').': "'.$extension_requeststatus[$excludeStatus].'"';
+    }
+    $label = get_string('filter', 'extension');
+    $label .= implode(', ', $filter_parts);
+
+    $PAGE->navbar->add($label);
+} else {
+    $PAGE->navbar->add(get_string('extensions', 'extension'));
+}
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading($course->fullname.': '.get_string('extensions', 'extension'));
 

@@ -42,7 +42,7 @@ if ($id) {
 } else {
     error('You must specify an extension ID');
 }
-//print_object($cm);
+//print_object($cm->extension);
 
 require_login($cm->course, false);
 $context = get_context_instance(CONTEXT_COURSE, $cm->course);
@@ -61,6 +61,9 @@ $PAGE->set_title(format_string($cm->extension->name));
 $PAGE->set_heading(format_string($COURSE->fullname));
 $PAGE->set_context($context);
 
+$PAGE->navbar->add(get_string('extensions', 'extension'), new moodle_url('/mod/extension/index.php', array('id' => $cm->course)));
+$PAGE->navbar->add(format_string($cm->extension->name), new moodle_url('/mod/extension/index.php', array('id' => $cm->course, 'a' => $cm->extension->activitycmid)));
+$PAGE->navbar->add(format_string($cm->extension->user->firstname.' '.$cm->extension->user->lastname));
 
 // Output starts here
 echo $OUTPUT->header();

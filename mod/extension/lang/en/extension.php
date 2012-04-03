@@ -138,6 +138,7 @@ $string['extensiongranted'] = 'Extension granted';
 $string['extensionsubmitted'] = 'Extension submitted';
 $string['extensionunits'] = 'Extension units';
 $string['extensionsmatching'] = 'Extensions matching: ';
+$string['filter'] = 'Filter: ';
 $string['graderextensiondecisionmessage'] = 'Dear {$a->gradername},\n
 A student\'s extension application has been confirmed as {$a->status}:
 
@@ -182,6 +183,7 @@ $string['noextensionsfound'] = 'No extensions found.';
 $string['notenabled'] = 'Not enabled.';
 $string['nopermission'] = 'You do not have permission to view this extension.';
 $string['noresults'] = 'No results';
+$string['not'] = 'not';
 $string['notifystudent'] = 'Notify student';
 $string['onlyregistry'] = '(Can only be set by Registry.)';
 $string['originalduedate'] = 'Original due date';

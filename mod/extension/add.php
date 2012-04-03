@@ -34,6 +34,7 @@ require_login($cm->course, true, $cm);
 $PAGE->set_url('/mod/extension/add.php', array('course' => $courseid, 'type' => $type, 'id' => $id));
 $PAGE->set_title(format_string($assignment->name).': '.get_string('requestextension', 'extension'));
 $PAGE->set_heading(format_string($COURSE->fullname));
+$PAGE->navbar->add(get_string('requestextension', 'extension'));
 
 echo $OUTPUT->header();
 
