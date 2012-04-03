@@ -310,7 +310,7 @@ class assignment_base {
                             if($this->assignment->extensiontally[1] == 1) {
                                 //singular
                                 echo get_string('includes1extensionfor', 'extension');
-                           } else {
+                            } else {
                                 // Plural
                                 echo get_string('includesextensionstotaling', 'extension', $this->assignment->extensiontally[1]);
                             }
