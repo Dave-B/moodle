@@ -906,7 +906,7 @@ class course_extension_collection {
      * Get a string indicating the filtering options
      **/
      public function describe_filter($context) {
-        global $COURSE, $extension_requeststatus;
+        global $DB, $COURSE, $extension_requeststatus;
         if($this->activitycmid || $this->userid || $this->status !== NULL || $this->confirmed !== NULL) {
             if($this->userid) {
                 $user = $DB->get_record('user', array('id' => $this->userid));

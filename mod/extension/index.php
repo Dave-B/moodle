@@ -45,10 +45,13 @@ $PAGE->set_url('/mod/extension/index.php', array('id' => $id));
 $PAGE->set_title(format_string($course->fullname));
 $PAGE->set_heading(format_string($course->fullname));
 
-if ($a || isset($status) || isset($excludeStatus)) {
+if ($u || $a || isset($status) || isset($excludeStatus)) {
     $PAGE->navbar->add(get_string('extensions', 'extension'), new moodle_url('/mod/extension/index.php', array('id' => $course->id)));
 
     $filter_parts = array();
+    if ($u) {
+        $filter_parts[] = get_string('user');;
+    }
     if ($a) {
         $filter_parts[] = 'assignment';
     }
