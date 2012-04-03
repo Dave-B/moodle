@@ -56,8 +56,11 @@ th {vertical-align: top; text-align: right}
 <tbody>
     <tr><th>Student:</th><td>{$a->student}</td></tr>
     <tr><th>Due date:</th><td>{$a->duedate}</td></tr>
+    <tr><th>Extensions:</th><td>{$a->extensionsummary}</td></tr>
     <tr><th>Submission date:</th><td>{$a->submissiontimemodified}</td></tr>
+    <tr><th>Reason for late submission:</th><td>{$a->reasonlate}</td></tr>
     <tr><th>Files:</th><td>{$a->files}</td></tr>
+    <tr class=\"groupend\"><th>Word count:</th><td>{$a->wordcount}</td></tr>
 </tbody>
 <tbody>
     <tr><th>Date marked:</th><td>{$a->timemarked}</td></tr>
@@ -65,6 +68,7 @@ th {vertical-align: top; text-align: right}
     <tr class=\"groupend\"><th>Comment:</th><td>{$a->comment}</td></tr>
 </tbody>
 </table>
+{$a->extensions}
 </body></html>
 ';
 $string['assignment:exportownsubmission'] = 'Export own submission';

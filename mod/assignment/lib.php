@@ -492,6 +492,135 @@ class assignment_base {
         $details->student = $user->lastname.', '.$user->firstname.' ('.$user->username.')';
         $details->duedate = userdate($this->assignment->timedue).' ('.date('c', $this->assignment->timedue).')';
 
+        if (empty($this->assignment->allowextension)) {
+            $details->extensionsummary = get_string('notavailable');
+            $details->extensions = '';
+        } else if (!count($this->extensiongroup->extensions)) {
+            $details->extensionsummary = '-';
+            $details->extensions = '';
+        } else {
+            $user->extensions = new object;
+            foreach($this->extensiongroup->extensions as $ext) {
+                if($ext->userid == $user->id) {
+                    // User has extensions on this assignment
+                    if ($ext->approvalconfirmed || !$this->course->registryworkflow) {
+                        // Confirmed extensions
+                         if ($ext->status == 0) {
+                            // Pending extensions
+                            $user->extensions->pending[] = $ext;
+                        } else if ($ext->status == 1) {
+                            // Approved extensions
+                            $user->extensions->approved[] = $ext;
+                            if (!isset($user->extensions->effectivedate)) {
+                                $user->extensions->effectivedate = $this->assignment->timedue + $this->extensiongroup->get_extension_time($user->id);
+                            }
+                        } else if ($ext->status == 2) {
+                            // Rejected extensions
+                            $user->extensions->rejected[] = $ext;
+                        }
+                    } else {
+                        // Unconfirmed extensions count as pending
+                        $user->extensions->pending[] = $ext;
+                        //$user->extension->pending += 1;
+                    }
+                }
+            }
+
+            if (isset($user->extensions->effectivedate)) {
+                $usereffectivedate = userdate($user->extensions->effectivedate);
+            } else {
+                $usereffectivedate = '-';
+            }
+
+            if (isset($user->extensions)) {
+                // Student has applied for one or more extensions
+                $extdetailstbl = '';
+
+                if (isset($user->extensions->approved)) {
+                    foreach ($user->extensions->approved as $ext) {
+                        $extdetailstbl .= '<tr><td>'.get_string('approved', 'extension')
+                                         .'</td><td>'.userdate($ext->timecreated)
+                                         .'</td><td>'.$ext->lengthrequested.' '.$ext->strunits
+                                         .'</td><td>'.$ext->reason
+                                         .'</td><td>'.$ext->lengthgranted.' '.$ext->strunits
+                                         .'</td><td>'.userdate($ext->timemodified)
+                                         .'</td><td>'.$ext->privatenotes
+                                         .'</td><td>'.$ext->studentmessage
+                                         .'</td><td>'
+                                         ."</td></tr>\n";
+                    }
+                }
+                if (isset($user->extensions->rejected)) {
+                    foreach ($user->extensions->rejected as $ext) {
+                        $extdetailstbl .= '<tr><td>'.get_string('rejected', 'extension')
+                                         .'</td><td>'.userdate($ext->timecreated)
+                                         .'</td><td>'.$ext->lengthrequested.' '.$ext->strunits
+                                         .'</td><td>'.$ext->reason
+                                         .'</td><td>-'
+                                         .'</td><td>'.userdate($ext->timemodified)
+                                         .'</td><td>'.$ext->privatenotes
+                                         .'</td><td>'.$ext->studentmessage
+                                         .'</td><td>'
+                                         ."</td></tr>\n";
+                    }
+                }
+                if (isset($user->extensions->pending)) {
+                    foreach ($user->extensions->pending as $ext) {
+                        $timemod = $ext->timemodified ? userdate($ext->timemodified) : '-';
+                        $extdetailstbl .= '<tr><td>'.get_string('pending', 'extension')
+                                         .'</td><td>'.userdate($ext->timecreated)
+                                         .'</td><td>'.$ext->lengthrequested.' '.$ext->strunits
+                                         .'</td><td>'.$ext->reason
+                                         .'</td><td>-'
+                                         .'</td><td>'.$timemod
+                                         .'</td><td>'.$ext->privatenotes
+                                         .'</td><td>'.$ext->studentmessage
+                                         .'</td><td>'
+                                         ."</td></tr>\n";
+                    }
+                }
+                $details->extensions = '<h2>'.get_string('modulenameplural', 'extension').'</h2>'
+                                      .'<p><b>'.get_string('newduedate', 'extension').'</b>: '.$usereffectivedate.'</p>'
+                                      .'<table id="extensions"><thead>'
+                                      .'<th>'.get_string('status').'</th>'
+                                      .'<th>'.get_string('requestdate', 'extension').'</th>'
+                                      .'<th>'.get_string('extensionlength', 'extension').'</th>'
+                                      .'<th>'.get_string('reasonforrequest', 'extension').'</th>'
+                                      .'<th>'.get_string('extensiongranted', 'extension').'</th>'
+                                      .'<th>'.get_string('datechanged').'</th>'
+                                      .'<th>'.get_string('privatenotes', 'extension').'</th>'
+                                      .'<th>'.get_string('feedback').'</th>'
+                                      .'</thead><tbody>'.$extdetailstbl.'</tbody></table>';
+
+                // Summarise extensions
+                if(isset($user->extensions->approved)) {
+                    $count = count($user->extensions->approved);
+                    $str = $count.' '.get_string('approved', 'extension').' ';
+                    if($count > 1 || $count == 0) {
+                        $str .= get_string('modulenameplural', 'extension');
+                    } else {
+                        $str .= get_string('modulename', 'extension');
+                    }
+                    $str .= ', to '.$usereffectivedate;
+                } else {
+                    $str = get_string('no').' '.get_string('approved', 'extension').' '
+                          .get_string('modulenameplural', 'extension');
+                }
+
+                $str .= ' (';
+                $str .= isset($user->extensions->pending) ? count($user->extensions->pending) : 0;
+                $str .= ' '.get_string('pending', 'extension').', ';
+                $str .= isset($user->extensions->rejected) ? count($user->extensions->rejected) : 0;
+                $str .= ' '.get_string('rejected', 'extension').')';
+
+                $details->extensionsummary = $str;
+
+            } else {
+                    $details->extensionsummary = 'None requested';
+                    $details->extensions = '';
+            }
+        }
+
         if ($submission->timemodified) {
             $details->submissiontimemodified = userdate($submission->timemodified).' ('.date('c', $submission->timemodified).')';
         } else {
@@ -503,6 +632,12 @@ class assignment_base {
             $details->wordcount = $submission->wordcount;
         } else {
             $details->wordcount = '-';
+        }
+
+        if(isset($submission->reasonlate)) {
+            $details->reasonlate = nl2br($submission->reasonlate);
+        } else {
+            $details->reasonlate = 'n/a';
         }
 
         $details->timemarked = $submission->timemarked ? userdate($submission->timemarked).' ('.date('c', $submission->timemodified).')' : '-';
