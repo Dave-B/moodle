@@ -60,6 +60,7 @@ class block_extension extends block_base {
             $extensions[2]['count'] = $DB->count_records('extension', array('course' => $COURSE->id, 'status' => 2, 'approvalconfirmed' => 1));
             // Extensions awaiting confirmation - these will be shown to the student as "Pending".
             $extensions[3]['count'] = $DB->count_records_select('extension', "course = $COURSE->id AND status <> 0 AND approvalconfirmed = 0");
+            $totalextensions = $extensions[0]['count'] + $extensions[1]['count'] + $extensions[2]['count'] + $extensions[3]['count'];
 
         } else if (has_capability('mod/extension:viewownextension', $context)) {
             // Can view own extensions (student)
@@ -71,29 +72,34 @@ class block_extension extends block_base {
 
             $extensions[1]['count'] = $DB->count_records_select('extension', "course = $COURSE->id AND status = 1 AND approvalconfirmed = 1 AND userid = $USER->id");
             $extensions[2]['count'] = $DB->count_records_select('extension', "course = $COURSE->id AND status = 2 AND approvalconfirmed = 1 AND userid = $USER->id");
+            $totalextensions = $extensions[0]['count'] + $extensions[1]['count'] + $extensions[2]['count'];
 
         }
 
-        $items = '';
-        foreach($extensions as $key => $group) {
-            if($group['count'] > 0) {
-                if($key == 3) {
-                    // Any unconfirmed requests
-                    // TODO: filter out pending requests
-                    $filter = '&amp;confirmed=0&amp;exclude=0';
-                } else if( $key == 0) {
-                    // All pending requests
-                    $filter = '&amp;status='.$key;
-                } else{
-                    // All confirmed requests
-                    $filter = '&amp;confirmed=1&amp;status='.$key;
+        if ($totalextensions < 1) {
+            $this->content->text = '<div class="blocksubtitle">'.$whostext.':</div> <p>'.get_string('noextensions', 'block_extension').'</p>';
+        } else {
+            $items = '';
+            foreach($extensions as $key => $group) {
+                if($group['count'] > 0) {
+                    if($key == 3) {
+                        // Any unconfirmed requests
+                        // TODO: filter out pending requests
+                        $filter = '&amp;confirmed=0&amp;exclude=0';
+                    } else if( $key == 0) {
+                        // All pending requests
+                        $filter = '&amp;status='.$key;
+                    } else{
+                        // All confirmed requests
+                        $filter = '&amp;confirmed=1&amp;status='.$key;
+                    }
+                    $items .= '<li><a href="/mod/extension/index.php?id='.$COURSE->id.$filter.'">'.$group['name'].' ('.$group['count'].')</a></li>';
+                } else {
+                    $items .= '<li>'.$group['name'].' ('.$group['count'].')</li>';
                 }
-                $items .= '<li><a href="/mod/extension/index.php?id='.$COURSE->id.$filter.'">'.$group['name'].' ('.$group['count'].')</a></li>';
-            } else {
-                $items .= '<li>'.$group['name'].' ('.$group['count'].')</li>';
             }
+            $this->content->text = '<div class="blocksubtitle">'.$whostext.':</div> <ul class="list">'.$items.'</ul>';
         }
-        $this->content->text   = '<div class="blocksubtitle">'.$whostext.':</div> <ul class="list">'.$items.'</ul>';
         $this->content->footer = '';
      
         return $this->content;
