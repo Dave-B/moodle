@@ -689,7 +689,7 @@ class course_extension_collection {
      */
     function view_table($context, $excludeStatus = NULL) {
         // XXX: Future: Group into module types
-        global $CFG, $DB, $COURSE, $USER;
+        global $CFG, $DB, $OUTPUT, $COURSE, $USER;
 
         $table = new html_table();
 
@@ -732,9 +732,9 @@ class course_extension_collection {
 
         if(!count($users)) {
             // No users = no extensions
-            print_box_start('boxaligncenter boxwidthnormal centerpara informationbox');
+            $OUTPUT->box_start('boxaligncenter boxwidthnormal centerpara informationbox');
             echo get_string('noresults', 'extension');
-            print_box_end();
+            $OUTPUT->box_end();
         } else {
             foreach($this->assignments as $assignment) {
                 if($assignment->extensiongroup->extensions) {
