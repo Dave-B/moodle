@@ -47,6 +47,9 @@ class restore_assignment_activity_structure_step extends restore_activity_struct
             $paths[] = $submission;
             // Apply for 'assignment' subplugins optional stuff at submission level
             $this->add_subplugin_structure('assignment', $submission);
+
+            $extension = new restore_path_element('extension', '/activity/assignment/extensions/extension');
+            $paths[] = $extension;
         }
 
         // Return the paths wrapped into standard activity structure
@@ -91,6 +94,27 @@ class restore_assignment_activity_structure_step extends restore_activity_struct
         $newitemid = $DB->insert_record('assignment_submissions', $data);
         $this->set_mapping('assignment_submission', $oldid, $newitemid, true); // Going to have files
         $this->set_mapping(restore_gradingform_plugin::itemid_mapping('submission'), $oldid, $newitemid);
+    }
+
+    protected function process_extension($data) {
+        global $DB;
+
+        $data = (object)$data;
+        $oldid = $data->id;
+        $oldactivitycmid = $data->activitycmid;
+        $data->course = $this->get_courseid();
+
+        $data->extension = $this->get_new_parentid('extension');
+        $data->timecreated = $this->apply_date_offset($data->timecreated);
+        $data->timemodified = $this->apply_date_offset($data->timemodified);
+        $data->timeconfirmed = $this->apply_date_offset($data->timeconfirmed);
+
+        $data->activitycmid = $this->get_mappingid('course_module', $oldactivitycmid);
+
+        $data->userid = $this->get_mappingid('user', $data->userid);
+
+        $newitemid = $DB->insert_record('extension', $data);
+        $this->set_mapping('extension', $oldid, $newitemid, true); // Going to have files
     }
 
     protected function after_execute() {

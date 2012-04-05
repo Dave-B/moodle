@@ -42,14 +42,25 @@ class backup_assignment_activity_structure_step extends backup_activity_structur
             'resubmit', 'preventlate', 'emailteachers', 'var1',
             'var2', 'var3', 'var4', 'var5',
             'maxbytes', 'timedue', 'timeavailable', 'grade',
-            'timemodified'));
+            'timemodified',
+            'allowextension', 'extensionunits', 'maxextensionstandard',
+            'maxextensionexceptional', 'requiredeclaration', 'requirewordcount'));
 
         $submissions = new backup_nested_element('submissions');
 
         $submission = new backup_nested_element('submission', array('id'), array(
-            'userid', 'timecreated', 'timemodified', 'numfiles',
-            'data1', 'data2', 'grade', 'submissioncomment',
-            'format', 'teacher', 'timemarked', 'mailed'));
+            'userid', 'timecreated', 'timemodified', 'reasonlate',
+            'numfiles', 'data1', 'data2', 'provisionalgrade',
+            'grade', 'submissioncomment', 'format', 'teacher',
+            'timemarked', 'timeconfirmed','mailed', 'wordcount'));
+
+        $extensions = new backup_nested_element('extensions');
+
+        $extension = new backup_nested_element('extension', array('id'), array(
+            'course', 'name', 'timecreated', 'timemodified', 'userid',
+            'activitycmid', 'reason', 'evidencefile', 'status',
+            'lengthrequested', 'lengthgranted', 'privatenotes',
+            'studentmessage', 'approvalconfirmed', 'timeconfirmed'));
 
         // Build the tree
 
@@ -63,18 +74,23 @@ class backup_assignment_activity_structure_step extends backup_activity_structur
         // Apply for 'assignment' subplugins optional stuff at submission level (not multiple)
         $this->add_subplugin_structure('assignment', $submission, false);
 
+        $assignment->add_child($extensions);
+        $extensions->add_child($extension);
+
         // Define sources
         $assignment->set_source_table('assignment', array('id' => backup::VAR_ACTIVITYID));
 
         // All the rest of elements only happen if we are including user info
         if ($userinfo) {
             $submission->set_source_table('assignment_submissions', array('assignment' => backup::VAR_PARENTID));
+            $extension->set_source_table('extension', array('activitycmid' => backup::VAR_MODID));
         }
 
         // Define id annotations
         $assignment->annotate_ids('scale', 'grade');
         $submission->annotate_ids('user', 'userid');
         $submission->annotate_ids('user', 'teacher');
+        $extension->annotate_ids('user', 'userid');
 
         // Define file annotations
         $assignment->annotate_files('mod_assignment', 'intro', null); // This file area hasn't itemid
