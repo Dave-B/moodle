@@ -94,7 +94,7 @@ $info->issuedate = date('j F Y', $certrecord->timecreated);
 
 // Use the first expirydate where timestamp is smaller than when the cert was created.
 $expirydates = array(
-    array('effectivefrom' => 1333242061, 'expirydate' => '31/03/2013'), // Effectivefrom  = 2012-04-01T01:01:01
+    array('effectivefrom' => 1333242061, 'expirydate' => '01/10/2012'), // Effectivefrom  = 2012-04-01T01:01:01
     array('effectivefrom' => 1312160461, 'expirydate' => '31/03/2012'), // Effectivefrom  = 2011-08-01T01:01:01
     array('effectivefrom' => 0, 'expirydate' => '16/03/2011'), // Effectivefrom  = before we started hosting
 );
