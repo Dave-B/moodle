@@ -28,7 +28,7 @@ echo $OUTPUT->box_start('generalbox', 'intro');
 <p>On some parts of the website, you will be asked to provide some limited personal information in order to facilitate the functioning of the site. By supplying this information you are consenting to the University holding and using it for the purposes for which it was provided. Information provided will be kept for as long as is necessary to fulfil that purpose. Personal information collected and/or processed by the University is held in accordance with the provisions of the Data Protection Act 1998.</p>
 
 
-<h2>Cookies</h2>
+<h2 id="cookies">Cookies</h2>
 
 <p>Cookies are small text files that are placed on your computer by websites that you visit. They are widely used in order to make websites work, or work more efficiently, as well as to provide information to the owners of the site. For more information about cookies you can visit <a href="http://www.allaboutcookies.org">http://www.allaboutcookies.org</a>.</p>
 
@@ -53,8 +53,8 @@ The following table explains the cookies we use and why.
         <tr>
             <td>Moodle session</td>
             <td>MoodleSession</td>
-            <td>Required to keep you logged in when using the site.</td>
-            <td>Expires when you close your browser</td>
+            <td>Required to keep you logged in whilst using the site.</td>
+            <td>Expires when you close your browser.</td>
         </tr>
     </tbody>
 </table>
