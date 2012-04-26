@@ -111,10 +111,10 @@ div.logininfo, div.loginfailures {display: inline; margin-right: 1em;}
 #custommenu .yui3-menu .yui3-menu-label-menuvisible, #custommenu .yui3-menu .yui3-menuitem-active, #custommenu .yui3-menu .yui3-menuitem-active a {background: #666; color: #eee;}
 
 .path-course-view .weeks .content, .path-course-view .topics .content, .path-course-view .weeks .section, .path-course-view .topics .section {background-color:#FFF;}
-
+/*
 #page-mod-resource-view .resourcecontent {margin:0; border: 1px dotted red;}
 #page-mod-resource-view .resourcecontent object {border: 1px dotted green;}
-
+*/
  /**
   * Course spine page
   */
