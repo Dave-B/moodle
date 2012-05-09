@@ -4,6 +4,6 @@
 
 <?php } else { ?>
 
-     <p class="copyright"><a href="/copyright.php" target="Copyrightstatement_popup">© Copyright the University of Oxford and contributors.</a></p>
+     <p class="copyright"><a href="/copyright.php" target="Copyrightstatement_popup">© Copyright the University of Oxford and contributors.</a> <a href="/privacy.php">Privacy and cookies policy</a></p>
 
 <?php } ?>

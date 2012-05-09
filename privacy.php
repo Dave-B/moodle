@@ -11,7 +11,6 @@ $PAGE->set_heading($SITE->fullname);
 
 $PAGE->navbar->add($title);
 
-
 echo $OUTPUT->header();
 echo $OUTPUT->heading($title);
 
@@ -24,8 +23,8 @@ echo $OUTPUT->box_start('generalbox', 'intro');
 <p>Please note that although this website provides links to other websites, this policy only applies to the <i><?php echo $SITE->fullname; ?></i> webpages.</p>
 
 <h2>Information collected</h2>
-
-<p>On some parts of the website, you will be asked to provide some limited personal information in order to facilitate the functioning of the site. By supplying this information you are consenting to the University holding and using it for the purposes for which it was provided. Information provided will be kept for as long as is necessary to fulfil that purpose. Personal information collected and/or processed by the University is held in accordance with the provisions of the Data Protection Act 1998.</p>
+<p>Usually we will have already loaded your name and email address to create your account; if we have not already created your account, you will need to supply that information to access the site and courses. On some parts of the website, you may be asked to provide additional personal information in order to facilitate the functioning of the site.</p>
+<p>By supplying this information you are consenting to the University holding and using it for the purposes for which it was provided. Information provided will be kept for as long as is necessary to fulfil that purpose. Personal information collected and/or processed by the University is held in accordance with the provisions of the Data Protection Act 1998.</p>
 
 
 <h2 id="cookies">Cookies</h2>
@@ -72,10 +71,8 @@ The following table explains the cookies we use and why.
 
 <p>While we take all reasonable precautions to ensure that other organisations with whom we deal have good security practices, we cannot be held responsible for the privacy practices of those organisations whose websites may be linked to our services.</p>
 
-<p>Any queries or concerns about the privacy of this website should be sent to the Data Protection Officer.</p>
+<p>Any queries or concerns about the privacy of this website should be sent to the <a href="mailto:data.protection@admin.ox.ac.uk?subject=<?php echo $CFG->wwwroot; ?>+Privacy+policy">Data Protection Officer</a>.</p>
 
 <?php
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();
-
-

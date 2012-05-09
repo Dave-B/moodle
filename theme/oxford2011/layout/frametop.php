@@ -110,6 +110,7 @@ if ($PAGE->pagelayout == 'frametop') {
         if($COURSE->idnumber) {
             echo '<p class="idnumber">ID: '.$COURSE->idnumber.'</p>';
         }
+        include_once('copyfooter.php');
         ?>
     </div>
     <?php } ?>
