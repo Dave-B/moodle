@@ -17,14 +17,16 @@ $refsites = array(
 
 
 if ($redirect && $dest) {
+    // We have querystring instructions to go to a particular oxref resource
     $site = $refsites[$redirect];
 
     $encodedurl = $site[0].$dest; // urlencode($site[0].$dest);
-    @header('Location: '.$encodedurl);
-    $redirectmessage = '<p>This page will redirect you to the <i><a href="'.$encodedurl.'">'.$site[1].'</a></i> resource in a few seconds.</p>';
-    //redirect($encodedurl, $redirectmessage, 5);
-    //<meta http-equiv="refresh" content="5; url=http://www.oed.com/view/Entry/64893" />
-    //$OUTPUT->metarefreshtag = '<meta http-equiv="refresh" content="5; url='.$encodedurl.'" />';
+    $redirectmessage = '<p>This page will redirect you to the <i>'.$site[1].'</i> resource in a few seconds (<a href="'.$encodedurl.'">Click here if you are not redirected</a>).</p>';
+    if (isset($_GET['jsrefresh'])) {
+        $jsrefresh = '<script>setTimeout("window.location.href=\''.$encodedurl.'\'",3000);</script>';
+    } else {
+        redirect($encodedurl, $redirectmessage, 5);
+    }
 }
 
 $PAGE->set_context(get_context_instance(CONTEXT_SYSTEM));
@@ -41,8 +43,9 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading($title);
 
 
-if ($redirect && $dest) {
+if (isset($_GET['jsrefresh']) && $redirect && $dest) {
     echo $OUTPUT->box_start('generalbox', 'intro');
+    echo $jsrefresh;
     echo $redirectmessage;
     echo $OUTPUT->box_end();
 }
