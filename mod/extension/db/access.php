@@ -54,10 +54,10 @@ $capabilities = array(
     'mod/extension:request' => array(
         'captype'      => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'manager' => array(
+        'archetypes' => array(
             'guest'          => CAP_PREVENT,
             'student'        => CAP_ALLOW,
-            'admin'          => CAP_ALLOW
+            'manager'          => CAP_ALLOW
         )
     ),
 
@@ -65,22 +65,22 @@ $capabilities = array(
         'riskbitmask' => RISK_PERSONAL,
         'captype'      => 'read',
         'contextlevel' => CONTEXT_COURSE,
-        'manager' => array(
+        'archetypes' => array(
             'guest'          => CAP_PREVENT,
             'student'        => CAP_PREVENT,
             'teacher'        => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-            'admin'          => CAP_ALLOW
+            'manager'          => CAP_ALLOW
         )
     ),
 
     'mod/extension:viewownextension' => array(
         'captype'      => 'read',
         'contextlevel' => CONTEXT_COURSE,
-        'manager' => array(
+        'archetypes' => array(
             'guest'          => CAP_PREVENT,
             'student'        => CAP_ALLOW,
-            'admin'          => CAP_ALLOW
+            'manager'          => CAP_ALLOW
         )
     ),
 
@@ -88,10 +88,10 @@ $capabilities = array(
         'riskbitmask' => RISK_PERSONAL,
         'captype'      => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'manager' => array(
+        'archetypes' => array(
             'guest'          => CAP_PREVENT,
             'student'        => CAP_PREVENT,
-            'admin'          => CAP_ALLOW
+            'manager'          => CAP_ALLOW
         )
     ),
 
@@ -99,10 +99,10 @@ $capabilities = array(
         'riskbitmask' => RISK_PERSONAL,
         'captype'      => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'manager' => array(
+        'archetypes' => array(
             'guest'          => CAP_PREVENT,
             'student'        => CAP_PREVENT,
-            'admin'          => CAP_ALLOW
+            'manager'          => CAP_ALLOW
         )
     )
 
