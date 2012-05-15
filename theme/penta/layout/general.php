@@ -114,6 +114,7 @@ if ($PAGE->pagelayout == 'frametop') {
             echo '<p class="idnumber">ID: '.$COURSE->idnumber.'</p>';
         }
         ?>
+        <p><a href="/privacy.php">Privacy and cookies policy</a></p>
     </div>
     <?php } ?>
 

@@ -94,6 +94,7 @@ echo $OUTPUT->doctype() ?>
         echo $OUTPUT->home_link();
         echo $OUTPUT->standard_footer_html();
         ?>
+        <p><a href="/privacy.php">Privacy and cookies policy</a></p>
     </div>
 </div>
 <?php echo $OUTPUT->standard_end_of_body_html() ?>
