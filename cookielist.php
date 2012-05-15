@@ -22,7 +22,7 @@ $cookies['other'] = Array(
                   Array(
                          'name' => 'PREF',
                          'title' => 'YouTube preferences',
-                         'description' => 'Stores your YouTube preferences',
+                         'description' => 'Stores your YouTube preferences.',
                          'more_info' => 'Expires 10 years after creation/update.',
                          'consent' => null,
                          'permanent' => false
@@ -30,7 +30,7 @@ $cookies['other'] = Array(
                   Array(
                          'name' => 'VISITOR_INFO1_LIVE',
                          'title' => 'YouTube analytics',
-                         'description' => 'Supports anonymous video performance analysis',
+                         'description' => 'Supports video performance analysis.',
                          'more_info' => 'Expires 7 months after creation/update.',
                          'consent' => null,
                          'permanent' => false
