@@ -13,12 +13,16 @@ require_once($CFG->dirroot.'/lib/formslib.php');
 
 class mod_extension_approval_form extends moodleform {
 
-    function definition() {
+    // Allow access to the notify student checkbox, so we can freeze it if
+    // user hasn't permission to change it.
+    private $notifyElement;
+    public function getNotifyElement() {
+        return $this->notifyElement;
+    }
 
+    function definition() {
         global $COURSE, $USER, $cm, $extension_requeststatus;
         $mform =& $this->_form;
-
-//        print_object($cm);
 
     /// State
         $mform->addElement('hidden', 'id', $cm->extension->id);
@@ -88,7 +92,7 @@ class mod_extension_approval_form extends moodleform {
                       '</div></div>';
             $mform->addElement('html', $notified);
         } else if ($COURSE->registryworkflow) {
-            $mform->addElement('checkbox', 'approvalconfirmed', get_string('notifystudent', 'extension'), get_string('onlyregistry', 'extension'));
+            $this->notifyElement = $mform->addElement('checkbox', 'approvalconfirmed', get_string('notifystudent', 'extension'), get_string('onlyregistry', 'extension'));
         } else {
             $mform->addElement('checkbox', 'approvalconfirmed', get_string('notifystudent', 'extension'));
         }

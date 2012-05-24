@@ -378,14 +378,11 @@ class extension {
                 // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
                 // or on the first display of the form.
 
-                // Limit notification/approval to registry capabilities
-                if ($COURSE->registryworkflow
-                    //&& isset($mform->_form->_elementIndex['approvalconfirmed'])
-                    && !has_capability('mod/extension:confirmextension', $context))
-                    {
-                    $myObj = $mform->_form->_elements[$mform->_form->_elementIndex['approvalconfirmed']];
-                    $myObj->freeze();
-                }
+            // Limit notification/approval to registry capabilities
+            if ($COURSE->registryworkflow && !has_capability('mod/extension:confirmextension', $context)) {
+                $notify = $mform->getNotifyElement();
+                $notify->freeze();
+            }
 
                 $mform->display();
             }
