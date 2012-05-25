@@ -88,7 +88,7 @@ if($certificate->printhours) {
     $orientation = $certificate->orientation;
     $pdf = new TCPDF($orientation, 'mm', 'A4', true, 'UTF-8', false);
 
-    $pdf->SetProtection(array('print'));
+    //$pdf->SetProtection(array('print'));
     $pdf->SetTitle($certificate->name);
     $pdf->setPrintHeader(false);
     $pdf->setPrintFooter(false);

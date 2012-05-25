@@ -87,7 +87,7 @@ $credithours =  $strcredithours.': '.$certificate->printhours;
     $customtext = $certificate->customtext;
     $orientation = $certificate->orientation;
     $pdf = new TCPDF($orientation, 'pt', 'Letter', true, 'UTF-8', false);
-    $pdf->SetProtection(array('print'));
+    //$pdf->SetProtection(array('print'));
     $pdf->SetTitle($certificate->name);
     $pdf->setPrintHeader(false);
     $pdf->setPrintFooter(false);
