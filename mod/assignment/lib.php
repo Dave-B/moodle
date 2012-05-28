@@ -1792,7 +1792,7 @@ class assignment_base {
             ///offset used to calculate index of student in that particular query, needed for the pop up to know who's next
             $offset = $page * $perpage;
             $strupdate = get_string('update');
-            $strgrade  = get_string('grade');
+            $strgrade  = get_string('setgrade');
             $strview  = get_string('view');
             $grademenu = make_grades_menu($this->assignment->grade);
 

@@ -1512,6 +1512,7 @@ $string['separateandconnectedinfo'] = 'The scale based on the theory of separate
 $string['servererror'] = 'An error occurred whilst communicating with the server';
 $string['serverlocaltime'] = 'Server\'s local time';
 $string['setcategorytheme'] = 'Set category theme';
+$string['setgrade'] = 'Set grade';
 $string['settings'] = 'Settings';
 $string['shortname'] = 'Short name'; // @deprecated MDL-34652 - use shortnamecourse or shortnameuser or some own context specific string
 $string['shortnamecollisionwarning'] = '[*] = This shortname is already in use by a course and will need to be changed upon approval';
