@@ -3197,14 +3197,14 @@ class assignment_grading_form extends moodleform {
         //if there are more to be graded.
         if ($this->_customdata->nextid>0) {
             $buttonarray=array();
-            $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savechanges'));
+            $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('submitchanges', 'assignment'));
             //@todo: fix accessibility: javascript dependency not necessary
             $buttonarray[] = &$mform->createElement('submit', 'saveandnext', get_string('saveandnext'));
             $buttonarray[] = &$mform->createElement('submit', 'next', get_string('next'));
             $buttonarray[] = &$mform->createElement('cancel');
         } else {
             $buttonarray=array();
-            $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savechanges'));
+            $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('submitchanges', 'assignment'));
             $buttonarray[] = &$mform->createElement('cancel');
         }
         $mform->addGroup($buttonarray, 'grading_buttonar', '', array(' '), false);

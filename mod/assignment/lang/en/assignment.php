@@ -253,6 +253,7 @@ $string['submissions'] = 'Submissions';
 $string['submissionsaved'] = 'Your changes have been saved';
 $string['submissionsnotgraded'] = '{$a} submissions not graded';
 $string['submitassignment'] = 'Submit your assignment using this form';
+$string['submitchanges'] = 'Submit changes';
 $string['submitedformarking'] = 'Assignment submitted for marking and can not be updated';
 $string['submitformarking'] = 'Final submission for assignment marking';
 $string['submitted'] = 'Submitted';
