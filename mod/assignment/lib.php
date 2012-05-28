@@ -2810,7 +2810,13 @@ class assignment_base {
      * @return string
      */
     function display_lateness($timesubmitted) {
-        return assignment_display_lateness($timesubmitted, $this->assignment->timedue);
+        // Use extended time, if present
+        if(isset($this->assignment->extendedtimedue) && $this->assignment->extendedtimedue != 0) {
+            $timeDue = $this->assignment->extendedtimedue;
+        } else {
+            $timeDue = $this->assignment->timedue;
+        }
+        return assignment_display_lateness($timesubmitted, $timeDue);
     }
 
     /**
