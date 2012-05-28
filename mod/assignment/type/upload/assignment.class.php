@@ -640,6 +640,7 @@ class assignment_upload extends assignment_base {
                 $optionsyes = array ('id'=>$this->cm->id, 'confirm'=>1, 'action'=>'finalize', 'sesskey'=>sesskey());
                 $this->view_header(get_string('submitformarking', 'assignment'));
                 echo $OUTPUT->heading(get_string('submitformarking', 'assignment'));
+                echo $OUTPUT->box(get_string('files').': '.$this->print_user_files_text($USER->id, true).'.', 'boxaligncenter boxwidthnormal centerpara');
                 echo $OUTPUT->confirm(get_string('onceassignmentsent', 'assignment'), new moodle_url('upload.php', $optionsyes),new moodle_url( 'view.php', $optionsno));
                 $this->view_footer();
                 die;
@@ -655,7 +656,9 @@ class assignment_upload extends assignment_base {
                 'view.php?a='.$this->assignment->id, $this->assignment->id, $this->cm->id);
         $submission = $this->get_submission($userid);
         $this->update_grade($submission);
+        $this->email_admins($submission);
         $this->email_teachers($submission);
+        $this->email_student($submission);
 
         // Trigger assessable_files_done event to show files are complete
         $eventdata = new stdClass();

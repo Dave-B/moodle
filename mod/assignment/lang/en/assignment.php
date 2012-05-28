@@ -119,19 +119,37 @@ $string['duedateno'] = 'No due date';
 $string['downloadsummary'] = 'Download summary';
 $string['early'] = '{$a} early';
 $string['editmysubmission'] = 'Edit my submission';
-$string['editthesefiles'] = 'Edit these files';
-$string['editthisfile'] = 'Update this file';
-$string['addsubmission'] = 'Add submission';
-$string['emailstudents'] = 'Email alerts to students';
-$string['emailteachermail'] = '{$a->username} has updated their assignment submission
-for \'{$a->assignment}\' at {$a->timeupdated}
+$string['emailstudentmail'] = 'Dear $a->username,
+Your assignment submission for \'{$a->assignment}\' has been recorded.
+
+Files submitted: {$a->filelist}.
 
 It is available here:
 
     {$a->url}';
-$string['emailteachermailhtml'] = '{$a->username} has updated their assignment submission
-for <i>\'{$a->assignment}\'  at {$a->timeupdated}</i><br /><br />
-It is <a href="{$a->url}">available on the web site</a>.';
+$string['emailstudentmailhtml'] = 'Dear {$a->username},<br /><br />
+Your assignment submission for  \'<i>{$a->assignment}</i>\' has been recorded.<br /><br />
+Files submitted: {$a->filelist}.<br /><br />
+It is <a href=\"{$a->url}\">available on the web site</a>.';
+$string['editthesefiles'] = 'Edit these files';
+$string['editthisfile'] = 'Update this file';
+$string['addsubmission'] = 'Add submission';
+$string['emailstudents'] = 'Email alerts to students';
+$string['emailteachermail'] = '{$a->username} has sent their assignment submission
+for \'{$a->assignment}\'
+
+Files submitted: {$a->filelist}.
+
+The assignment was submitted $a->ontime.
+
+It is available here:
+
+    {$a->url}';
+$string['emailteachermailhtml'] = '{$a->username} has sent their assignment submission
+for <i>\'{$a->assignment}\'</i><br /><br />
+Files submitted: {$a->filelist}.<br /><br />
+The assignment was submitted {$a->ontime}.<br /><br />
+It is <a href=\"{$a->url}\">available on the web site</a>.';
 $string['emailteachers'] = 'Email alerts to teachers';
 $string['emailteachers_help'] = 'If enabled, teachers receive email notification whenever students add or update an assignment submission.
 
@@ -238,6 +256,7 @@ $string['submitassignment'] = 'Submit your assignment using this form';
 $string['submitedformarking'] = 'Assignment was already submitted for marking and can not be updated';
 $string['submitformarking'] = 'Final submission for assignment marking';
 $string['submitted'] = 'Submitted';
+$string['submittedafterdeadline'] = 'after the set deadline';
 $string['submittedfiles'] = 'Submitted files';
 $string['subplugintype_assignment'] = 'Assignment type';
 $string['subplugintype_assignment_plural'] = 'Assignment types';

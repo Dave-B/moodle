@@ -2323,16 +2323,70 @@ class assignment_base {
     }
 
     /**
+     * @param string $filearea
+     * @param array $args
+     * @return bool
+     */
+    function send_file($filearea, $args) {
+        debugging('plugin does not implement file sending', DEBUG_DEVELOPER);
+        return false;
+    }
+
+    /**
+     * Alerts Registry by email of new or changed assignments that need grading
+     *
+     * First checks whether the registry workflow is set for this course.
+     * Sends an email to users with mod/assignment:confirmgrade (Registry).
+     * Uses the methods email_teachers_text() and email_teachers_html() to construct the content.
+     * @param $submission object The submission that has changed
+     */
+    function email_admins($submission) {
+        global $CFG, $DB;
+
+        if (empty($this->course->registryworkflow)) { // No need to do anything
+            return;
+        }
+
+        $user = $DB->get_record('user', array('id'=>$submission->userid));
+
+        $registry = get_users_by_capability($this->context, 'mod/assignment:confirmgrade', '', '', '', '', '', '', false, false);
+        if ($registry) {
+            //print_object($registry);
+
+            $strassignments = get_string('modulenameplural', 'assignment');
+            $strassignment  = get_string('modulename', 'assignment');
+            $strsubmitted  = get_string('submitted', 'assignment');
+
+            if ($this->assignment->timedue >= time()) {
+                $strontime = get_string('submittedontime', 'assignment');
+            } else {
+                $strontime = get_string('submittedafterdeadline', 'assignment');
+            }
+
+            foreach ($registry as $registryuser) {
+                $info = new object();
+                $info->username = fullname($user, true);
+                $info->assignment = format_string($this->assignment->name,true);
+                $info->filelist = $this->print_user_files_text($submission->userid, true);
+                $info->url = $CFG->wwwroot.'/mod/assignment/submissions.php?id='.$this->cm->id;
+                $info->ontime = $strontime;
+
+                $postsubject = $strsubmitted.': '.$info->username.' -> '.$this->assignment->name;
+                $posttext = $this->email_teachers_text($info);
+                $posthtml = ($registryuser->mailformat == 1) ? $this->email_teachers_html($info) : '';
+
+                @email_to_user($registryuser, $user, $postsubject, $posttext, $posthtml);  // If it fails, oh well, too bad.
+            }
+        }
+    }
+
+    /**
      * Alerts teachers by email of new or changed assignments that need grading
      *
      * First checks whether the option to email teachers is set for this assignment.
      * Sends an email to ALL teachers in the course (or in the group if using separate groups).
      * Uses the methods email_teachers_text() and email_teachers_html() to construct the content.
-     *
-     * @global object
-     * @global object
      * @param $submission object The submission that has changed
-     * @return void
      */
     function email_teachers($submission) {
         global $CFG, $DB;
@@ -2343,40 +2397,47 @@ class assignment_base {
 
         $user = $DB->get_record('user', array('id'=>$submission->userid));
 
-        if ($teachers = $this->get_graders($user)) {
+        if(!empty($this->course->registryworkflow)) {
+            // If we're using the Registry workflow exclude users that will be handled by email_admins();
+            // Exclude Registry users
+            $registry = get_users_by_capability($this->context, 'mod/assignment:confirmgrade', '', '', '', '', '', '', false, false);
+            // Exclude Oversight users (e.g. Course Directors)
+            $oversight = get_users_by_capability($this->context, 'moodle/course:oversight', '', '', '', '', '', '', false, false);
+            $admin = array_merge($registry, $oversight);
+            foreach  ($admin as $a) {
+                $exclude[$a->id] = $a;
+            }
+            //print_object($exclude);
+        } else {
+            $exclude = NULL;
+        }
+
+        if ($teachers = $this->get_graders($user, $exclude)) {
+            //print_object($teachers);
 
             $strassignments = get_string('modulenameplural', 'assignment');
             $strassignment  = get_string('modulename', 'assignment');
             $strsubmitted  = get_string('submitted', 'assignment');
 
+            if ($this->assignment->timedue >= time()) {
+                $strontime = get_string('submittedontime', 'assignment');
+            } else {
+                $strontime = get_string('submittedafterdeadline', 'assignment');
+            }
+
             foreach ($teachers as $teacher) {
-                $info = new stdClass();
+                $info = new object();
                 $info->username = fullname($user, true);
                 $info->assignment = format_string($this->assignment->name,true);
+                $info->filelist = $this->print_user_files_text($submission->userid, true);
                 $info->url = $CFG->wwwroot.'/mod/assignment/submissions.php?id='.$this->cm->id;
-                $info->timeupdated = userdate($submission->timemodified, '%c', $teacher->timezone);
+                $info->ontime = $strontime;
 
                 $postsubject = $strsubmitted.': '.$info->username.' -> '.$this->assignment->name;
                 $posttext = $this->email_teachers_text($info);
                 $posthtml = ($teacher->mailformat == 1) ? $this->email_teachers_html($info) : '';
 
-                $eventdata = new stdClass();
-                $eventdata->modulename       = 'assignment';
-                $eventdata->userfrom         = $user;
-                $eventdata->userto           = $teacher;
-                $eventdata->subject          = $postsubject;
-                $eventdata->fullmessage      = $posttext;
-                $eventdata->fullmessageformat = FORMAT_PLAIN;
-                $eventdata->fullmessagehtml  = $posthtml;
-                $eventdata->smallmessage     = $postsubject;
-
-                $eventdata->name            = 'assignment_updates';
-                $eventdata->component       = 'mod_assignment';
-                $eventdata->notification    = 1;
-                $eventdata->contexturl      = $info->url;
-                $eventdata->contexturlname  = $info->assignment;
-
-                message_send($eventdata);
+                @email_to_user($teacher, $user, $postsubject, $posttext, $posthtml);  // If it fails, oh well, too bad.
             }
         }
     }
@@ -2394,6 +2455,35 @@ class assignment_base {
         debugging('plugin does not implement file sending', DEBUG_DEVELOPER);
         return false;
     }
+
+    /**
+     * Confirms submission to student by email
+     *
+     * Uses the methods email_students_text() and email_students_html() to construct the content.
+     * @param $submission object The submission that has changed
+     */
+    function email_student($submission) {
+        global $CFG, $DB;
+
+        $user = $DB->get_record('user', array('id'=>$submission->userid));
+
+        $strassignments = get_string('modulenameplural', 'assignment');
+        $strassignment  = get_string('modulename', 'assignment');
+        $strsubmitted  = get_string('submitted', 'assignment');
+
+        $info = new object();
+        $info->username = fullname($user, true);
+        $info->assignment = format_string($this->assignment->name,true);
+        $info->filelist = $this->print_user_files_text($submission->userid, true);
+        $info->url = $CFG->wwwroot.'/mod/assignment/view.php?id='.$this->cm->id;
+
+        $postsubject = $strsubmitted.': '.$info->username.' -> '.$this->assignment->name;
+        $posttext = $this->email_students_text($info);
+        $posthtml = ($user->mailformat == 1) ? $this->email_students_html($info) : '';
+
+        @email_to_user($user, $user, $postsubject, $posttext, $posthtml);  // If it fails, oh well, too bad.
+    }
+
 
     /**
      * Returns a list of teachers that should be grading given submission
@@ -2476,6 +2566,39 @@ class assignment_base {
                      '<a href="'.$CFG->wwwroot.'/mod/assignment/view.php?id='.$this->cm->id.'">'.format_string($this->assignment->name, true, array('context' => $this->context)).'</a></font></p>';
         $posthtml .= '<hr /><font face="sans-serif">';
         $posthtml .= '<p>'.get_string('emailteachermailhtml', 'assignment', $info).'</p>';
+        $posthtml .= '</font><hr />';
+        return $posthtml;
+    }
+
+    /**
+     * Creates the text content for emails to students
+     *
+     * @param $info object The info used by the 'emailtudentmail' language string
+     * @return string
+     */
+    function email_students_text($info) {
+        $posttext  = format_string($this->course->shortname).' -> '.$this->strassignments.' -> '.
+                     format_string($this->assignment->name)."\n";
+        $posttext .= '---------------------------------------------------------------------'."\n";
+        $posttext .= get_string("emailstudentmail", "assignment", $info)."\n";
+        $posttext .= "\n---------------------------------------------------------------------\n";
+        return $posttext;
+    }
+
+     /**
+     * Creates the html content for emails to students
+     *
+     * @param $info object The info used by the 'emailstudentmailhtml' language string
+     * @return string
+     */
+    function email_students_html($info) {
+        global $CFG;
+        $posthtml  = '<p><font face="sans-serif">'.
+                     '<a href="'.$CFG->wwwroot.'/course/view.php?id='.$this->course->id.'">'.format_string($this->course->shortname).'</a> ->'.
+                     '<a href="'.$CFG->wwwroot.'/mod/assignment/index.php?id='.$this->course->id.'">'.$this->strassignments.'</a> ->'.
+                     '<a href="'.$CFG->wwwroot.'/mod/assignment/view.php?id='.$this->cm->id.'">'.format_string($this->assignment->name).'</a></font></p>';
+        $posthtml .= '<hr /><font face="sans-serif">';
+        $posthtml .= '<p>'.get_string('emailstudentmailhtml', 'assignment', $info).'</p>';
         $posthtml .= '</font><hr />';
         return $posthtml;
     }
