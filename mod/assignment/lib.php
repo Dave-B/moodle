@@ -1425,7 +1425,7 @@ class assignment_base {
         $mformdata->submission_content= $this->print_user_files($user->id,true);
         $mformdata->filter = $filter;
         $mformdata->mailinfo = get_user_preferences('assignment_mailinfo', 0);
-         if ($assignment->assignmenttype == 'upload') {
+        if ($assignment->assignmenttype == 'upload') {
             $mformdata->fileui_options = array('subdirs'=>1, 'maxbytes'=>$assignment->maxbytes, 'maxfiles'=>$assignment->var1, 'accepted_types'=>'*', 'return_types'=>FILE_INTERNAL);
         } elseif ($assignment->assignmenttype == 'uploadsingle') {
             $mformdata->fileui_options = array('subdirs'=>0, 'maxbytes'=>$CFG->userquota, 'maxfiles'=>1, 'accepted_types'=>'*', 'return_types'=>FILE_INTERNAL);
@@ -1479,6 +1479,7 @@ class assignment_base {
         if ($advancedgradingwarning) {
             echo $OUTPUT->notification($advancedgradingwarning, 'error');
         }
+
         $submitform->display();
 
         $customfeedback = $this->custom_feedbackform($submission, true);
@@ -1668,7 +1669,11 @@ class assignment_base {
         }
 
         $extrafields = get_extra_user_fields($context);
-        $tablecolumns = array_merge(array('picture', 'fullname'), $extrafields,
+        $massfields = array();
+        if ($course->registryworkflow) {
+            $massfields[] = 'provisionalgrade';
+        }
+        $tablecolumns = array_merge(array('picture', 'fullname'), $extrafields, $massfields,
                 array('grade', 'submissioncomment', 'timemodified', 'timemarked', 'status', 'finalgrade'));
         if($this->assignment->requirewordcount) {
             // Index to insert after student timemodified
@@ -1678,17 +1683,20 @@ class assignment_base {
         if ($uses_outcomes) {
             $tablecolumns[] = 'outcome'; // no sorting based on outcomes column
         }
-        if (!$quickgrade) {
-            $tablecolumns[] = ''; // Column for actions (e.g. selective zip)
-        }
+        $tablecolumns[] = ''; // Column for actions (e.g. selective zip)
 
         $extrafieldnames = array();
         foreach ($extrafields as $field) {
             $extrafieldnames[] = get_user_field_name($field);
         }
+        $massfieldnames = array();
+        if ($course->registryworkflow) {
+            $massfieldnames[] = get_string('provisionalgrade', 'grades');
+        }
         $tableheaders = array_merge(
                 array('', get_string('fullnameuser')),
                 $extrafieldnames,
+                $massfieldnames,
                 array(
                     get_string('grade'),
                     get_string('comment', 'assignment'),
@@ -1723,6 +1731,9 @@ class assignment_base {
         $table->column_class('fullname', 'fullname');
         foreach ($extrafields as $field) {
             $table->column_class($field, $field);
+        }
+        if($course->registryworkflow) {
+            $table->column_class('provisionalgrade', 'grades');
         }
         $table->column_class('grade', 'grade');
         $table->column_class('submissioncomment', 'comment');
@@ -1766,6 +1777,12 @@ class assignment_base {
             $sort = ' ORDER BY '.$sort;
         }
 
+        if($course->registryworkflow) {
+            $provisionalgradeselect = 's.provisionalgrade, ';
+        } else {
+            $provisionalgradeselect = '';
+        }
+
         if($this->assignment->requirewordcount) {
             $wordcountselect = 's.wordcount, ';
         } else {
@@ -1775,8 +1792,8 @@ class assignment_base {
         $ufields = user_picture::fields('u', $extrafields);
         if (!empty($users)) {
             $select = "SELECT $ufields,
-                              s.id AS submissionid, s.grade, s.submissioncomment,$wordcountselect
-                              s.timemodified, s.timemarked,
+                              s.id AS submissionid, $provisionalgradeselect s.grade, s.submissioncomment, $wordcountselect
+                              s.timemodified, s.timemarked, s.timeconfirmed,
                               CASE WHEN s.timemarked > 0 AND s.timemarked >= s.timemodified THEN 1
                                    ELSE 0 END AS status ";
 
@@ -1815,8 +1832,25 @@ class assignment_base {
 
                         $picture = $OUTPUT->user_picture($auser);
 
-                        if (empty($auser->submissionid)) {
-                            $auser->grade = -1; //no submission yet
+                        if (empty($auser->submissionid) || $auser->provisionalgrade == -1) {
+                            //no submission yet
+                            $auser->provisionalgrade = -1;
+                            $auser->grade = -1;
+                            $nograde = array(-1=>get_string('nograde'));
+                        } else {
+                            $nograde = false;
+                        }
+
+                    ///Print provisional grade
+                        if($course->registryworkflow) {
+                            if ($quickgrade && empty($auser->timeconfirmed)) {
+                                $attributes = array();
+                                $attributes['tabindex'] = $tabindex++;
+                                $menu = html_writer::select(make_grades_menu($this->assignment->grade), 'menu['.$auser->id.']', $auser->provisionalgrade, $nograde, $attributes);
+                                $provisionalgrade = '<div id="g'.$auser->id.'">'. $menu .'</div>';
+                            } else {
+                                $provisionalgrade = $this->display_grade($auser->provisionalgrade);
+                            }
                         }
 
                         if (!empty($auser->submissionid)) {
@@ -1846,10 +1880,15 @@ class assignment_base {
                                 if ($final_grade->locked or $final_grade->overridden) {
                                     $grade = '<div id="g'.$auser->id.'" class="'. $locked_overridden .'">'.$final_grade->formatted_grade.'</div>';
                                 } else if ($quickgrade) {
-                                    $attributes = array();
-                                    $attributes['tabindex'] = $tabindex++;
-                                    $menu = html_writer::label(get_string('assignment:grade', 'assignment'), 'menumenu'. $auser->id, false, array('class' => 'accesshide'));
-                                    $menu .= html_writer::select(make_grades_menu($this->assignment->grade), 'menu['.$auser->id.']', $auser->grade, array(-1=>get_string('nograde')), $attributes);
+                                    $context = get_context_instance(CONTEXT_COURSE, $this->cm->course);
+                                    if (empty($auser->timeconfirmed) && (!$course->registryworkflow || has_capability('mod/assignment:confirmgrade', $context))) {
+                                        $attributes = array();
+                                        $attributes['tabindex'] = $tabindex++;
+                                        $menu = html_writer::label(get_string('assignment:grade', 'assignment'), 'menumenu'. $auser->id, false, array('class' => 'accesshide'));
+                                        $menu .= html_writer::select(make_grades_menu($this->assignment->grade), 'menu['.$auser->id.']', $auser->grade, array(-1=>get_string('nograde')), $attributes);
+                                    } else {
+                                        $menu = '<input type="hidden" name="menu['.$auser->id.']">'.$this->display_grade($auser->grade);
+                                    }
                                     $grade = '<div id="g'.$auser->id.'">'. $menu .'</div>';
                                 } else {
                                     $grade = '<div id="g'.$auser->id.'">'.$this->display_grade($auser->grade).'</div>';
@@ -1962,9 +2001,15 @@ class assignment_base {
                         foreach ($extrafields as $field) {
                             $extradata[] = $auser->{$field};
                         }
-                        $row = array_merge(array($picture, $userlink), $extradata,
-                                array($grade, $comment, $studentmodified, $teachermodified,
-                                $status, $finalgrade));
+                        if($course->registryworkflow) {
+                            $row = array_merge(array($picture, $userlink), $extradata, array($provisionalgrade),
+                                    array($grade, $comment, $studentmodified, $teachermodified,
+                                    $status, $finalgrade));
+                        } else {
+                            $row = array_merge(array($picture, $userlink), $extradata,
+                                    array($grade, $comment, $studentmodified, $teachermodified,
+                                    $status, $finalgrade));
+                        }
                         if($this->assignment->requirewordcount) {
                             array_splice($row, $wordcountindex, 0, $wordcount);
                         }
@@ -2144,15 +2189,33 @@ class assignment_base {
         if (!($grading_info->items[0]->grades[$feedback->userid]->locked ||
             $grading_info->items[0]->grades[$feedback->userid]->overridden) ) {
 
-            $submission->grade      = $feedback->xgrade;
+            if($this->course->registryworkflow && !$feedback->confirmgrade) {
+                // If using workflow and not confirmed, so store grade as provisional
+                $submission->provisionalgrade = $feedback->xgrade;
+                $submission->grade            = '-1';
+                // Notify Registry that a provisional mark has been set
+                $this->assignment_notify_provisional_grade($submission);
+                $submission->onlyprovisionalgrade = true;
+            } else {
+                // No workflow/confirmed grade, so store grade
+                $submission->grade  = $feedback->xgrade;
+                $mailinfo = get_user_preferences('assignment_mailinfo', 0);
+                if (!$mailinfo) {
+                    $submission->mailed = 1;       // treat as already mailed
+                } else {
+                    $submission->mailed = 0;       // Make sure mail goes out (again, even)
+                }
+                $submission->onlyprovisionalgrade = false;
+                if($this->course->registryworkflow) {
+                    $submission->timeconfirmed = time();
+                    if(!empty($this->assignment->emailteachers)) {
+                        // Notify marker that the mark has been approved
+                        $this->assignment_notify_provisional_grade_approved($submission);
+                    }
+                }
+            }
             $submission->submissioncomment    = $feedback->submissioncomment_editor['text'];
             $submission->teacher    = $USER->id;
-            $mailinfo = get_user_preferences('assignment_mailinfo', 0);
-            if (!$mailinfo) {
-                $submission->mailed = 1;       // treat as already mailed
-            } else {
-                $submission->mailed = 0;       // Make sure mail goes out (again, even)
-            }
             $submission->timemarked = time();
 
             unset($submission->data1);  // Don't need to update this.
@@ -2210,6 +2273,84 @@ class assignment_base {
         }
 
     }
+
+    /**
+     * Email Registry users when a provisional grade has been set
+     */
+    function assignment_notify_provisional_grade($submission) {
+        global $CFG, $DB, $SITE, $COURSE, $USER;
+
+        $student = $DB->get_record('user', array('id' => $submission->userid));
+        $from = $SITE->fullname.': '.get_string('modulenameplural', 'assignment');
+        $subject = get_string('confirmgrade', 'assignment').': '.$this->assignment->name.' ('.$COURSE->fullname.')';
+
+        $messagedata = new object();
+        $messagedata->studentname = $student->firstname.' '.$student->lastname;
+        $messagedata->markername = $USER->firstname.' '.$USER->lastname;
+        $messagedata->coursename = $COURSE->fullname;
+
+        $messagedata->assignmentname = $this->assignment->name;
+        $messagedata->assignmenturl = $CFG->wwwroot.'/mod/assignment/submissions.php?id='.$this->cm->id.'&userid='.$submission->userid.'&mode=single&offset=0';
+        $messagedata->assignmentlisturl = $CFG->wwwroot.'/mod/assignment/submissions.php?id='.$this->cm->id;
+        $messagedata->siteurl = $CFG->wwwroot.'/';
+
+        // Get Recipient(s)
+        // TODO: Find a better way of choosing from more than one user in the relevant role
+        $context = get_context_instance(CONTEXT_COURSE, $COURSE->id);
+        $confirmers = get_users_by_capability($context, 'mod/assignment:confirmgrade');
+        $admins = get_admins();
+        foreach ($confirmers as $id => $confirmer) {
+            if(array_key_exists($id, $admins)) {
+                // Don't email admin users
+                unset($confirmers[$confirmer->id]);
+            }
+        }
+
+        // Notify Grade confirmers (Registry) that a provisional grade was set
+        foreach ($confirmers as $confirmer) {
+            $messagedata->confirmername = $confirmer->firstname.' '.$confirmer->lastname;
+
+            $messagetext = get_string('confirmerprovisionalgrademessage', 'assignment', $messagedata);
+            email_to_user($confirmer, $from, $subject, $messagetext, '', '', '', false);
+        }
+    }
+
+    /**
+     * Email Marker users when registry approves a provisional grade
+     */
+    function assignment_notify_provisional_grade_approved($submission) {
+        global $CFG, $DB, $SITE, $COURSE, $USER;
+
+        $student = $DB->get_record('user', array('id' => $submission->userid));
+        $from = $SITE->fullname.': '.get_string('modulenameplural', 'assignment');
+        $subject = get_string('gradeconfirmed', 'assignment').': '.$this->assignment->name.' ('.$COURSE->fullname.')';
+
+        $messagedata = new object();
+        $messagedata->studentname = $student->firstname.' '.$student->lastname;
+        $messagedata->confirmername = $USER->firstname.' '.$USER->lastname;
+        $messagedata->coursename = $COURSE->fullname;
+
+        $messagedata->assignmentname = $this->assignment->name;
+        $messagedata->assignmenturl = $CFG->wwwroot.'/mod/assignment/submissions.php?id='.$this->cm->id.'&userid='.$submission->userid.'&mode=single&offset=0';
+        $messagedata->siteurl = $CFG->wwwroot.'/';
+
+        // Get Recipient(s)
+        // TODO: Find a better way of choosing from more than one user in the relevant role
+        // Exclude Registry users
+        $exclude = get_users_by_capability($this->context, 'mod/assignment:confirmgrade', '', '', '', '', '', '', false, false);
+        // Exclude Course Director users
+        $exclude += get_users_by_capability($this->context, 'moodle/course:oversight', '', '', '', '', '', '', false, false);
+        $graders = $this->get_graders($USER, $exclude);
+
+        // Notify Markers that a grade was confirmed
+        foreach ($graders as $grader) {
+            $messagedata->markername = $grader->firstname.' '.$grader->lastname;
+
+            $messagetext = get_string('provisionalgradeconfirmedmessage', 'assignment', $messagedata);
+            email_to_user($grader, $from, $subject, $messagetext, '', '', false);
+        }
+    }
+
 
     /**
      * Load the submission object for a particular user
@@ -2276,6 +2417,7 @@ class assignment_base {
         $submission->numfiles     = 0;
         $submission->data1        = '';
         $submission->data2        = '';
+        $submission->provisionalgrade       = -1;
         $submission->grade        = -1;
         $submission->submissioncomment      = '';
         $submission->format       = 0;
@@ -3132,9 +3274,22 @@ class assignment_grading_form extends moodleform {
             // use simple direct grading
             $grademenu['-1'] = get_string('nograde');
 
-            $mform->addElement('select', 'xgrade', get_string('grade').':', $grademenu, $attributes);
-            $mform->setDefault('xgrade', $this->_customdata->submission->grade ); //@fixme some bug when element called 'grade' makes it break
+            $gradingelement = $mform->addElement('select', 'xgrade', get_string('grade').':', $grademenu, $attributes);
+            if ($this->_customdata->submission->timeconfirmed) {
+                $mform->setDefault('xgrade', $this->_customdata->submission->grade); //@fixme some bug when element called 'grade' makes it break
+            } else {
+                $mform->setDefault('xgrade', $this->_customdata->submission->provisionalgrade);
+            }
             $mform->setType('xgrade', PARAM_INT);
+
+            // Scheme to prevent accidental change of confirmed grades
+            if (!empty($this->_customdata->submission->timeconfirmed)) {
+                $gradingelement->freeze();
+                /*
+                $mform->addElement('checkbox', 'allowconfirmedgradechange', get_string('allowconfirmedgradechange','assignment').':', get_string('shouldnotbedone','assignment'));
+                $mform->disabledIf('xgrade', 'allowconfirmedgradechange');
+                * */
+            }
         }
 
         if (!empty($this->_customdata->enableoutcomes)) {
@@ -3169,7 +3324,7 @@ class assignment_grading_form extends moodleform {
      * @global core_renderer $OUTPUT
      */
     function add_feedback_section() {
-        global $OUTPUT;
+        global $OUTPUT, $COURSE;
         $mform =& $this->_form;
         $mform->addElement('header', 'Feed Back', get_string('feedback', 'grades'));
 
@@ -3190,11 +3345,35 @@ class assignment_grading_form extends moodleform {
                 default :
                     break;
             }
+
+            $lastmailinfo = get_user_preferences('assignment_mailinfo', 1) ? 'checked="checked"' : '';
+            $mform->addElement('hidden', 'confirmgrade_h', "0");
+            $mform->setType('confirmgrade_h', PARAM_INT);
             $mform->addElement('hidden', 'mailinfo_h', "0");
             $mform->setType('mailinfo_h', PARAM_INT);
-            $mform->addElement('checkbox', 'mailinfo',get_string('enablenotification','assignment').
-            $OUTPUT->help_icon('enablenotification', 'assignment') .':' );
-            $mform->setType('mailinfo', PARAM_INT);
+            if($COURSE->registryworkflow) {
+                // Check if user has rights to confirm
+                $context = get_context_instance(CONTEXT_COURSE, $this->_customdata->cm->course);
+                $canConfirm = has_capability('mod/assignment:confirmgrade', $context);
+                if (!empty($this->_customdata->submission->timeconfirmed)) {
+                    $mform->addElement('static', 'regconfirm', get_string('confirmgrade','assignment').
+                        $OUTPUT->help_icon('confirmgrade', 'assignment') .':',
+                        get_string('gradeconfirmed','assignment').': '.userdate($this->_customdata->submission->timeconfirmed));
+                } else if ($canConfirm) {
+                    $mform->addElement('checkbox', 'confirmgrade', get_string('confirmgrade','assignment').
+                    $OUTPUT->help_icon('confirmgrade', 'assignment') .':' );
+                    $mform->setType('confirmgrade', PARAM_INT);
+                } else {
+                    $mform->addElement('static', 'regconfirm', get_string('confirmgrade','assignment').
+                        $OUTPUT->help_icon('confirmgrade', 'assignment') .':',
+                        get_string('confirmbeforenotify','assignment'));
+                }
+            } else {
+                $mform->addElement('checkbox', 'mailinfo', get_string('confirmgrade','assignment').
+                $OUTPUT->help_icon('confirmgrade', 'assignment') .':' );
+                $mform->setType('mailinfo', PARAM_INT);
+            }
+
         }
     }
 

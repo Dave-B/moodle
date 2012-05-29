@@ -502,6 +502,7 @@ $string['prefshow'] = 'Show/hide toggles';
 $string['previewrows'] = 'Preview rows';
 $string['profilereport'] = 'User profile report';
 $string['profilereport_help'] = 'Grade report used on user profile page.';
+$string['provisionalgrade'] = 'Provisional grade';
 $string['publishing'] = 'Publishing';
 $string['quickfeedback'] = 'Quick feedback';
 $string['quickgrading'] = 'Quick grading';

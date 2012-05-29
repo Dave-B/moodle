@@ -24,6 +24,8 @@
  */
 
 $string['additionalfields'] = 'Additional fields';
+$string['allowconfirmedgradechange'] = 'Allow changing of the confirmed grade';
+$string['shouldnotbedone'] = 'This should not be done in normal circumstances.';
 $string['activityoverview'] = 'You have assignments that need attention';
 $string['allowdeleting'] = 'Allow deleting';
 $string['allowdeleting_help'] = 'If enabled, students may delete uploaded files at any time before submitting for grading.';
@@ -71,6 +73,7 @@ th {vertical-align: top; text-align: right}
 {$a->extensions}
 </body></html>
 ';
+$string['assignment:confirmgrade'] = 'Confirm assignment grade';
 $string['assignment:exportownsubmission'] = 'Export own submission';
 $string['assignment:exportsubmission'] = 'Export submission';
 $string['assignment:grade'] = 'Grade assignment';
@@ -102,8 +105,28 @@ $string['configitemstocount'] = 'Nature of items to be counted for student submi
 $string['configmaxbytes'] = 'Default maximum assignment size for all assignments on the site (subject to course limits and other local settings)';
 $string['configshowrecentsubmissions'] = 'Everyone can see notifications of submissions in recent activity reports.';
 $string['configuploadtext'] = 'If text is entered here, the user will be required to confirm their agreement to the statement before uploading. Use for site wide uploaded assignment policy.';
+$string['confirmbeforenotify'] = 'The grade must be confirmed by Registry before the student is notified of the result.';
 $string['confirmdeletefile'] = 'Are you absolutely sure you want to delete this file?<br /><strong>{$a}</strong>';
 $string['confirmerror'] = 'You cannot upload your assignment until you have agreed to the statement by ticking the box.';
+$string['confirmgrade'] = 'Confirm grade';
+$string['confirmgrade_help'] = 'If enabled, students will be notified their assignment submissions are graded.';
+$string['confirmerprovisionalgrademessage'] = 'Dear {$a->confirmername},\n
+{$a->markername} has marked an assignment:
+
+      Course: {$a->coursename}
+  Assignment: {$a->assignmentname}
+     Student: {$a->studentname}
+
+Please check the course website to confirm/adjust the mark:
+  {$a->assignmenturl}
+
+Once you have confirmed the mark, the student will be notified.
+
+Best regards,
+The Department for Continuing Education.
+
+{$a->siteurl}
+';
 $string['confirmstatement'] = 'Confirm statement';
 $string['coursemisconf'] = 'Course is misconfigured';
 $string['currentgrade'] = 'Current grade in gradebook';
@@ -166,6 +189,7 @@ $string['feedbackupdated'] = 'Submissions feedback updated for {$a} people';
 $string['finalize'] = 'Prevent submission updates';
 $string['finalizeerror'] = 'An error occurred and that submission could not be finalised';
 $string['futureaassignment'] = 'This assignment is not yet available.';
+$string['gradeconfirmed'] = 'Grade confirmed';
 $string['graded'] = 'Graded';
 $string['guestnosubmit'] = 'Sorry, guests are not allowed to submit an assignment. You have to log in/ register before you can submit your answer.';
 $string['guestnoupload'] = 'Sorry, guests are not allowed to upload';
