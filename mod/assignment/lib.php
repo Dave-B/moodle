@@ -1055,7 +1055,6 @@ class assignment_base {
 
                     //if it is not an update, we don't change the last modified time etc.
                     //this will also not write into database if no submissioncomment and grade is entered.
-
                     if ($updatedb){
                         if ($newsubmission) {
                             if (!isset($submission->submissioncomment)) {
@@ -1733,7 +1732,7 @@ class assignment_base {
             $table->column_class($field, $field);
         }
         if($course->registryworkflow) {
-            $table->column_class('provisionalgrade', 'grades');
+            $table->column_class('provisionalgrade', 'grade');
         }
         $table->column_class('grade', 'grade');
         $table->column_class('submissioncomment', 'comment');
@@ -1846,7 +1845,7 @@ class assignment_base {
                             if ($quickgrade && empty($auser->timeconfirmed)) {
                                 $attributes = array();
                                 $attributes['tabindex'] = $tabindex++;
-                                $menu = html_writer::select(make_grades_menu($this->assignment->grade), 'menu['.$auser->id.']', $auser->provisionalgrade, $nograde, $attributes);
+                                $menu = html_writer::select(make_grades_menu($this->assignment->grade), 'provisionalgrade['.$auser->id.']', $auser->provisionalgrade, $nograde, $attributes);
                                 $provisionalgrade = '<div id="g'.$auser->id.'">'. $menu .'</div>';
                             } else {
                                 $provisionalgrade = $this->display_grade($auser->provisionalgrade);
@@ -1879,15 +1878,14 @@ class assignment_base {
 
                                 if ($final_grade->locked or $final_grade->overridden) {
                                     $grade = '<div id="g'.$auser->id.'" class="'. $locked_overridden .'">'.$final_grade->formatted_grade.'</div>';
-                                } else if ($quickgrade) {
-                                    $context = get_context_instance(CONTEXT_COURSE, $this->cm->course);
-                                    if (empty($auser->timeconfirmed) && (!$course->registryworkflow || has_capability('mod/assignment:confirmgrade', $context))) {
+                                } else if ($quickgrade && !$course->registryworkflow) {
+                                    if (empty($auser->timeconfirmed)) {
                                         $attributes = array();
                                         $attributes['tabindex'] = $tabindex++;
                                         $menu = html_writer::label(get_string('assignment:grade', 'assignment'), 'menumenu'. $auser->id, false, array('class' => 'accesshide'));
                                         $menu .= html_writer::select(make_grades_menu($this->assignment->grade), 'menu['.$auser->id.']', $auser->grade, array(-1=>get_string('nograde')), $attributes);
                                     } else {
-                                        $menu = '<input type="hidden" name="menu['.$auser->id.']">'.$this->display_grade($auser->grade);
+                                        $menu = $this->display_grade($auser->grade);
                                     }
                                     $grade = '<div id="g'.$auser->id.'">'. $menu .'</div>';
                                 } else {
@@ -1961,7 +1959,7 @@ class assignment_base {
                         }
 
                         $buttontext = ($auser->status == 1) ? $strupdate : $strgrade;
-                        if ($final_grade->locked or $final_grade->overridden) {
+                        if ($final_grade->locked or $final_grade->overridden or !empty($auser->timeconfirmed)) {
                             $buttontext = $strview;
                         }
 
@@ -1970,6 +1968,9 @@ class assignment_base {
                                    . '&amp;userid='.$auser->id.'&amp;mode=single'.'&amp;filter='.$filter.'&amp;offset='.$offset++;
 
                         $button = $OUTPUT->action_link($popup_url, $buttontext);
+                        if (!empty($auser->timeconfirmed)) {
+                            $button .= ' <span class="small">('.get_string('gradeconfirmed', 'assignment').')</span>';
+                        }
 
                         $status  = '<div id="up'.$auser->id.'" class="s'.$auser->status.'">'.$button.'</div>';
 
@@ -2049,14 +2050,16 @@ class assignment_base {
 
         /// Print quickgrade form around the table
         if ($quickgrade && $table->started_output && !empty($users)){
-            $mailinfopref = false;
-            if (get_user_preferences('assignment_mailinfo', 1)) {
-                $mailinfopref = true;
-            }
-            $emailnotification =  html_writer::checkbox('mailinfo', 1, $mailinfopref, get_string('enablenotification','assignment'));
+            if(!$course->registryworkflow) {
+                $mailinfopref = false;
+                if (get_user_preferences('assignment_mailinfo', 1)) {
+                    $mailinfopref = true;
+                }
+                $emailnotification =  html_writer::checkbox('mailinfo', 1, $mailinfopref, get_string('enablenotification','assignment'));
 
-            $emailnotification .= $OUTPUT->help_icon('enablenotification', 'assignment');
-            echo html_writer::tag('div', $emailnotification, array('class'=>'emailnotification'));
+                $emailnotification .= $OUTPUT->help_icon('enablenotification', 'assignment');
+                echo html_writer::tag('div', $emailnotification, array('class'=>'emailnotification'));
+                }
 
             $savefeedback = html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'fastg', 'value'=>get_string('saveallfeedback', 'assignment')));
             echo html_writer::tag('div', $savefeedback, array('class'=>'fastgbutton'));
@@ -3364,6 +3367,7 @@ class assignment_grading_form extends moodleform {
                     $OUTPUT->help_icon('confirmgrade', 'assignment') .':' );
                     $mform->setType('confirmgrade', PARAM_INT);
                 } else {
+                    $mform->addElement('hidden', 'confirmgrade');
                     $mform->addElement('static', 'regconfirm', get_string('confirmgrade','assignment').
                         $OUTPUT->help_icon('confirmgrade', 'assignment') .':',
                         get_string('confirmbeforenotify','assignment'));
