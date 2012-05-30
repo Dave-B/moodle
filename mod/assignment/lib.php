@@ -3368,6 +3368,7 @@ class assignment_grading_form extends moodleform {
                         $OUTPUT->help_icon('confirmgrade', 'assignment') .':',
                         get_string('confirmbeforenotify','assignment'));
                 }
+                $mform->disabledIf('confirmgrade', 'xgrade', 'eq', -1);
             } else {
                 $mform->addElement('checkbox', 'mailinfo', get_string('confirmgrade','assignment').
                 $OUTPUT->help_icon('confirmgrade', 'assignment') .':' );
