@@ -257,6 +257,21 @@ $string['pluginadministration'] = 'Assignment administration';
 $string['pluginname'] = 'Assignment (2.2)';
 $string['positivenumber'] = 'You must supply a positive number here.';
 $string['preventlate'] = 'Prevent late submissions';
+$string['provisionalgradeconfirmedmessage'] = 'Dear {$a->markername},\n
+{$a->confirmername} has confirmed the assignment mark:
+
+      Course: {$a->coursename}
+  Assignment: {$a->assignmentname}
+     Student: {$a->studentname
+     Details: {$a->assignmenturl}
+
+The student will be notified, if set in the email preferences.
+
+Best regards,
+The Department for Continuing Education.
+
+{$a->siteurl}
+';
 $string['quickgrade'] = 'Allow quick grading';
 $string['quickgrade_help'] = 'If enabled, multiple assignments can be graded on one page. Add grades and comments then click the "Save all my feedback" button to save all changes for that page.';
 $string['readconfirm'] = 'I confirm that I have read, understood, and complied with the statement.';
