@@ -1668,7 +1668,7 @@ class assignment_base {
             }
         }
 
-        $extrafields = get_extra_user_fields($context);
+        $extrafields = array();//get_extra_user_fields($context);
         $massfields = array();
         if ($course->registryworkflow) {
             $massfields[] = 'provisionalgrade';
