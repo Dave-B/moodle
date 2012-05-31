@@ -1050,6 +1050,17 @@ $capabilities = array(
         )
     ),
 
+    'moodle/course:oversight' => array(
+
+        'riskbitmask' => RISK_PERSONAL,
+
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_COURSE,
+        'legacy' => array(
+            'manager' => CAP_ALLOW
+        )
+    ),
+
     'moodle/blog:view' => array(
 
         'captype' => 'read',

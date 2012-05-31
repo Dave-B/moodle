@@ -2663,9 +2663,10 @@ class assignment_base {
      * Returns a list of teachers that should be grading given submission
      *
      * @param object $user
+     * @param optional array $exclude Array of users to exclude from results
      * @return array
      */
-    function get_graders($user) {
+    function get_graders($user, $exclude = NULL) {
         global $DB;
 
         //potential graders
@@ -2683,6 +2684,9 @@ class assignment_base {
                         if ($t->id == $user->id) {
                             continue; // do not send self
                         }
+                        if (!empty($exclude) && array_key_exists($t->id, $exclude)) {
+                            continue; // do not send excluded users
+                        }
                         if (groups_is_member($group->id, $t->id)) {
                             $graders[$t->id] = $t;
                         }
@@ -2694,6 +2698,9 @@ class assignment_base {
                     if ($t->id == $user->id) {
                         continue; // do not send self
                     }
+                    if (!empty($exclude) && array_key_exists($t->id, $exclude)) {
+                        continue; // do not send excluded users
+                    }
                     if (!groups_get_all_groups($this->course->id, $t->id)) { //ugly hack
                         $graders[$t->id] = $t;
                     }
@@ -2703,6 +2710,9 @@ class assignment_base {
             foreach ($potgraders as $t) {
                 if ($t->id == $user->id) {
                     continue; // do not send self
+                }
+                if (!empty($exclude) && array_key_exists($t->id, $exclude)) {
+                    continue; // do not send excluded users
                 }
                 $graders[$t->id] = $t;
             }
