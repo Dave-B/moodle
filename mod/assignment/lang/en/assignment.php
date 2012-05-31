@@ -305,6 +305,7 @@ $string['submitformarking'] = 'Final submission for assignment marking';
 $string['submitted'] = 'Submitted';
 $string['submittedafterdeadline'] = 'after the set deadline';
 $string['submittedfiles'] = 'Submitted files';
+$string['submittedontime'] = 'on time';
 $string['subplugintype_assignment'] = 'Assignment type';
 $string['subplugintype_assignment_plural'] = 'Assignment types';
 $string['trackdrafts'] = 'Enable "Send for marking" button';
