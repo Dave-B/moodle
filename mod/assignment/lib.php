@@ -1409,6 +1409,11 @@ class assignment_base {
         $mformdata->assignment = $assignment;
         $mformdata->submission = $submission;
         $mformdata->lateness = $this->display_lateness($submission->timemodified);
+        if(isset($this->extensiongroup)) {
+            // Include any extension info
+            $mformdata->lateness .= '<br/>'.get_string('withextensionto', 'extension').' ';
+            $mformdata->lateness .= userdate($this->assignment->timedue + $this->extensiongroup->get_extension_time($user->id));
+        }
         $mformdata->auser = $auser;
         $mformdata->user = $user;
         $mformdata->offset = $offset;
