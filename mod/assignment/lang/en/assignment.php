@@ -38,6 +38,7 @@ $string['allowresubmit_help'] = 'If enabled, students will be allowed to resubmi
 $string['alreadygraded'] = 'Your assignment has already been graded and resubmission is not allowed.';
 $string['assignment:addinstance'] = 'Add a new assignment';
 $string['assignmentdetails'] = 'Assignment details';
+$string['awaitingconfirmation'] = 'Awaiting confirmation';
 $string['assignmenthtmlsummary'] = '<!DOCTYPE html><html>
 <head><title>Assignment summary for {$a->assignment}, Student: $a->student</title>
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />

@@ -1842,13 +1842,14 @@ class assignment_base {
 
                     ///Print provisional grade
                         if($course->registryworkflow) {
-                            if ($quickgrade && empty($auser->timeconfirmed)) {
+                            if ($quickgrade && !$final_grade->grade && empty($auser->timeconfirmed)) {
                                 $attributes = array();
                                 $attributes['tabindex'] = $tabindex++;
                                 $menu = html_writer::select(make_grades_menu($this->assignment->grade), 'provisionalgrade['.$auser->id.']', $auser->provisionalgrade, $nograde, $attributes);
                                 $provisionalgrade = '<div id="g'.$auser->id.'">'. $menu .'</div>';
                             } else {
                                 $provisionalgrade = $this->display_grade($auser->provisionalgrade);
+                                $provisionalgrade = '<div id="g'.$auser->id.'">'.$this->display_grade($auser->provisionalgrade).'</div>';
                             }
                         }
 
@@ -1970,6 +1971,8 @@ class assignment_base {
                         $button = $OUTPUT->action_link($popup_url, $buttontext);
                         if (!empty($auser->timeconfirmed)) {
                             $button .= ' <span class="small">('.get_string('gradeconfirmed', 'assignment').')</span>';
+                        } else if ($auser->provisionalgrade != -1) {
+                            $button .= ' <span class="small">('.get_string('awaitingconfirmation', 'assignment').')</span>';
                         }
 
                         $status  = '<div id="up'.$auser->id.'" class="s'.$auser->status.'">'.$button.'</div>';
@@ -2353,7 +2356,6 @@ class assignment_base {
             email_to_user($grader, $from, $subject, $messagetext, '', '', false);
         }
     }
-
 
     /**
      * Load the submission object for a particular user
