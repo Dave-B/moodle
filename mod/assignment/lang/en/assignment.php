@@ -120,6 +120,9 @@ $string['confirmerprovisionalgrademessage'] = 'Dear {$a->confirmername},\n
 Please check the course website to confirm/adjust the mark:
   {$a->assignmenturl}
 
+All submissions for this assignment are listed here:
+  {$a->assignmentlisturl}
+
 Once you have confirmed the mark, the student will be notified.
 
 Best regards,
