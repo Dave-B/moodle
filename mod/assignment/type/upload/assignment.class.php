@@ -262,7 +262,7 @@ class assignment_upload extends assignment_base {
      * @return string optional
      */
     function print_user_files($userid=0, $return=false) {
-        global $CFG, $USER, $OUTPUT, $PAGE;
+        global $CFG, $COURSE, $USER, $OUTPUT, $PAGE;
 
         $mode    = optional_param('mode', '', PARAM_ALPHA);
         $offset  = optional_param('offset', 0, PARAM_INT);
@@ -292,9 +292,13 @@ class assignment_upload extends assignment_base {
 
         if ($this->drafts_tracked() and $this->isopen() and has_capability('mod/assignment:grade', $this->context) and $mode != '') { // we do not want it on view.php page
             if ($this->can_unfinalize($submission)) {
-                //$options = array ('id'=>$this->cm->id, 'userid'=>$userid, 'action'=>'unfinalize', 'mode'=>$mode, 'offset'=>$offset);
-                $output .= '<br /><input type="submit" name="unfinalize" value="'.get_string('unfinalize', 'assignment').'" />';
-                $output .=  $OUTPUT->help_icon('unfinalize', 'assignment');
+                if($COURSE->registryworkflow and !has_capability('mod/assignment:unfinalize', $this->context)) {
+                    $output .= get_string('nounfinalizeright', 'assignment');
+                } else {
+                    //$options = array ('id'=>$this->cm->id, 'userid'=>$userid, 'action'=>'unfinalize', 'mode'=>$mode, 'offset'=>$offset);
+                    $output .= '<br /><input type="submit" name="unfinalize" value="'.get_string('unfinalize', 'assignment').'" />';
+                    $output .=  $OUTPUT->help_icon('unfinalize', 'assignment');
+                }
 
             } else if ($this->can_finalize($submission)) {
                 //$options = array ('id'=>$this->cm->id, 'userid'=>$userid, 'action'=>'finalizeclose', 'mode'=>$mode, 'offset'=>$offset);

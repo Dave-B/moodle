@@ -60,6 +60,15 @@ $capabilities = array(
         )
     ),
 
+    'mod/assignment:unfinalize' => array(
+
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        )
+    ),
+
     'mod/assignment:grade' => array(
         'riskbitmask' => RISK_XSS,
 
