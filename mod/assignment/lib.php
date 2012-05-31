@@ -1868,7 +1868,33 @@ class assignment_base {
                             } else {
                                 $studentmodifiedcontent = '&nbsp;';
                             }
+                            // Note if any extensions have been granted
+                            if ($this->assignment->allowextension && $this->extensiongroup->extensions) {
+                                foreach($this->extensiongroup->extensions as $ext) {
+                                    if($ext->userid == $auser->id) {
+                                        // User has extensions on this assignment
+                                        if ($ext->status == 1 && ($ext->approvalconfirmed || !$course->registryworkflow)) {
+                                            // Extensions are approved and confirmed
+                                            $auser->extension->count += 1;
+                                            if (!isset($auser->extension->effectivedate)) {
+                                                $auser->extension->effectivedate = $this->assignment->timedue + $this->extensiongroup->get_extension_time($auser->id);
+                                            }
+                                        }
+                                    }
+                                }
+                                if (isset($auser->extension)) {
+                                    $studentmodifiedcontent .= '<div>('.$auser->extension->count.' ';
+                                    if($auser->extension->count > 1) {
+                                        $studentmodifiedcontent .= get_string('modulenameplural', 'extension');
+                                    } else {
+                                        $studentmodifiedcontent .= get_string('modulename', 'extension');
+                                    }
+                                    $studentmodifiedcontent .= ', to '.userdate($auser->extension->effectivedate, get_string('strftimedatetimeshort'));
+                                    $studentmodifiedcontent .= ')</div>';
+                                }
+                            }
                             $studentmodified = html_writer::tag('div', $studentmodifiedcontent, array('id' => 'ts' . $auser->id));
+
                         ///Print wordcount
                             if($this->assignment->requirewordcount) {
                                 $wordcount = $auser->wordcount;
