@@ -1466,13 +1466,13 @@ class assignment_base {
 
         $submitform->set_data($mformdata);
 
-        $PAGE->set_title($this->course->fullname . ': ' .get_string('feedback', 'assignment').' - '.fullname($user, true));
+        $PAGE->set_title($this->course->fullname . ': ' .get_string('marksubmission', 'assignment').' - '.fullname($user, true));
         $PAGE->set_heading($this->course->fullname);
         $PAGE->navbar->add(get_string('submissions', 'assignment'), new moodle_url('/mod/assignment/submissions.php', array('id'=>$cm->id)));
         $PAGE->navbar->add(fullname($user, true));
 
         echo $OUTPUT->header();
-        echo $OUTPUT->heading(get_string('feedback', 'assignment').': '.fullname($user, true));
+        echo $OUTPUT->heading(get_string('marksubmission', 'assignment').': '.format_string($this->assignment->name).': '.fullname($user, true));
 
         // display mform here...
         if ($advancedgradingwarning) {

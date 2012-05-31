@@ -227,6 +227,7 @@ $string['invaliduserid'] = 'Invalid user ID';
 $string['itemstocount'] = 'Count';
 $string['lastgrade'] = 'Last grade';
 $string['late'] = '{$a} late';
+$string['marksubmission'] = 'Mark submission';
 $string['maximumgrade'] = 'Maximum grade';
 $string['maximumsize'] = 'Maximum size';
 $string['maxpublishstate'] = 'Maximum visibility for blog entry before due date';
