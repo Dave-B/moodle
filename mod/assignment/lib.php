@@ -802,6 +802,12 @@ class assignment_base {
 
         $result = true;
 
+        // Delete extensions, if enabled
+        if($assignment->allowextension) {
+            require_once(dirname(dirname(__FILE__)).'/extension/lib.php');
+            extension_delete_by_activity($assignment, 'assignment');
+        }
+
         // now get rid of all files
         $fs = get_file_storage();
         if ($cm = get_coursemodule_from_instance('assignment', $assignment->id)) {

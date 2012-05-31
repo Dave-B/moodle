@@ -108,6 +108,7 @@ function extension_update_instance(stdClass $extension, mod_extension_mod_form $
  * @return boolean Success/Failure
  */
 function extension_delete_by_activity($activity, $modulename) {
+    global $DB;
 
     if (! $cm = get_coursemodule_from_instance($modulename, $activity->id, $activity->course)) {
         return false;
@@ -115,7 +116,7 @@ function extension_delete_by_activity($activity, $modulename) {
 
     $result = true;
 
-    if (! delete_records('extension', 'course', $cm->course, 'activitycmid', $cm->id)) {
+    if (! $DB->delete_records('extension', array('course' => $cm->course, 'activitycmid' => $cm->id))) {
         $result = false;
     }
 
