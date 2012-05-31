@@ -17,15 +17,15 @@ $id = optional_param('id', 0, PARAM_INT);  // Course Module ID
 
 if ($id) {
     if (! $cm = get_coursemodule_from_id($type, $id)) {
-        error("Course Module ID was incorrect");
+        print_error("Course Module ID was incorrect");
     }
 
     if (! $assignment = $DB->get_record($type, array("id" => $cm->instance))) {
-        error("Activity ID was incorrect");
+        print_error("Activity ID was incorrect");
     }
 
 } else {
-    error('You must specify an activity ID');
+    print_error('You must specify an activity ID');
 }
 
 require_login($cm->course, true, $cm);
@@ -92,7 +92,7 @@ if ($mform->is_cancelled()){
 
     $extensionid = $DB->insert_record('extension', $fromform, true);
     if(!$extensionid){
-        error(get_string('inserterror' , 'extension'));
+        print_error(get_string('inserterror' , 'extension'));
     } else {
         // Notify staff that extension requested
         $student = $DB->get_record('user', array('id' => $fromform->userid));
