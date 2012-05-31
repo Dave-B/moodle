@@ -159,7 +159,7 @@ class assignment_base {
 
             // Add any extension length and effective due date
             // XXX: Needs review - does this handle individuals vs groups of users correctly?
-            if($this->assignment->timeextension = $this->extensiongroup->get_effective_date(null, true)) {
+            if($this->assignment->timeextension = $this->extensiongroup->get_effective_date(null, true)) { // Yes that's an assignment, not a comparison.
                 $this->assignment->extensionlength = $this->extensiongroup->get_extension_length();
                 $this->assignment->extendedtimedue = $this->assignment->timedue + $this->assignment->timeextension;
             }
