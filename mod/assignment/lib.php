@@ -1846,10 +1846,10 @@ class assignment_base {
                                 $attributes = array();
                                 $attributes['tabindex'] = $tabindex++;
                                 $menu = html_writer::select(make_grades_menu($this->assignment->grade), 'provisionalgrade['.$auser->id.']', $auser->provisionalgrade, $nograde, $attributes);
-                                $provisionalgrade = '<div id="g'.$auser->id.'">'. $menu .'</div>';
+                                $provisionalgrade = '<div id="pg'.$auser->id.'">'. $menu .'</div>';
                             } else {
                                 $provisionalgrade = $this->display_grade($auser->provisionalgrade);
-                                $provisionalgrade = '<div id="g'.$auser->id.'">'.$this->display_grade($auser->provisionalgrade).'</div>';
+                                $provisionalgrade = '<div id="pg'.$auser->id.'">'.$this->display_grade($auser->provisionalgrade).'</div>';
                             }
                         }
 
