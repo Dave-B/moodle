@@ -2201,7 +2201,7 @@ class assignment_base {
                 $submission->onlyprovisionalgrade = true;
             } else {
                 // No workflow/confirmed grade, so store grade
-                $submission->grade  = $feedback->xgrade;
+                $submission->grade = $feedback->xgrade;
                 $mailinfo = get_user_preferences('assignment_mailinfo', 0);
                 if (!$mailinfo) {
                     $submission->mailed = 1;       // treat as already mailed
@@ -2217,7 +2217,7 @@ class assignment_base {
                     }
                 }
             }
-            $submission->submissioncomment    = $feedback->submissioncomment_editor['text'];
+            $submission->submissioncomment = $feedback->submissioncomment_editor['text'];
             $submission->teacher    = $USER->id;
             $submission->timemarked = time();
 
