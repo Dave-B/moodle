@@ -259,6 +259,7 @@ $string['page-mod-assignment-x'] = 'Any assignment module page';
 $string['page-mod-assignment-view'] = 'Assignment module main page';
 $string['page-mod-assignment-submissions'] = 'Assignment module submission page';
 $string['pagesize'] = 'Submissions shown per page';
+$string['positivenumber'] = 'You must supply a positive number here (just numeric digits - no letters or punctuation).';
 $string['popupinnewwindow'] = 'Open in a popup window';
 $string['pluginadministration'] = 'Assignment administration';
 $string['pluginname'] = 'Assignment (2.2)';
