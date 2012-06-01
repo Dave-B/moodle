@@ -2238,6 +2238,8 @@ class assignment_base {
                 // Notify Registry that a provisional mark has been set
                 $this->assignment_notify_provisional_grade($submission);
                 $submission->onlyprovisionalgrade = true;
+                // In registryworkflow, prov grade is set by tutor, so store their ID
+                $submission->teacher = $USER->id;
             } else {
                 // No workflow/confirmed grade, so store grade
                 $submission->grade = $feedback->xgrade;
@@ -2257,8 +2259,12 @@ class assignment_base {
                 }
             }
             $submission->submissioncomment = $feedback->submissioncomment_editor['text'];
-            $submission->teacher    = $USER->id;
             $submission->timemarked = time();
+            if(!$this->course->registryworkflow) {
+                // If not registryworkflow, it won't be Registry setting the grade, so
+                // it's certainly ok to use the current user
+                $submission->teacher = $USER->id;
+            }
 
             unset($submission->data1);  // Don't need to update this.
             unset($submission->data2);  // Don't need to update this.
@@ -2273,7 +2279,7 @@ class assignment_base {
             $this->update_grade($submission);
 
             add_to_log($this->course->id, 'assignment', 'update grades',
-                       'submissions.php?id='.$this->cm->id.'&user='.$feedback->userid, $feedback->userid, $this->cm->id);
+                       'submissions.php?id='.$this->cm->id.'&userid='.$feedback->userid.'&activeuser='.$USER->id, $feedback->userid, $this->cm->id);
              if (!is_null($formdata)) {
                     if ($this->type == 'upload' || $this->type == 'uploadsingle') {
                         $mformdata = $formdata->mform->get_data();
