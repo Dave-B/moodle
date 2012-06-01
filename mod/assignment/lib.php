@@ -2244,10 +2244,10 @@ class assignment_base {
                 // No workflow/confirmed grade, so store grade
                 $submission->grade = $feedback->xgrade;
                 $mailinfo = get_user_preferences('assignment_mailinfo', 0);
-                if (!$mailinfo) {
-                    $submission->mailed = 1;       // treat as already mailed
+                if ($mailinfo || $this->course->registryworkflow) {
+                     $submission->mailed = 0;       // Make sure mail goes out (again, even)
                 } else {
-                    $submission->mailed = 0;       // Make sure mail goes out (again, even)
+                    $submission->mailed = 1;       // treat as already mailed
                 }
                 $submission->onlyprovisionalgrade = false;
                 if($this->course->registryworkflow) {
