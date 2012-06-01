@@ -499,7 +499,7 @@ class assignment_base {
             $details->extensionsummary = '-';
             $details->extensions = '';
         } else {
-            $user->extensions = new object;
+            $user->extensions = array();
             foreach($this->extensiongroup->extensions as $ext) {
                 if($ext->userid == $user->id) {
                     // User has extensions on this assignment
@@ -507,37 +507,36 @@ class assignment_base {
                         // Confirmed extensions
                          if ($ext->status == 0) {
                             // Pending extensions
-                            $user->extensions->pending[] = $ext;
+                            $user->extensions['pending'][] = $ext;
                         } else if ($ext->status == 1) {
                             // Approved extensions
-                            $user->extensions->approved[] = $ext;
-                            if (!isset($user->extensions->effectivedate)) {
-                                $user->extensions->effectivedate = $this->assignment->timedue + $this->extensiongroup->get_extension_time($user->id);
+                            $user->extensions['approved'][] = $ext;
+                            if (!isset($user->extensions['effectivedate'])) {
+                                $user->extensions['effectivedate'] = $this->assignment->timedue + $this->extensiongroup->get_extension_time($user->id);
                             }
                         } else if ($ext->status == 2) {
                             // Rejected extensions
-                            $user->extensions->rejected[] = $ext;
+                            $user->extensions['rejected'][] = $ext;
                         }
                     } else {
                         // Unconfirmed extensions count as pending
-                        $user->extensions->pending[] = $ext;
-                        //$user->extension->pending += 1;
+                        $user->extensions['pending'][] = $ext;
                     }
                 }
             }
 
-            if (isset($user->extensions->effectivedate)) {
-                $usereffectivedate = userdate($user->extensions->effectivedate);
+            if (isset($user->extensions['effectivedate'])) {
+                $usereffectivedate = userdate($user->extensions['effectivedate']);
             } else {
                 $usereffectivedate = '-';
             }
 
-            if (isset($user->extensions)) {
+            if (count($user->extensions)) {
                 // Student has applied for one or more extensions
                 $extdetailstbl = '';
 
-                if (isset($user->extensions->approved)) {
-                    foreach ($user->extensions->approved as $ext) {
+                if (isset($user->extensions['approved'])) {
+                    foreach ($user->extensions['approved'] as $ext) {
                         $extdetailstbl .= '<tr><td>'.get_string('approved', 'extension')
                                          .'</td><td>'.userdate($ext->timecreated)
                                          .'</td><td>'.$ext->lengthrequested.' '.$ext->strunits
@@ -550,8 +549,8 @@ class assignment_base {
                                          ."</td></tr>\n";
                     }
                 }
-                if (isset($user->extensions->rejected)) {
-                    foreach ($user->extensions->rejected as $ext) {
+                if (isset($user->extensions['rejected'])) {
+                    foreach ($user->extensions['rejected'] as $ext) {
                         $extdetailstbl .= '<tr><td>'.get_string('rejected', 'extension')
                                          .'</td><td>'.userdate($ext->timecreated)
                                          .'</td><td>'.$ext->lengthrequested.' '.$ext->strunits
@@ -564,8 +563,8 @@ class assignment_base {
                                          ."</td></tr>\n";
                     }
                 }
-                if (isset($user->extensions->pending)) {
-                    foreach ($user->extensions->pending as $ext) {
+                if (isset($user->extensions['pending'])) {
+                    foreach ($user->extensions['pending'] as $ext) {
                         $timemod = $ext->timemodified ? userdate($ext->timemodified) : '-';
                         $extdetailstbl .= '<tr><td>'.get_string('pending', 'extension')
                                          .'</td><td>'.userdate($ext->timecreated)
@@ -593,8 +592,8 @@ class assignment_base {
                                       .'</thead><tbody>'.$extdetailstbl.'</tbody></table>';
 
                 // Summarise extensions
-                if(isset($user->extensions->approved)) {
-                    $count = count($user->extensions->approved);
+                if(isset($user->extensions['approved'])) {
+                    $count = count($user->extensions['approved']);
                     $str = $count.' '.get_string('approved', 'extension').' ';
                     if($count > 1 || $count == 0) {
                         $str .= get_string('modulenameplural', 'extension');
@@ -608,9 +607,9 @@ class assignment_base {
                 }
 
                 $str .= ' (';
-                $str .= isset($user->extensions->pending) ? count($user->extensions->pending) : 0;
+                $str .= isset($user->extensions['pending']) ? count($user->extensions['pending']) : 0;
                 $str .= ' '.get_string('pending', 'extension').', ';
-                $str .= isset($user->extensions->rejected) ? count($user->extensions->rejected) : 0;
+                $str .= isset($user->extensions['rejected']) ? count($user->extensions['rejected']) : 0;
                 $str .= ' '.get_string('rejected', 'extension').')';
 
                 $details->extensionsummary = $str;
