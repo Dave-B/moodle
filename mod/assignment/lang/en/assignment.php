@@ -78,13 +78,13 @@ $string['assignment:confirmgrade'] = 'Confirm assignment grade';
 $string['assignment:exportownsubmission'] = 'Export own submission';
 $string['assignment:exportsubmission'] = 'Export submission';
 $string['assignment:grade'] = 'Grade assignment';
-$string['assignmentmail'] = '{$a->teacher} has posted some feedback on your
+$string['assignmentmail'] = 'Feedback is now available on your
 assignment submission for \'{$a->assignment}\'
 
 You can see it appended to your assignment submission:
 
     {$a->url}';
-$string['assignmentmailhtml'] = '{$a->teacher} has posted some feedback on your
+$string['assignmentmailhtml'] = 'Feedback is now available on your
 assignment submission for \'<i>{$a->assignment}</i>\'<br /><br />
 You can see it appended to your <a href="{$a->url}">assignment submission</a>.';
 $string['assignmentmailsmall'] = '{$a->teacher} has posted some feedback on your
