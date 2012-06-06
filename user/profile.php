@@ -137,8 +137,14 @@ if (!$currentuser) {
     if ($node = $PAGE->settingsnav->get('userviewingsettings'.$user->id)) {
         $node->forceopen = true;
     }
+    if ($profilenode = $PAGE->navigation->find($user->id, navigation_node::TYPE_USER) ) {
+        $extensionsnode = $profilenode->add(get_string('extensions', 'extension'), new moodle_url('/mod/extension/userlist.php?id='.$user->id));
+    }
 } else if ($node = $PAGE->settingsnav->get('usercurrentsettings', navigation_node::TYPE_CONTAINER)) {
     $node->forceopen = true;
+    if ($profilenode = $PAGE->navigation->find('myprofile', navigation_node::TYPE_USER) ) {
+        $extensionsnode = $profilenode->add(get_string('extensions', 'extension'), new moodle_url('/mod/extension/userlist.php?id='.$user->id));
+    }
 }
 if ($node = $PAGE->settingsnav->get('root')) {
     $node->forceopen = false;
