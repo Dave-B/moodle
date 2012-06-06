@@ -430,6 +430,9 @@ class assignment_base {
 
         // Print the feedback
         echo $OUTPUT->heading(get_string('submissionfeedback', 'assignment'), 3);
+        if ( ($this->type != 'uploadsingle') && $this->course->registryworkflow) {
+            echo '<p class="mdl-align">'.get_string('grademoderation', 'assignment').'</p>';
+        }
 
         echo '<table cellspacing="0" class="feedback">';
 

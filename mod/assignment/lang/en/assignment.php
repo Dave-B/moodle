@@ -195,6 +195,7 @@ $string['finalize'] = 'Prevent submission updates';
 $string['finalizeerror'] = 'An error occurred and that submission could not be finalised';
 $string['futureaassignment'] = 'This assignment is not yet available.';
 $string['gradeconfirmed'] = 'Grade confirmed';
+$string['grademoderation'] = 'The mark displayed below remains subject to moderation; you will be notified if it is changed.';
 $string['graded'] = 'Graded';
 $string['guestnosubmit'] = 'Sorry, guests are not allowed to submit an assignment. You have to log in/ register before you can submit your answer.';
 $string['guestnoupload'] = 'Sorry, guests are not allowed to upload';
