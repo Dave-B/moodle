@@ -166,11 +166,25 @@ class assignment_upload extends assignment_base {
     }
 
     function view_final_submission() {
-        global $CFG, $USER, $OUTPUT;
+        global $CFG, $COURSE, $USER, $OUTPUT;
 
         // Check if we need to ask extra questions before finalizing
+        $reasonlate = false;
+        if ($COURSE->registryworkflow) {
+            if(!empty($this->assignment->extendedtimedue)) {
+                if ($this->assignment->extendedtimedue <= time()) {
+                    $reasonlate = true;
+                }
+            } else {
+                if ($this->assignment->timedue <= time()) {
+                    $reasonlate = true;
+                }
+            }
+        }
+
         if ($this->assignment->requiredeclaration && !empty($CFG->assignment_uploadtext) ||
-            $this->assignment->requirewordcount) {
+            $this->assignment->requirewordcount ||
+            $reasonlate) {
             $prequestions = true;
         } else {
             $prequestions = false;

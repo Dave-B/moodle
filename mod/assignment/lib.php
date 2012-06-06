@@ -1419,6 +1419,9 @@ class assignment_base {
             $mformdata->lateness .= '<br/>'.get_string('withextensionto', 'extension').' ';
             $mformdata->lateness .= userdate($this->assignment->timedue + $this->extensiongroup->get_extension_time($user->id));
         }
+        if (!empty($submission->reasonlate)) {
+            $mformdata->reasonlate = get_string('reasonlate', 'assignment').':<blockquote>'.$submission->reasonlate.'</blockquote>';
+        }
         $mformdata->auser = $auser;
         $mformdata->user = $user;
         $mformdata->offset = $offset;
@@ -3203,6 +3206,10 @@ class assignment_base {
                 $updated->wordcount = $fromform->wordcount;
             }
 
+            if ($COURSE->registryworkflow && isset($fromform->reasonlate)) {
+                $updated->reasonlate = $fromform->reasonlate;
+            }
+
             if (!$DB->update_record('assignment_submissions', $updated)) {
                 error(get_string('error'));
             } else {
@@ -3462,6 +3469,9 @@ class assignment_grading_form extends moodleform {
         $mform->addElement('static', '', '' , $this->_customdata->submission_content );
         if (!empty($this->_customdata->submission->wordcount)) {
             $mform->addElement('static', '', get_string('wordcount', 'assignment').':', $this->_customdata->submission->wordcount);
+        }
+        if (!empty($this->_customdata->submission->reasonlate)) {
+            $mform->addElement('static', '', get_string('reasonlate', 'assignment').':', $this->_customdata->submission->reasonlate);
         }
     }
 

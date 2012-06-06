@@ -4,7 +4,7 @@ require_once("$CFG->libdir/formslib.php");
 class mod_presubmit_form extends moodleform {
 
     function definition() {
-        global $CFG, $USER, $assignment;
+        global $CFG, $COURSE, $USER, $assignment;
 
         $mform =& $this->_form;
 
@@ -30,6 +30,27 @@ class mod_presubmit_form extends moodleform {
 
             $mform->registerRule('positivenum','regex', '/^[\d]+$/');
             $mform->addRule('wordcount', get_string('positivenumber', 'assignment'), 'positivenum', null, 'client');
+        }
+
+        if ($COURSE->registryworkflow) {
+            $reasonlate = false;
+            if(!empty($assignment->extendedtimedue)) {
+                if ($assignment->extendedtimedue <= time()) {
+                    $reasonlate = true;
+                }
+            } else {
+                if ($assignment->timedue <= time()) {
+                    $reasonlate = true;
+                }
+            }
+
+            if($reasonlate){
+                // Ask why was the assignment late
+                $mform->addElement('header', 'typedesc', get_string('latesubmission', 'assignment'));
+                $mform->addElement('textarea', 'reasonlate', get_string('statereasonlate', 'assignment'), array('cols'=>'50','rows'=>'10'));
+
+                $mform->addRule('reasonlate', null, 'required', null, 'client');
+            }
         }
 
         // Buttons
