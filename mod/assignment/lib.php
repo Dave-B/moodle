@@ -2685,7 +2685,10 @@ class assignment_base {
         $potgraders = $DB->get_records_sql($sql, $params);
 
         $graders = array();
-        if (groups_get_activity_groupmode($this->cm) == SEPARATEGROUPS) {   // Separate groups are being used
+
+        $thisgroupmode = groups_get_activity_groupmode($this->cm);
+        if ($thisgroupmode == SEPARATEGROUPS || $thisgroupmode == VISIBLEGROUPS) {
+            // Groups are being used
             if ($groups = groups_get_all_groups($this->course->id, $user->id)) {  // Try to find all groups
                 foreach ($groups as $group) {
                     foreach ($potgraders as $t) {
