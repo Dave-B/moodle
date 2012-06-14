@@ -57,7 +57,8 @@ $capabilities = array(
         'archetypes' => array(
             'guest'          => CAP_PREVENT,
             'student'        => CAP_ALLOW,
-            'manager'          => CAP_ALLOW
+            'teacher'        => CAP_PREVENT,
+            'editingteacher' => CAP_PREVENT,
         )
     ),
 
@@ -70,7 +71,7 @@ $capabilities = array(
             'student'        => CAP_PREVENT,
             'teacher'        => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-            'manager'          => CAP_ALLOW
+            'manager'        => CAP_ALLOW
         )
     ),
 
@@ -79,8 +80,7 @@ $capabilities = array(
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
             'guest'          => CAP_PREVENT,
-            'student'        => CAP_ALLOW,
-            'manager'          => CAP_ALLOW
+            'student'        => CAP_ALLOW
         )
     ),
 
@@ -91,7 +91,7 @@ $capabilities = array(
         'archetypes' => array(
             'guest'          => CAP_PREVENT,
             'student'        => CAP_PREVENT,
-            'manager'          => CAP_ALLOW
+            'manager'        => CAP_PREVENT
         )
     ),
 
@@ -102,7 +102,7 @@ $capabilities = array(
         'archetypes' => array(
             'guest'          => CAP_PREVENT,
             'student'        => CAP_PREVENT,
-            'manager'          => CAP_ALLOW
+            'manager'        => CAP_PREVENT
         )
     )
 
