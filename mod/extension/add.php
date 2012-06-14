@@ -109,7 +109,28 @@ if ($mform->is_cancelled()){
         $subject = get_string('newextensionrequest', 'extension').': '.$assignment->name.', '.$studentname;
 
         // Who ya gonna call?
-        $approvers = get_extension_users_by_role($cm, 'mod/extension:approveextension', $USER);
+        $userstoexclude = get_admins(); // We'll exclude admins from these emails.
+
+        if ($COURSE->registryworkflow) {
+            $confirmers = get_extension_users_by_role($cm, 'mod/extension:confirmextension', $USER, $userstoexclude);
+            //echo "confirmers:<br/>";
+            //print_object($confirmers);
+            foreach ($confirmers as $key => $confirmer) {
+                // TODO: Find a better way of choosing from more than one user in the relevant role
+                if (!isset($firstconfirmer)) {
+                    $firstconfirmer = $confirmer;
+                    $messagedata->confirmername = $firstconfirmer->firstname.' '.$firstconfirmer->lastname;
+                    //print_object($confirmer);
+                }
+
+                // Notify confirmers later...
+
+                // Add confirmer to the exclude list, so later use (for approvers) will not include it.
+                $userstoexclude[$key] = $confirmer;
+            }
+        }
+
+        $approvers = get_extension_users_by_role($cm, 'mod/extension:approveextension', $USER, $userstoexclude);
         // TODO: Find a better way of choosing from more than one user in the relevant role
         foreach ($approvers as $approver) {
             if (!isset($firstapprover)) {
@@ -120,28 +141,6 @@ if ($mform->is_cancelled()){
         }
         //echo "approvers:<br/>";
         //print_object($approvers);
-
-        if ($COURSE->registryworkflow) {
-            $confirmers = get_extension_users_by_role($cm, 'mod/extension:confirmextension', $USER);
-            //echo "confirmers:<br/>";
-            //print_object($confirmers);
-            foreach ($confirmers as $confirmer) {
-                // TODO: Find a better way of choosing from more than one user in the relevant role
-                if (!isset($firstconfirmer)) {
-                    $firstconfirmer = $confirmer;
-                    $messagedata->confirmername = $firstconfirmer->firstname.' '.$firstconfirmer->lastname;
-                    //print_object($confirmer);
-                }
-
-                // Notify Extension confirmers (Registry) that an extension was requested
-                $messagedata->confirmername = $confirmer->firstname.' '.$confirmer->lastname;
-                $messagedata->extensionurl = $CFG->wwwroot.'/mod/extension/view.php?id='.$extensionid;
-                $messagedata->extensionlisturl = $CFG->wwwroot.'/mod/extension/index.php?id='.$cm->course.'&a='.$cm->id;
-
-                $messagetext = get_string('confirmernewextensionmessage_workflow', 'extension', $messagedata);
-                email_to_user($confirmer, $from, $subject, $messagetext, '', '', false);
-            }
-        }
 
         // Notify Extension approvers (Course directors) that an extension was requested
         foreach ($approvers as $approver) {
@@ -155,6 +154,19 @@ if ($mform->is_cancelled()){
                 $messagetext = get_string('approvernewextensionmessage', 'extension', $messagedata);
             }
             email_to_user($approver, $from, $subject, $messagetext, '', '', false);
+        }
+
+        if ($COURSE->registryworkflow) {
+            foreach ($confirmers as $key => $confirmer) {
+                // Notify confirmers later
+                // Notify Extension confirmers (Registry) that an extension was requested
+                $messagedata->confirmername = $confirmer->firstname.' '.$confirmer->lastname;
+                $messagedata->extensionurl = $CFG->wwwroot.'/mod/extension/view.php?id='.$extensionid;
+                $messagedata->extensionlisturl = $CFG->wwwroot.'/mod/extension/index.php?id='.$cm->course.'&a='.$cm->id;
+
+                $messagetext = get_string('confirmernewextensionmessage_workflow', 'extension', $messagedata);
+                email_to_user($confirmer, $from, $subject, $messagetext, '', '', false);
+            }
         }
 
         // Redirect page
