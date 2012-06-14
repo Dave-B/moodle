@@ -40,7 +40,8 @@ $string['clicktoviewapprove'] = 'Click to view/approve extension';
 $string['confirmed'] = 'Confirmed';
 $string['day'] = 'Day';
 $string['days'] = 'Days';
-$string['approvernewextensionmessage'] = 'Dear {$a->approvername},\n
+$string['approvernewextensionmessage'] = 'Dear {$a->approvername},
+
 The student {$a->studentname} has applied for an extension on the
 following assignment:
 
@@ -58,7 +59,8 @@ The Department for Continuing Education
 
 {$a->siteurl}
 ';
-$string['approvernewextensionmessage_workflow'] = 'Dear {$a->approvername},\n
+$string['approvernewextensionmessage_workflow'] = 'Dear {$a->approvername},
+
 The student {$a->studentname} has applied for an extension on the
 following assignment:
 
@@ -80,7 +82,8 @@ The Department for Continuing Education
 
 {$a->siteurl}
 ';
-$string['confirmernewextensionmessage_workflow'] = 'Dear {$a->confirmername},\n
+$string['confirmernewextensionmessage_workflow'] = 'Dear {$a->confirmername},
+
 The student {$a->studentname} has applied for an extension on the
 following assignment:
 
@@ -105,7 +108,8 @@ $string['extensionapplicationdeadline'] = 'Deadline for extension application';
 $string['extension'] = 'Extension';
 $string['extensionapproved'] = 'Extension approved';
 $string['extensionawaitingconfirmation'] = 'Extension awaiting confirmation';
-$string['extensionawaitingconfirmationmessage'] = 'Dear {$a->confirmername},\n
+$string['extensionawaitingconfirmationmessage'] = 'Dear {$a->confirmername},
+
 The student {$a->studentname}\'s extension request has been {$a->status} by
 {$a->approvername}.
 
@@ -139,7 +143,8 @@ $string['extensionsubmitted'] = 'Extension submitted';
 $string['extensionunits'] = 'Extension units';
 $string['extensionsmatching'] = 'Extensions matching: ';
 $string['filter'] = 'Filter: ';
-$string['graderextensiondecisionmessage'] = 'Dear {$a->gradername},\n
+$string['graderextensiondecisionmessage'] = 'Dear {$a->gradername},
+
 A student\'s extension application has been confirmed as {$a->status}:
 
         Course: {$a->coursename}
@@ -198,7 +203,8 @@ $string['rejected'] = 'Rejected';
 $string['requestdate'] = 'Request date';
 $string['requestextension'] = 'Request time extension';
 $string['requestspending'] = '{$a} extensions pending';
-$string['studentextensiondecisionmessage'] = 'Dear {$a->studentname},\n
+$string['studentextensiondecisionmessage'] = 'Dear {$a->studentname},
+
 Your application for an extension has been {$a->status}:
 
         Course: {$a->coursename}
