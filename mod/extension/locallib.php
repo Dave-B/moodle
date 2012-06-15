@@ -183,10 +183,10 @@ class extension {
             $output .= ' ('.get_string('includesextensionstotaling', 'extension', $effectivedate->numapproved);
         }
         $output .= $effectivedate->totalextensionunits.' ';
-        if ($effectivedate->numapproved == 1) {
+        if ($effectivedate->totalextensionunits == 1) {
             // Singular
             $output .= get_string(substr($this->cm->activity->extensionunits, 0, -1), 'extension').')';
-        } else if ($effectivedate->numapproved > 0) {
+        } else if ($effectivedate->totalextensionunits > 0) {
             $output .= $this->strunits.')';
         }
         $output .= '</td></tr>';
