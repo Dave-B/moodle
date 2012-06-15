@@ -2525,7 +2525,7 @@ class assignment_base {
      * Uses the methods email_teachers_text() and email_teachers_html() to construct the content.
      * @param $submission object The submission that has changed
      */
-    function email_admins($submission) {
+    function email_confirmers($submission) {
         global $CFG, $DB;
 
         if (empty($this->course->registryworkflow)) { // No need to do anything
@@ -2534,10 +2534,10 @@ class assignment_base {
 
         $user = $DB->get_record('user', array('id'=>$submission->userid));
 
-        $registry = get_users_by_capability($this->context, 'mod/assignment:confirmgrade', '', '', '', '', '', '', false, false);
-        if ($registry) {
-            //print_object($registry);
+        $confirmers = get_users_by_capability($this->context, 'mod/assignment:confirmgrade');
+        //print_object($confirmers);
 
+        if ($confirmers) {
             $strassignments = get_string('modulenameplural', 'assignment');
             $strassignment  = get_string('modulename', 'assignment');
             $strsubmitted  = get_string('submitted', 'assignment');
@@ -2548,7 +2548,7 @@ class assignment_base {
                 $strontime = get_string('submittedafterdeadline', 'assignment');
             }
 
-            foreach ($registry as $registryuser) {
+            foreach ($confirmers as $confirmer) {
                 $info = new object();
                 $info->username = fullname($user, true);
                 $info->assignment = format_string($this->assignment->name,true);
@@ -2558,9 +2558,9 @@ class assignment_base {
 
                 $postsubject = $strsubmitted.': '.$info->username.' -> '.$this->assignment->name;
                 $posttext = $this->email_teachers_text($info);
-                $posthtml = ($registryuser->mailformat == 1) ? $this->email_teachers_html($info) : '';
+                $posthtml = ($confirmer->mailformat == 1) ? $this->email_teachers_html($info) : '';
 
-                @email_to_user($registryuser, $user, $postsubject, $posttext, $posthtml);  // If it fails, oh well, too bad.
+                @email_to_user($confirmer, $user, $postsubject, $posttext, $posthtml);  // If it fails, oh well, too bad.
             }
         }
     }
@@ -2583,11 +2583,11 @@ class assignment_base {
         $user = $DB->get_record('user', array('id'=>$submission->userid));
 
         if(!empty($this->course->registryworkflow)) {
-            // If we're using the Registry workflow exclude users that will be handled by email_admins();
+            // If we're using the Registry workflow exclude users that will be handled by email_confirmers();
             // Exclude Registry users
-            $registry = get_users_by_capability($this->context, 'mod/assignment:confirmgrade', '', '', '', '', '', '', false, false);
+            $registry = get_users_by_capability($this->context, 'mod/assignment:confirmgrade');
             // Exclude Oversight users (e.g. Course Directors)
-            $oversight = get_users_by_capability($this->context, 'moodle/course:oversight', '', '', '', '', '', '', false, false);
+            $oversight = get_users_by_capability($this->context, 'moodle/course:oversight');
             $admin = array_merge($registry, $oversight);
             foreach  ($admin as $a) {
                 $exclude[$a->id] = $a;

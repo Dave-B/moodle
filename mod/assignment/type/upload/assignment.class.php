@@ -553,6 +553,7 @@ class assignment_upload extends assignment_base {
             $this->update_grade($submission);
             if (!$this->drafts_tracked()) {
                 $this->email_teachers($submission);
+                $this->email_confirmers($submission);
             }
 
             // send files to event system
@@ -674,7 +675,7 @@ class assignment_upload extends assignment_base {
                 'view.php?a='.$this->assignment->id, $this->assignment->id, $this->cm->id);
         $submission = $this->get_submission($userid);
         $this->update_grade($submission);
-        $this->email_admins($submission);
+        $this->email_confirmers($submission);
         $this->email_teachers($submission);
         $this->email_student($submission);
 
