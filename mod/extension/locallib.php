@@ -230,6 +230,8 @@ class extension {
                     $fromform->privatenotes = $fromform->existingprivatenotes;
                 }
 
+                $userstoexclude = get_admins(); // We'll exclude admins from notification emails.
+
                 if(!$COURSE->registryworkflow) {
                     // No workflow
                     $fromform->timeconfirmed = time();
@@ -243,7 +245,7 @@ class extension {
 
                     $messagedata = new object();
 
-                    $approvers = get_extension_users_by_role($this->cm, 'mod/extension:approveextension', $this->user);
+                    $approvers = get_extension_users_by_role($this->cm, 'mod/extension:approveextension', $this->user, $userstoexclude);
                     foreach ($approvers as $approver) {
                         if(!isset($firstapprover)) {
                             // TODO: Find a better way of choosing from more than one user in the relevant role
@@ -254,7 +256,7 @@ class extension {
                     //echo "approvers:<br/>";
                     //print_object($approvers);
 
-                    $confirmers = get_extension_users_by_role($this->cm, 'mod/extension:confirmextension', $this->user);
+                    $confirmers = get_extension_users_by_role($this->cm, 'mod/extension:confirmextension', $this->user, $userstoexclude);
                     foreach ($confirmers as $confirmer) {
                         if(!isset($firstconfirmer)) {
                             // TODO: Find a better way of choosing from more than one user in the relevant role
@@ -340,13 +342,11 @@ class extension {
                             } else {
                                 $subject = get_string('extensionrejected', 'extension');
                             }
-
                             $messagetext = get_string('studentextensiondecisionmessage', 'extension', $messagedata);
                             email_to_user($user, $from, $subject, $messagetext, '', '', false);
 
-
                             // Notify grader (Tutor)
-                            $exclude = $approvers + $confirmers;
+                            $exclude = $approvers + $confirmers + $userstoexclude;
                             $graders = get_extension_users_by_role($this->cm, 'mod/assignment:grade', $this->user, $exclude);
                             //print_object($graders);
                             foreach ($graders as $id => $grader) {
