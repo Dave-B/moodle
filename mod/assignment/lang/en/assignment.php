@@ -112,7 +112,8 @@ $string['confirmdeletefile'] = 'Are you absolutely sure you want to delete this 
 $string['confirmerror'] = 'You cannot upload your assignment until you have agreed to the statement by ticking the box.';
 $string['confirmgrade'] = 'Confirm grade';
 $string['confirmgrade_help'] = 'If enabled, students will be notified their assignment submissions are graded.';
-$string['confirmerprovisionalgrademessage'] = 'Dear {$a->confirmername},\n
+$string['confirmerprovisionalgrademessage'] = 'Dear {$a->confirmername},
+
 {$a->markername} has marked an assignment:
 
       Course: {$a->coursename}
@@ -267,7 +268,8 @@ $string['pluginadministration'] = 'Assignment administration';
 $string['pluginname'] = 'Assignment (2.2)';
 $string['positivenumber'] = 'You must supply a positive number here.';
 $string['preventlate'] = 'Prevent late submissions';
-$string['provisionalgradeconfirmedmessage'] = 'Dear {$a->markername},\n
+$string['provisionalgradeconfirmedmessage'] = 'Dear {$a->markername},
+
 {$a->confirmername} has confirmed the assignment mark:
 
       Course: {$a->coursename}
