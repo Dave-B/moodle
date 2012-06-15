@@ -126,6 +126,7 @@ if ($mform->is_cancelled()){
                 // Notify confirmers later...
 
                 // Add confirmer to the exclude list, so later use (for approvers) will not include it.
+                // Users should not have both Registry and Course Director roles, else they will not get the notifications.
                 $userstoexclude[$key] = $confirmer;
             }
         }
