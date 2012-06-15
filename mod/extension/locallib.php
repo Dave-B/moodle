@@ -377,6 +377,14 @@ class extension {
             } else {
                 // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
                 // or on the first display of the form.
+
+                // Limit notification/approval to registry capabilities
+                if ($COURSE->registryworkflow && !has_capability('mod/extension:confirmextension', $context)) {
+                    if($notify = $mform->getNotifyElement()) {
+                        $notify->freeze();
+                    }
+                }
+
                 $mform->display();
             }
         }
