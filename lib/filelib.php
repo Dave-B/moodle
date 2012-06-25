@@ -2313,7 +2313,7 @@ function send_file($path, $filename, $lifetime = 'default' , $filter=0, $pathiss
 
     } else {
         // Try to put the file through filters
-        if ($mimetype == 'text/html') {
+        if ($mimetype == 'text/html' || $mimetype == 'application/xhtml+xml') {
             $options = new stdClass();
             $options->noclean = true;
             $options->nocache = true; // temporary workaround for MDL-5136
@@ -2470,7 +2470,7 @@ function send_stored_file($stored_file, $lifetime=86400 , $filter=0, $forcedownl
         readfile_accel($stored_file, $mimetype, !$dontdie);
 
     } else {     // Try to put the file through filters
-        if ($mimetype == 'text/html') {
+        if ($mimetype == 'text/html' || $mimetype == 'application/xhtml+xml') {
             $options = new stdClass();
             $options->noclean = true;
             $options->nocache = true; // temporary workaround for MDL-5136
