@@ -7,7 +7,7 @@ body.lang-vi {font-family:Arial, Verdana, Helvetica, sans-serif !important;}
   */
 a, .fakelink {text-decoration:none;color:#002D62;}
 a:hover, .fakelink:hover {text-decoration:underline;color:#476A8F;}
-a.autolink {background-color: #f9f9f9;}
+a.autolink {background-color: #f9f9f9;color:#002D62;}
 
 #page-header a {text-decoration:none;color:#FFF;font-weight:bold;}
 #page-header a:hover {text-decoration:underline;color:#FFF;}
