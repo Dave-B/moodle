@@ -101,6 +101,8 @@ h2.sectionname {margin:.5em; font-size:140%;}
 .course-content div.summary {margin-left:2em;}
 .course-content div.summary h2 {margin:0;}
 .course-content ul.topics li.section .content {margin-left: 0;}
+.course-content ul.topics li.section .left {width: 0;}
+.editing .course-content ul.topics li.section .left {width: 40px;}
 .section div.right {margin-top:2px;}
 .course-content ul.section li.activity {line-height:1.7em;}
 
