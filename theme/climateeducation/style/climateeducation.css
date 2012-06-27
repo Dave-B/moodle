@@ -107,6 +107,10 @@ h6.main {text-align:center;font-weight:bold;color:#333;}
 
 .path-course-view .weeks .content, .path-course-view .topics .content, .path-course-view .weeks .section, .path-course-view .topics .section {background-color:#FFF;}
 
+.course-content ul.topics li.section .content {margin-left: 0;}
+.course-content ul.topics li.section .left {width: 0;}
+.editing .course-content ul.topics li.section .left {width: 40px;}
+
 #page-mod-resource-view .resourcecontent {margin:0; border: 1px dotted red;}
 #page-mod-resource-view .resourcecontent object {border: 1px dotted green;}
 .mod_introbox {border: 0;}
@@ -114,8 +118,8 @@ h6.main {text-align:center;font-weight:bold;color:#333;}
 
 tbody.empty td {border: #999;}
 
+h1.sectionname {margin:0 0 .5em 0; font-size:140%;}
 h2.sectionname {margin: 0 0 .5em 0; font-size:120%;}
-#section-0 h2.sectionname {margin:0 0 .5em 0; font-size:140%;}
 .course-content div.summary {margin-left:2em;}
 .section div.right {margin-top:2px;}
 .course-content ul.section {margin-top: 0;}
