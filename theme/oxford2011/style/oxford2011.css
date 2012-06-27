@@ -74,7 +74,7 @@ div.logininfo, div.loginfailures {display: inline; margin-right: 1em;}
   border-width: 1px 0 1px 0;
   margin: 0;
   padding: 0 1em;
-  }
+}
 .navbar .breadcrumb {
   margin: 7px 5px;
 }
@@ -95,11 +95,12 @@ div.logininfo, div.loginfailures {display: inline; margin-right: 1em;}
  /**
   * Course spine page
   */
-h1.sectionname {margin: 0; font-size:180%;}
+h1.sectionname {margin:.5em; font-size:180%;}
 h2.sectionname {margin:.5em; font-size:140%;}
-#section-0 {margin: 0;}
-#section-0 h2.sectionname {margin:.5em;font-size:180%;}
+
 .course-content div.summary {margin-left:2em;}
+.course-content div.summary h2 {margin:0;}
+.course-content ul.topics li.section .content {margin-left: 0;}
 .section div.right {margin-top:2px;}
 .course-content ul.section li.activity {line-height:1.7em;}
 
