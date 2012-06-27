@@ -118,9 +118,12 @@ div.logininfo, div.loginfailures {display: inline; margin-right: 1em;}
  /**
   * Course spine page
   */
-h1.sectionname {margin: 0; font-size:180%;}
+.course-content ul.topics li.section .content {margin-left: 0;}
+.course-content ul.topics li.section .left {width: 0;}
+.editing .course-content ul.topics li.section .left {width: 40px;}
+
+h1.sectionname {margin:.5em; font-size:180%;}
 h2.sectionname {margin:.5em;font-size:140%;}
-#section-0 h2.sectionname {margin:.5em;font-size:180%;}
 .course-content div.summary {margin-left:2em;}
 .course-content ul.section {margin-top: 0;}
 .course-content ul.section li.activity {line-height:1.7em;}
