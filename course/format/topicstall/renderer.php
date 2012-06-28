@@ -132,8 +132,9 @@ class format_topicstall_renderer extends format_section_renderer_base {
             'class' => 'section main clearfix'.$sectionstyle));
 
         $leftcontent = $this->section_left_content($section, $course, $onsectionpage);
+        $o.= html_writer::tag('div', $leftcontent, array('class' => 'left side'));
 
-        $rightcontent = $leftcontent.$this->section_right_content($section, $course, $onsectionpage);
+        $rightcontent = $this->section_right_content($section, $course, $onsectionpage);
         $o.= html_writer::tag('div', $rightcontent, array('class' => 'right side'));
         $o.= html_writer::start_tag('div', array('class' => 'content'));
 
@@ -141,7 +142,7 @@ class format_topicstall_renderer extends format_section_renderer_base {
             $o.= $this->output->heading($this->section_title($section, $course), 2, 'sectionname');
         } else {
             $o.= $this->output->heading($this->section_title($section, $course), 1, 'sectionname');
-        } 
+        }
 
         $o.= html_writer::start_tag('div', array('class' => 'summary'));
         $o.= $this->format_summary_text($section);
