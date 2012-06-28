@@ -765,6 +765,7 @@ class course_extension_collection {
                     $studentsExtensions = array();
 
                     foreach ($assignment->extensiongroup->extensions as $extension) {
+                        $viewAwaitingConfAsPending = null;
                         if ($groupmode) {
                             if (!empty($havegroups)) {
                                 if (!array_key_exists($extension->userid, $members)) {
@@ -787,22 +788,23 @@ class course_extension_collection {
                             if ($excludeStatus === NULL || $extension->status != $excludeStatus) {
                                 // No statuses to exclude, or extension has different status
 
+                                $extensionstaff = false;
                                 if (has_capability('mod/extension:viewanyextension', $context)
                                     || has_capability('mod/extension:approveextension', $context)
                                     || has_capability('mod/extension:confirmextension', $context)
                                    ) {
                                     $extensionstaff = true;
-                                } else {
-                                    $extensionstaff = false;
                                 }
 
                                 if ($COURSE->registryworkflow && !$extensionstaff
                                     && !$extension->approvalconfirmed && $this->status == 0) {
                                     // When student has unconfirmed extension, allow viewing as status=0
                                     $viewAwaitingConfAsPending = true;
+                                    echo " (pend) ";
                                 }
 
-                                if ($this->status === NULL || $extension->status == $this->status || isset($viewAwaitingConfAsPending))  {
+                                // Show extensions with relevant status
+                                if ($this->status === NULL || ($extension->status == $this->status && $extension->approvalconfirmed) || isset($viewAwaitingConfAsPending))  {
                                     $studentLink = '<a href="/user/view.php?id='.$extension->userid.'">'.
                                                     $users[$extension->userid]->firstname.' '.$users[$extension->userid]->lastname.
                                                    '</a>';
