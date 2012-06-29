@@ -1,6 +1,7 @@
 <?php
 
 require_once("config.php");
+require_login($cm->course, true, $cm);
 
 $redirect = optional_param('redirect', NULL, PARAM_TEXT);
 $dest     = optional_param('dest', '', PARAM_TEXT);
