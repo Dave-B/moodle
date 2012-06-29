@@ -44,7 +44,7 @@ function callback_topicstall_uses_sections() {
  * @return bool Returns true
  */
 function callback_topicstall_load_content(&$navigation, $course, $coursenode) {
-    return $navigation->load_generic_course_sections($course, $coursenode, 'topics');
+    return $navigation->load_generic_course_sections($course, $coursenode, 'topicstall');
 }
 
 /**
@@ -62,7 +62,7 @@ function callback_topicstall_get_section_name($course, $section) {
     if ((string)$section->name !== '') {
         return format_string($section->name, true, array('context' => get_context_instance(CONTEXT_COURSE, $course->id)));
     } else if ($section->section == 0) {
-        return get_string('section0name', 'format_topics');
+        return get_string('section0name', 'format_topicstall');
     } else {
         return get_string('topic').' '.$section->section;
     }
@@ -93,7 +93,7 @@ function callback_topicstall_ajax_section_move($course) {
     $titles = array();
     rebuild_course_cache($course->id);
     $modinfo = get_fast_modinfo($COURSE);
-    $renderer = $PAGE->get_renderer('format_topics');
+    $renderer = $PAGE->get_renderer('format_topicstall');
     if ($renderer && ($sections = $modinfo->get_section_info_all())) {
         foreach ($sections as $number => $section) {
             $titles[$number] = $renderer->section_title($section, $course);
