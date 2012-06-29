@@ -3,6 +3,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class filter_oxref extends moodle_text_filter {
     function filter($text, array $options = array()){
+        global $SESSION;
 
         $refsites = array(
                        'oxref' => 'http://www.oxfordreference.com/',
@@ -17,10 +18,9 @@ class filter_oxref extends moodle_text_filter {
         foreach ($refsites as $refkey => $refsite) {
             // If there's no record of connecting to this site previously in this browser session,
             // rewrite the link to redirect via Oxref registered page.
-            if (true) {
+            if (!$SESSION->oxref[$refkey]) {
                 $words[] = new filterobject($refsite, '', '', false, false, '/oxref.php?redirect='.$refkey.'&amp;dest=');
             }
-            // FIXME: Otherwise, (if previously connected), do nothing.
         }
 
         $filterignoretagsopen  = array('<head>' , '<nolink>' , '<span class="nolink">',

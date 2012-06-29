@@ -5,6 +5,7 @@ require_login($cm->course, true, $cm);
 
 $redirect = optional_param('redirect', NULL, PARAM_TEXT);
 $dest     = optional_param('dest', '', PARAM_TEXT);
+$redirectdelay = 3000;
 
 $refsites = array(
                'oxref' => array('http://www.oxfordreference.com/', 'Oxford Reference Online Core Collection'),
@@ -20,13 +21,15 @@ $refsites = array(
 if ($redirect && $dest) {
     // We have querystring instructions to go to a particular oxref resource
     $site = $refsites[$redirect];
+    if($site) {
+        // Looks like a valid reference site, set session var so we can skip the referer check after this redirect.
+        //echo $redirect;
+        $SESSION->oxref[$redirect] = true;
 
-    $encodedurl = $site[0].$dest; // urlencode($site[0].$dest);
-    $redirectmessage = '<p>This page will redirect you to the <i>'.$site[1].'</i> resource in a few seconds (<a href="'.$encodedurl.'">Click here if you are not redirected</a>).</p>';
-    if (isset($_GET['jsrefresh'])) {
-        $jsrefresh = '<script>setTimeout("window.location.href=\''.$encodedurl.'\'",3000);</script>';
-    } else {
-        redirect($encodedurl, $redirectmessage, 5);
+        // Redirect
+        $encodedurl = $site[0].$dest; // urlencode($site[0].$dest);
+        $redirectmessage = '<p>This page will redirect you to the <i>'.$site[1].'</i> resource in a few seconds (<a href="'.$encodedurl.'">Click here if you are not redirected</a>).</p>';
+        redirect($encodedurl, $redirectmessage, $redirectdelay/1000);
     }
 }
 
@@ -42,14 +45,6 @@ $PAGE->navbar->add($title);
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($title);
-
-
-if (isset($_GET['jsrefresh']) && $redirect && $dest) {
-    echo $OUTPUT->box_start('generalbox', 'intro');
-    echo $jsrefresh;
-    echo $redirectmessage;
-    echo $OUTPUT->box_end();
-}
 
 echo $OUTPUT->box_start('generalbox', 'intro');
 ?>
