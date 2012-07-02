@@ -800,7 +800,6 @@ class course_extension_collection {
                                     && !$extension->approvalconfirmed && $this->status == 0) {
                                     // When student has unconfirmed extension, allow viewing as status=0
                                     $viewAwaitingConfAsPending = true;
-                                    echo " (pend) ";
                                 }
 
                                 // Show extensions with relevant status
