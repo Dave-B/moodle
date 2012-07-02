@@ -18,7 +18,7 @@ class filter_oxref extends moodle_text_filter {
         foreach ($refsites as $refkey => $refsite) {
             // If there's no record of connecting to this site previously in this browser session,
             // rewrite the link to redirect via Oxref registered page.
-            if (!$SESSION->oxref[$refkey]) {
+            if (!isset($SESSION->oxref[$refkey])) {
                 $words[] = new filterobject($refsite, '', '', false, false, '/oxref.php?redirect='.$refkey.'&amp;dest=');
             }
         }
