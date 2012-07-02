@@ -23,6 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['acceptedfiles'] = 'Accepted files';
 $string['additionalfields'] = 'Additional fields';
 $string['allowconfirmedgradechange'] = 'Allow changing of the confirmed grade';
 $string['shouldnotbedone'] = 'This should not be done in normal circumstances.';
