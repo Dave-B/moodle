@@ -131,7 +131,7 @@ $string['extensionfieldset'] = 'Custom example fieldset';
 $string['extensionintro'] = 'Extension Intro';
 $string['extensionlabel'] = 'Extension';
 $string['extensionlength'] = 'Extension length';
-$string['extensionlengthguidance'] = 'If you require an extension of more than 2 weeks then you should contact the Registry at <a href=\"mailto:registry@conted.ox.ac.uk\">registry@conted.ox.ac.uk</a> for an application form. Please see your course handbook for further details.';
+$string['extensionlengthguidance'] = 'If you require an extension of more than 2 weeks then you should contact the Registry at <a href="mailto:registry@conted.ox.ac.uk">registry@conted.ox.ac.uk</a> for an application form. Please see your course handbook for further details.';
 $string['extensionname'] = 'Extension Name';
 $string['extensionname_help'] = 'This is the content of the help tooltip associated with the extensionname field. Markdown syntax is supported.';
 $string['extensionrejected'] = 'Extension rejected';
@@ -227,8 +227,8 @@ The Department for Continuing Education
 ';
 $string['studentnotified'] = 'Student notified';
 $string['submitrequest'] = 'Submit extension request';
-$string['supportingevidenceguidance'] = 'If you have evidence to support your extension request (e.g. medical certificate, employer\'s letter), please upload it here.';
 $string['supportingevidence'] = 'Supporting evidence';
+$string['supportingevidenceguidance'] = 'If you have evidence to support your extension request (e.g. medical certificate, employer\'s letter), please upload it here.';
 $string['unconfirmed'] = 'Unconfirmed';
 $string['viewextensions'] = 'View extensions';
 $string['withextensionto'] = 'With extension to';
