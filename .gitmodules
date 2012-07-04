@@ -1,0 +1,3 @@
+[submodule "mod/certificate"]
+	path = mod/certificate
+	url = https://github.com/PukunuiAustralia/moodle-mod_certificate.git
