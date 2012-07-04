@@ -38,7 +38,7 @@
         'core:smtphosts'=>array('core', 'smtphosts', 'smtp.ox.ac.uk'),
         'folder:requiremodintro'=>array('folder', 'requiremodintro', '0'),
         'imscp:requiremodintro'=>array('imscp', 'requiremodintro', '0'),
-        'moodlecourse:format'=>array('moodlecourse', 'format', 'unmarked'),
+        'moodlecourse:format'=>array('moodlecourse', 'format', 'topicstall'),
         'profilefield:courseids'=>array('profilefield', 'courseids', $courseidsdata),
         'page:requiremodintro'=>array('page', 'requiremodintro', '0'),
         'resource:display'=>array('resource', 'display', '2'),
