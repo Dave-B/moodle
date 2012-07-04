@@ -228,7 +228,7 @@ The Department for Continuing Education
 $string['studentnotified'] = 'Student notified';
 $string['submitrequest'] = 'Submit extension request';
 $string['supportingevidence'] = 'Supporting evidence';
-$string['supportingevidenceguidance'] = 'If you have evidence to support your extension request (e.g. medical certificate, employer\'s letter), please upload it here.';
+$string['supportingevidenceguidance'] = 'If you have evidence to support your extension request (e.g. medical certificate, employer\'s letter), please email it to <a href="mailto:registry@conted.ox.ac.uk?subject=Extension%20file:%20{$a->assignmentname}&amp;body=Documentary%20evidence%20for%20extension%20request%20from%20{$a->username}:%20{$a->coursename},%20{$a->assignmentname}.">Registry</a>.';
 $string['unconfirmed'] = 'Unconfirmed';
 $string['viewextensions'] = 'View extensions';
 $string['withextensionto'] = 'With extension to';

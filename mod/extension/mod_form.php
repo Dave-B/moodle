@@ -70,12 +70,17 @@ class mod_extension_form extends moodleform {
     /// Reason for the extension
         $mform->addElement('textarea', 'reason', get_string('reasonforrequest', 'extension'), 'wrap="virtual" rows="10" cols="70"');
         $mform->addRule('reason', null, 'required', null, 'client');
-/*
-    /// Optional file upload to support the request
-        $mform->addElement('filemanager', 'evidencefile', get_string('supportingevidence', 'extension'), null,
-                                    array('subdirs' => false, 'maxbytes' => $COURSE->maxbytes, 'maxfiles' => 1, 'accepted_types' => array('documents')));
-        $mform->addElement('html', '<div class="fitem"><div class="fitemtitle"> </div><div class="felement">'.get_string('supportingevidenceguidance', 'extension').'</div></div.');
-*/
+
+    /// Instruct users to send evidence files to Registry
+        if ($COURSE->registryworkflow) {
+            $info = new StdClass();
+            $info->coursename = htmlentities($COURSE->fullname);
+            $info->assignmentname = htmlentities($assignment->name);
+            $info->username = htmlentities($USER->firstname.' '.$USER->lastname);
+            $mform->addElement('html', '<div class="fitem"><div class="fitemtitle"> </div><div class="felement">'.
+                                        get_string('supportingevidenceguidance', 'extension', $info).
+                                        '</div></div.');
+        }
 
 //-------------------------------------------------------------------------------
         // add standard elements, common to all modules
