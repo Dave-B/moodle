@@ -44,14 +44,12 @@ function xmldb_extension_upgrade($oldversion) {
 
     $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
 
-    // And upgrade begins here. For each one, you'll need one
-    // block of code similar to the next one. Please, delete
-    // this comment lines once this file start handling proper
-    // upgrade code.
-
-    // if ($oldversion < YYYYMMDD00) { //New version in version.php
-    //
-    // }
+    if ($oldversion < 2012032301) { //New version in version.php
+    /// Changing nullability of field lengthgranted on table assignment_submissions to allow null
+        $table = new xmldb_table('extension');
+        $field = new xmldb_field('lengthgranted');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, '10', null, null, null, null, null, null, 'lengthrequested');
+    }
 
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
