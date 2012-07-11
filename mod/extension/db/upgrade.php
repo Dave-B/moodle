@@ -47,7 +47,12 @@ function xmldb_extension_upgrade($oldversion) {
     if ($oldversion < 2012032301) { //New version in version.php
     /// Changing nullability of field lengthgranted on table assignment_submissions to allow null when importing
         $table = new xmldb_table('extension');
-        $field = new xmldb_field('lengthgranted', XMLDB_TYPE_INTEGER, '10', null, null, '');
+        $field = new xmldb_field('lengthgranted', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'lengthrequested');
+        $dbman->change_field_precision($table, $field);
+
+    /// Changing nullability of field studentmessage on table assignment_submissions to allow null when importing
+        $table = new xmldb_table('extension');
+        $field = new xmldb_field('studentmessage', XMLDB_TYPE_TEXT, null, null, null, null, null, 'privatenotes');
         $dbman->change_field_precision($table, $field);
     }
 
