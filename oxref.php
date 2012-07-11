@@ -5,7 +5,7 @@ require_login();
 
 $redirect = optional_param('redirect', NULL, PARAM_TEXT);
 $dest     = optional_param('dest', '', PARAM_TEXT);
-$redirectdelay = 3000;
+$redirectdelay = 1500;
 
 $refsites = array(
                'oxref' => array('http://www.oxfordreference.com/', 'Oxford Reference Online Core Collection'),
