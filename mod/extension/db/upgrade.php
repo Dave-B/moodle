@@ -45,10 +45,10 @@ function xmldb_extension_upgrade($oldversion) {
     $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
 
     if ($oldversion < 2012032301) { //New version in version.php
-    /// Changing nullability of field lengthgranted on table assignment_submissions to allow null
+    /// Changing nullability of field lengthgranted on table assignment_submissions to allow null when importing
         $table = new xmldb_table('extension');
-        $field = new xmldb_field('lengthgranted');
-        $field->set_attributes(XMLDB_TYPE_INTEGER, '10', null, null, null, null, null, null, 'lengthrequested');
+        $field = new xmldb_field('lengthgranted', XMLDB_TYPE_INTEGER, '10', null, null, '');
+        $dbman->change_field_precision($table, $field);
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.
