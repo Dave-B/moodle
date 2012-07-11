@@ -1,0 +1,163 @@
+html, body#tinymce {background-color:#FaFaFa;}
+body {padding:0; font-size: 14.5px;}
+body.lang-vi {font-family:Arial, Verdana, Helvetica, sans-serif !important;}
+
+ /**
+  * Links
+  */
+a, .fakelink {text-decoration:none;color:#002D62;}
+a:hover, .fakelink:hover {text-decoration:underline;color:#476A8F;}
+a.autolink {background-color: #f9f9f9;color:#002D62;}
+
+#page-header a {text-decoration:none;color:#FFF;font-weight:bold;}
+#page-header a:hover {text-decoration:underline;color:#FFF;}
+
+.loginbox a:link {
+  text-decoration: underline;
+}
+
+.tree_item {color:#002D62;}
+.tree_item:hover {color:#476A8F;}
+
+ /**
+  * Headings
+  */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {color:#000;}
+
+#page-header h1.headermain {color:#FFF; font-size: 1.2em; padding-top: .5em;}
+
+h1.main,
+h2.main,
+h3.main,
+h4.main,
+h5.main,
+h6.main {text-align:center;font-weight:bold;color:#002B5F;}
+
+h2.headingblock.header {font-size:125%;background-color:#000}
+
+th.header,
+td.header,
+div.header {border-color:#DDDDDD;}
+ 
+.block .header {color: white;background-color:#738190;padding:2px 4px;}
+.block .header h2 {color: white;}
+.block .content {background-color:#FFF;border-top:1px solid #D5D5D5;}
+.block .content hr {border-top-color:#D5D5D5;}
+fieldset {border:1px solid #D5D5D5; padding: .5em;}
+
+.header {background:none;}
+
+ /**
+  * Overriding base
+  */
+#page-header {
+  color: white;
+  background: #8594A5 url([[pix:theme|Begbroke-Logo]]) no-repeat scroll 100% -5px;
+  height: 70px;
+}
+.pagelayout-frontpage #page-header {border:0;margin:0;width:100%;}
+
+.headermain,
+#page-header .headermenu {margin: 0 0 0 15px;float:none;text-align:left;}
+
+div.logininfo, div.loginfailures {display: inline; margin-right: 1em;}
+
+.navbar {
+  background: #738190 url([[pix:theme|nav_background]]) no-repeat scroll 100% 100%;
+  color: white;
+  font-size: 0.8em;
+  border-top: 1px solid #DDD;
+  border-width: 1px 0 1px 0;
+  margin: 0;
+  padding: 0 1em;
+}
+.navbar a {
+  color: white;
+}
+.navbar .breadcrumb {
+  margin: 7px 5px;
+}
+.navbar .navbutton {
+  margin: 3px 0;
+}
+
+#custommenu {display: none}
+
+.path-course-view .weeks .content, .path-course-view .topics .content, .path-course-view .weeks .section, .path-course-view .topics .section {background-color:#FFF;}
+
+#page-mod-resource-view .resourcecontent {margin:0; border: 1px dotted red;}
+#page-mod-resource-view .resourcecontent object {border: 1px dotted green;}
+
+ /**
+  * Course spine page
+  */
+h1.sectionname {margin:.5em; font-size:180%;}
+h2.sectionname {margin:.5em; font-size:140%;}
+
+.course-content div.summary {margin-left:2em;}
+.course-content div.summary h2 {margin:0;}
+.course-content ul.topics li.section .content {margin-left: 0;}
+.course-content ul.topics li.section .left {width: 0;}
+.editing .course-content ul.topics li.section .left {width: 40px;}
+.section div.right {margin-top:2px;}
+.course-content ul.section li.activity {line-height:1.7em;}
+
+.section ul.section {margin-top:0;}
+.section div.summary {margin-top:1em;}
+
+li.activity.label hr {border: 0; border-bottom: 1px solid #ddd;}
+
+.commands img.iconsmall {
+  height: 12px;
+  margin-right: 6px;
+  vertical-align: middle;
+  width: 12px;
+}
+
+.availabilityinfo {margin-top: -3px;}
+
+body#course-view .unread {
+  margin-left: .5em;
+}
+
+.unread {
+  font-size: 75%;
+  background-color: #F5F6FA;
+  border: 1px solid #D5D5D5;
+  border-bottom: 2px solid #476A8F;
+}
+
+.calendartable .hasevent {
+  border: 1px solid #999;
+}
+
+.calendartable .today {
+  border: 1px solid #444;
+  font-weight: bold;
+}
+
+td.eventskey {
+  padding: .3em;
+}
+
+.attention {
+  background-color: #d00;
+}
+
+/**
+ * Mod theme tweaks
+ */
+
+.sponsor {font-size: .8em; margin: -.2em 15px;}
+
+div.feedback_item_number_left {padding: 11px;}
+div.box.feedback_form fieldset, div.box.feedback_complete_cancel fieldset {border: 0;}
+
+div.blocksubtitle {font-size: .85em;}
+
+.small {font-size: .8em;}
