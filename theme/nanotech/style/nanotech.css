@@ -42,10 +42,13 @@ h2.headingblock.header {font-size:125%;background-color:#000}
 
 th.header,
 td.header,
-div.header {border-color:#DDDDDD;}
- 
+div.header {border-color:#DDDDDD;background-color: #99A4AF; color: white;}
+.forumheaderlist .discussion .starter {background-color: #DDD}
+
+
 .block .header {color: white;background-color:#738190;padding:2px 4px;}
 .block .header h2 {color: white;}
+.block .header .commands {background-color: #DDD; margin-right: 4px;}
 .block .content {background-color:#FFF;border-top:1px solid #D5D5D5;}
 .block .content hr {border-top-color:#D5D5D5;}
 fieldset {border:1px solid #D5D5D5; padding: .5em;}
@@ -87,6 +90,16 @@ div.logininfo, div.loginfailures {display: inline; margin-right: 1em;}
 }
 
 #custommenu {display: none}
+
+#page-footer {
+  color: white;
+  background-color: #8594A5;
+  padding-top: 1em;
+}
+
+#page-footer a {
+  color: white;
+}
 
 .path-course-view .weeks .content, .path-course-view .topics .content, .path-course-view .weeks .section, .path-course-view .topics .section {background-color:#FFF;}
 
