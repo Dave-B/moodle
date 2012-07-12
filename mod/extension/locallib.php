@@ -801,9 +801,10 @@ class course_extension_collection {
                                     // When student has unconfirmed extension, allow viewing as status=0
                                     $viewAwaitingConfAsPending = true;
                                 }
-
                                 // Show extensions with relevant status
-                                if ($this->status === NULL || ($extension->status == $this->status && $extension->approvalconfirmed) || isset($viewAwaitingConfAsPending))  {
+                                if ($this->status === NULL || isset($viewAwaitingConfAsPending) ||
+                                    ($extension->status == $this->status && ($extension->approvalconfirmed || $extensionstaff) )
+                                   )  {
                                     $studentLink = '<a href="/user/view.php?id='.$extension->userid.'">'.
                                                     $users[$extension->userid]->firstname.' '.$users[$extension->userid]->lastname.
                                                    '</a>';
