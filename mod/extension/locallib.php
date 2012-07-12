@@ -538,14 +538,33 @@ class extension_group {
      * @return array
      */
     public function get_extension_counts() {
-        $results = array(0=>0,1=>0,2=>0);
+        global $COURSE, $context;
+        $results = array(0=>0,1=>0,2=>0,'toconfirm'=>0);
+
+        $extensionstaff = false;
+        if($COURSE->registryworkflow) {
+            if (has_capability('mod/extension:viewanyextension', $context)
+                || has_capability('mod/extension:approveextension', $context)
+                || has_capability('mod/extension:confirmextension', $context)
+               ) {
+                $extensionstaff = true;
+            }
+        }
 
         if($this->extensions) {
             foreach($this->extensions as $extension) {
-                if($extension->approvalconfirmed == 1) {
-                    $results[$extension->status]++;
+                if ($COURSE->registryworkflow) {
+                    if($extension->status == 0 || $extension->approvalconfirmed == 1) {
+                        $results[$extension->status]++;
+                    } else {
+                        if ( $extensionstaff) {
+                            $results['toconfirm']++;
+                        } else {
+                            $results[0]++;
+                        }
+                    }
                 } else {
-                    $results[0]++;
+                    $results[$extension->status]++;
                 }
             }
             return $results;
@@ -581,11 +600,13 @@ class extension_group {
      * @return array
      */
     public function get_extension_summary() {
-
         if($results = $this->get_extension_counts()) {
             $output = '';
             foreach($results as $key=>$val) {
-                if($val) {
+                if ($key === 'toconfirm' && $val) {
+                    $output .= '<a href="/mod/extension/index.php?id='.$this->course.'&amp;a='.$this->activitycmid.'&amp;exclude=0&amp;confirmed=0">'.
+                               $val.' '.get_string('awaitingconfirmation', 'extension').'</a>, ';
+                } else if ($val) {
                     $output .= '<a href="/mod/extension/index.php?id='.$this->course.'&amp;a='.$this->activitycmid.'&amp;status='.$key.'">'.
                                $val.' '.get_string($this->requeststatus[$key], 'extension').'</a>, ';
                 }
