@@ -43,7 +43,8 @@
         'moodlecourse:maxbytes'=>array('moodlecourse', 'maxbytes', '5242880'),
 
       /// Blocks
-        //'block:navigation'=>array('block', 'navigation', '0'),
+        'header:block'=>array('header', 'Block settings'),
+        'block:navigation'=>array('block', 'navigation', '0'),
 
       /// Modules
         'header:modules'=>array('header', 'Module settings'),
