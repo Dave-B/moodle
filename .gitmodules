@@ -1,3 +1,6 @@
 [submodule "mod/certificate"]
 	path = mod/certificate
 	url = https://github.com/PukunuiAustralia/moodle-mod_certificate.git
+[submodule "blocks/course_menu"]
+	path = blocks/course_menu
+	url = https://github.com/Dave-B/moodle-block_course_menu.git
