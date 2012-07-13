@@ -6,7 +6,7 @@
 // format.
 //
 // The default blocks layout for this course format:
-    $format['defaultblocks'] = 'participants,calendar_month,recent_activity,'.
+    $format['defaultblocks'] = 'course_menu,participants,calendar_month,recent_activity,'.
                                'activity_modules,blog_menu,oxref,'.
                                'calendar_upcoming,search_forums';
 //
