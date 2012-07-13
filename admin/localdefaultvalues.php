@@ -26,6 +26,7 @@
         //   1 - setting name
         //   2 - value(s)
       /// Core
+        'header:core'=>array('header', 'Core settings'),
         'core:allowcoursethemes'=>array('core', 'allowcoursethemes', '1'),
         'core:bloglevel'=>array('core', 'bloglevel', '4'),
         'core:cachetext'=>array('core', 'cachetext', '1800'),
@@ -38,19 +39,20 @@
         'core:legacyfilesinnewcourses'=>array('core', 'legacyfilesinnewcourses', '1'),
         'core:smtphosts'=>array('core', 'smtphosts', 'smtp.ox.ac.uk'),
 
+        'moodlecourse:format'=>array('moodlecourse', 'format', 'topicstall'),
+        'moodlecourse:maxbytes'=>array('moodlecourse', 'maxbytes', '5242880'),
+
       /// Blocks
         //'block:navigation'=>array('block', 'navigation', '0'),
 
       /// Modules
+        'header:modules'=>array('header', 'Module settings'),
         'core:assignment_maxbytes'=>array('core', 'assignment_maxbytes', '5242880'),
         'assignsubmission_file:maxbytes'=>array('assignsubmission_file', 'maxbytes', '5242880'),
 
         'folder:requiremodintro'=>array('folder', 'requiremodintro', '0'),
 
         'imscp:requiremodintro'=>array('imscp', 'requiremodintro', '0'),
-
-        'moodlecourse:format'=>array('moodlecourse', 'format', 'topicstall'),
-        'moodlecourse:maxbytes'=>array('moodlecourse', 'maxbytes', '5242880'),
 
         'profilefield:courseids'=>array('profilefield', 'courseids', $courseidsdata),
 

@@ -90,36 +90,42 @@ YUI().use('node', function (Y) {
     $tablerows = '';
     foreach ($settings as $key=>$a_setting) {
         $class='';
-        if ($a_setting[0] == 'profilefield') {
-            if ($catid = find_profile_field($a_setting[1])) {
-                $currentvalue = '[Profile field "'.$a_setting[2]->name.'" exists (id '.$catid.')]';
-            } else {
-                $currentvalue = '[Profile field does not exist]';
-                $class=' class="attention"';
-            }
-        } else if ($a_setting[0] == 'block') {
-            if ($block = $DB->get_record('block', array('name'=>$a_setting[1]))) {
-                $currentvalue = $block->visible;
-            } else {
-                $currentvalue = '[Block does not exist]';
-                $class=' class="attention"';
-            }
-            if ($currentvalue != $a_setting[2]) {
-                $class=' class="attention"';
-            }
+        $tablerows .= '<tr>';
+        if ($a_setting[0] == 'header') {
+            $tablerows .= '<th colspan="5" style="border-top:1px solid #eee;">'.$a_setting[1].'</th>';
         } else {
-            $currentvalue = get_config($a_setting[0], $a_setting[1]);
-            if ($currentvalue != $a_setting[2]) {
-                $class=' class="attention"';
+            if ($a_setting[0] == 'profilefield') {
+                if ($catid = find_profile_field($a_setting[1])) {
+                    $currentvalue = '[Profile field "'.$a_setting[2]->name.'" exists (id '.$catid.')]';
+                } else {
+                    $currentvalue = '[Profile field does not exist]';
+                    $class=' class="attention"';
+                }
+            } else if ($a_setting[0] == 'block') {
+                if ($block = $DB->get_record('block', array('name'=>$a_setting[1]))) {
+                    $currentvalue = $block->visible;
+                } else {
+                    $currentvalue = '[Block does not exist]';
+                    $class=' class="attention"';
+                }
+                if ($currentvalue != $a_setting[2]) {
+                    $class=' class="attention"';
+                }
+            } else {
+                $currentvalue = get_config($a_setting[0], $a_setting[1]);
+                if ($currentvalue != $a_setting[2]) {
+                    $class=' class="attention"';
+                }
             }
-        }
-        $tablerows .= '<tr><td><input type="checkbox" name="'.$key.'" value="1" class="setting"/></td><td>'.$a_setting[0].'</td>';
-        $tablerows .= '<td>'.$a_setting[1].'</td>';
-        $tablerows .= '<td>'.$currentvalue.'</td><td'.$class.'>';
-        if ($a_setting[0] == 'profilefield') {
-            $tablerows .= '[Create profile field]';
-        } else {
-            $tablerows .= $a_setting[2];
+            $tablerows .= '<td><input type="checkbox" name="'.$key.'" value="1" class="setting"/></td><td>'.$a_setting[0].'</td>';
+            $tablerows .= '<td>'.$a_setting[1].'</td>';
+            $tablerows .= '<td>'.$currentvalue.'</td><td'.$class.'>';
+            if ($a_setting[0] == 'profilefield') {
+                $tablerows .= '[Create profile field]';
+            } else {
+                $tablerows .= $a_setting[2];
+            }
+            $tablerows .= "</td>\n";
         }
         $tablerows .= "</td></tr>\n";
     }
