@@ -541,6 +541,10 @@ class extension_group {
         global $COURSE, $context;
         $results = array(0=>0,1=>0,2=>0,'toconfirm'=>0);
 
+        if (!$context) {
+            $context = get_context_instance(CONTEXT_COURSE, $COURSE->id);
+        }
+
         $extensionstaff = false;
         if($COURSE->registryworkflow) {
             if (has_capability('mod/extension:viewanyextension', $context)
