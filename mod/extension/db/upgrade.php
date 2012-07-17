@@ -44,7 +44,7 @@ function xmldb_extension_upgrade($oldversion) {
 
     $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
 
-    if ($oldversion < 2012032301) { //New version in version.php
+    if ($oldversion < 2012032301) {
     /// Changing nullability of field lengthgranted on table assignment_submissions to allow null when importing
         $table = new xmldb_table('extension');
         $field = new xmldb_field('lengthgranted', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'lengthrequested');
@@ -53,6 +53,13 @@ function xmldb_extension_upgrade($oldversion) {
     /// Changing nullability of field studentmessage on table assignment_submissions to allow null when importing
         $table = new xmldb_table('extension');
         $field = new xmldb_field('studentmessage', XMLDB_TYPE_TEXT, null, null, null, null, null, 'privatenotes');
+        $dbman->change_field_precision($table, $field);
+    }
+
+    if ($oldversion < 2012032302) {
+    /// Re-state field, to ensure status field has a default value on study
+        $table = new xmldb_table('extension');
+        $field = new xmldb_field('status', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'evidencefile');
         $dbman->change_field_precision($table, $field);
     }
 
