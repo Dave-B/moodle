@@ -34,10 +34,13 @@
 -Courseware Guide|http://onlinesupport.conted.ox.ac.uk/CoursewareGuide/
 -Learning Support|http://onlinesupport.conted.ox.ac.uk/nml/
 -Technical support|http://onlinesupport.conted.ox.ac.uk/TechnicalSupport/'),
+        'core:debug'=>array('core', 'debug', '15'),
         'core:enableavailability'=>array('core', 'enableavailability', '1'),
         'core:filteruploadedfiles'=>array('core', 'filteruploadedfiles', '2'),
         'core:legacyfilesinnewcourses'=>array('core', 'legacyfilesinnewcourses', '1'),
         'core:smtphosts'=>array('core', 'smtphosts', 'smtp.ox.ac.uk'),
+        'core:updateautocheck'=>array('core', 'updateautocheck', '0'),
+        'core:usetags'=>array('core', 'usetags', '0'),
 
         'moodlecourse:format'=>array('moodlecourse', 'format', 'topicstall'),
         'moodlecourse:maxbytes'=>array('moodlecourse', 'maxbytes', '5242880'),
