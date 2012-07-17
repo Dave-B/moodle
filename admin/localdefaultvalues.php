@@ -25,8 +25,10 @@
         //   0 - component, pluginname, 'profilefield', 'block' (0/1 for visibility), or 'core'
         //   1 - setting name
         //   2 - value(s)
+
       /// Core
         'header:core'=>array('header', 'Core settings'),
+
         'core:allowcoursethemes'=>array('core', 'allowcoursethemes', '1'),
         'core:bloglevel'=>array('core', 'bloglevel', '1'),
         'core:cachetext'=>array('core', 'cachetext', '1800'),
@@ -45,12 +47,18 @@
         'moodlecourse:format'=>array('moodlecourse', 'format', 'topicstall'),
         'moodlecourse:maxbytes'=>array('moodlecourse', 'maxbytes', '5242880'),
 
+
       /// Blocks
         'header:block'=>array('header', 'Block settings'),
+
         'block:navigation'=>array('block', 'navigation', '0'),
+
 
       /// Modules
         'header:modules'=>array('header', 'Module settings'),
+
+        'book:requiremodintro'=>array('book', 'requiremodintro', '0'),
+
         'core:assignment_maxbytes'=>array('core', 'assignment_maxbytes', '5242880'),
         'assignsubmission_file:maxbytes'=>array('assignsubmission_file', 'maxbytes', '5242880'),
 
