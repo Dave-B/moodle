@@ -27,7 +27,7 @@
  *
  * @package    mod
  * @subpackage extension
- * @copyright  2011 Your Name
+ * @copyright  2012 David Balch
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
