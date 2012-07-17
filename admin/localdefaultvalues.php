@@ -28,7 +28,7 @@
       /// Core
         'header:core'=>array('header', 'Core settings'),
         'core:allowcoursethemes'=>array('core', 'allowcoursethemes', '1'),
-        'core:bloglevel'=>array('core', 'bloglevel', '4'),
+        'core:bloglevel'=>array('core', 'bloglevel', '1'),
         'core:cachetext'=>array('core', 'cachetext', '1800'),
         'core:custommenuitems'=>array('core', 'custommenuitems', 'Online support|http://onlinesupport.conted.ox.ac.uk/
 -Courseware Guide|http://onlinesupport.conted.ox.ac.uk/CoursewareGuide/
