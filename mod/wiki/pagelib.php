@@ -75,7 +75,7 @@ abstract class page_wiki {
     /**
      * @var array The tabs set used in wiki module
      */
-    protected $tabs = array('view' => 'view', 'edit' => 'edit', 'comments' => 'comments',
+    protected $tabs = array('newpage' => 'newpage', 'view' => 'view', 'edit' => 'edit', 'comments' => 'comments',
                             'history' => 'history', 'map' => 'map', 'files' => 'files',
                             'admin' => 'admin');
     /**

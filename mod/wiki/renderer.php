@@ -264,6 +264,9 @@ class mod_wiki_renderer extends plugin_renderer_base {
         }
 
         foreach ($tabitems as $tab) {
+            if ($tab == 'newpage' && !has_capability('mod/wiki:createpage', $context)) {
+                continue;
+            }
             if ($tab == 'edit' && !has_capability('mod/wiki:editpage', $context)) {
                 continue;
             }
@@ -279,7 +282,11 @@ class mod_wiki_renderer extends plugin_renderer_base {
             if ($tab == 'admin' && !has_capability('mod/wiki:managewiki', $context)) {
                 continue;
             }
-            $link = new moodle_url('/mod/wiki/'. $tab. '.php', array('pageid' => $pageid));
+            if ($tab == 'newpage') {
+                $link = new moodle_url('/mod/wiki/'. 'create.php?action=new&amp;swid='. $page->subwikiid);
+            } else {
+                $link = new moodle_url('/mod/wiki/'. $tab. '.php', array('pageid' => $pageid));
+            }
             if ($linked == $tab) {
                 $tabs[] = new tabobject($tab, $link, get_string($tab, 'wiki'), '', true);
             } else {
