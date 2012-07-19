@@ -63,7 +63,7 @@ $submission = $instance->get_submission($formdata->userid, false);
 
 $types = array('.txt', '.rtf', '.pdf', // Open text formats
                '.doc', '.xls', '.ppt', '.docx', '.xlsx', '.pptx', '.mdb', '.accdb', // MS Office formats
-               '.odt', '.ods', '.ods', '.odg', '.odb', // OpenDocument formats
+               '.odt', '.ods', '.odp', '.odg', '.odb', // OpenDocument formats
                '.png', '.jpg', '.gif', // Images
                '.zip' // Archive
               );
