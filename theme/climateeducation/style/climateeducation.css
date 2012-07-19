@@ -1,13 +1,13 @@
 body {
-  background-color: #225F87;
-  color: #fff;
-  font-family: "Gill Sans MT", "Gill Sans", Arial, sans-serif;
-  font-size: .9em;
+  background-color: #225F87; color: #fff;
+  font-family: "Gill Sans MT", "Gill Sans", Arial, sans-serif; font-size: .9em;
   padding: 1.5em;
 }
 body.pagelayout-frametop {padding: .5em 1.5em 0 1.5em;}
 body#tinymce {background-color:#FFF;}
 body.lang-vi {font-family:Arial, Verdana, Helvetica, sans-serif !important;}
+.yui-panel, .yui3-dd-draggable, div.info, .generaltable {color: #000;}
+thead .header {color: #fff; background-color: #225F87}
 
  /**
   * Links
@@ -23,7 +23,7 @@ a:hover {color: #fff;}
 #page-content a {text-decoration:none;color:#222;}
 #page-content a:visited {color:#333;}
 #page-content a:hover, .file-picker a:hover {text-decoration:underline;color:#000;}
-#page-content {background-color: #eee;}
+#page-content {background-color: #eee; color: #000;}
 #page-content-wrapper {margin: 1em;}
 
 .tree_item {color:#002D62;}
