@@ -2074,6 +2074,7 @@ class assignment_base {
                     }
                     $currentposition++;
                 }
+                echo $OUTPUT->notification(get_string('mayneedscrollbar', 'assignment'));
                 $table->print_html();  /// Print the whole table
                 if (!$quickgrade) {
                     $selectivedownload = html_writer::empty_tag('input', array('type'=>'submit', 'name'=>'selectivezip', 'value'=>get_string('downloadselected', 'assignment')));

@@ -235,6 +235,7 @@ $string['marksubmission'] = 'Mark submission';
 $string['maximumgrade'] = 'Maximum grade';
 $string['maximumsize'] = 'Maximum size';
 $string['maxpublishstate'] = 'Maximum visibility for blog entry before due date';
+$string['mayneedscrollbar'] = 'NB: To grade submissions, you may need to use the scroll bar below the table to reveal the "Status" column.';
 $string['messageprovider:assignment_updates'] = 'Assignment (2.2) notifications';
 $string['modulename'] = 'Assignment (2.2)';
 $string['modulename_help'] = 'Assignments enable the teacher to specify a task either on or offline which can then be graded.';
