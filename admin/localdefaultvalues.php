@@ -51,7 +51,9 @@
       /// Blocks
         'header:block'=>array('header', 'Block settings'),
 
-        'block:navigation'=>array('block', 'navigation', '0'),
+//        'block:navigation'=>array('block', 'navigation', '0'), // Disable block
+        'blockweight:settings'=>array('blockweight', 'settings', '9'), // Default Settings block weight
+        'blockweight:navigation'=>array('blockweight', 'navigation', '10'), // Default Nav block weight
 
 
       /// Modules

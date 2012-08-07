@@ -32,6 +32,11 @@
                         // Set a block visibility (Site administration ► Plugins ► Blocks ► Manage blocks)
                         $updates[$key][1] = $DB->set_field('block', 'visible', $a_setting[2], array('name'=>$a_setting[1]));
                     }
+                } else if ($a_setting[0] == 'blockweight') {
+                    if (ctype_digit($a_setting[2])) {
+                        // Set a block default weight (Site administration ► Plugins ► Blocks ► Manage blocks)
+                        $updates[$key][1] = $DB->set_field('block_instances', 'defaultweight', $a_setting[2], array('blockname'=>$a_setting[1]));
+                    }
                 } else {
                     // Set a plugin setting
                     $updates[$key][1] = set_config($a_setting[1], $a_setting[2], $a_setting[0]);
@@ -104,6 +109,16 @@ YUI().use('node', function (Y) {
             } else if ($a_setting[0] == 'block') {
                 if ($block = $DB->get_record('block', array('name'=>$a_setting[1]))) {
                     $currentvalue = $block->visible;
+                } else {
+                    $currentvalue = '[Block does not exist]';
+                    $class=' class="attention"';
+                }
+                if ($currentvalue != $a_setting[2]) {
+                    $class=' class="attention"';
+                }
+            } else if ($a_setting[0] == 'blockweight') {
+                if ($block = $DB->get_record('block_instances', array('blockname'=>$a_setting[1]))) {
+                    $currentvalue = $block->defaultweight;
                 } else {
                     $currentvalue = '[Block does not exist]';
                     $class=' class="attention"';
