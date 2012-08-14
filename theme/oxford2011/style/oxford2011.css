@@ -92,6 +92,17 @@ div.logininfo, div.loginfailures {display: inline; margin-right: 1em;}
 #page-mod-resource-view .resourcecontent {margin:0; border: 1px dotted red;}
 #page-mod-resource-view .resourcecontent object {border: 1px dotted green;}
 
+.decorations {
+  text-align: center;
+}
+
+.decorations img, img.decoration {
+  border: 1px solid #D5D5D5;
+}
+ul.section, ul.section * {
+  clear: both !important;
+}
+
  /**
   * Course spine page
   */
