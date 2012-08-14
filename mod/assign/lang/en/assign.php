@@ -203,14 +203,16 @@ $string['maxattempts'] = 'Maximum attempts';
 $string['maxattempts_help'] = 'The maximum number of submissions attempts that can be made by a student. After this number of attempts has been made the student&apos;s submission will not be able to be reopened.';
 $string['maxgrade'] = 'Maximum grade';
 $string['messageprovider:assign_notification'] = 'Assignment notifications';
-$string['modulename'] = 'Assignment';
+//$string['modulename'] = 'Assignment';
+$string['modulename'] = 'Assignment (2.3)';
 $string['modulename_help'] = 'The assignment activity module enables a teacher to communicate tasks, collect work and provide grades and feedback.
 
 Students can submit any digital content (files), such as word-processed documents, spreadsheets, images, or audio and video clips. Alternatively, or in addition, the assignment may require students to type text directly into the text editor. An assignment can also be used to remind students of \'real-world\' assignments they need to complete offline, such as art work, and thus not require any digital content. Students can submit work individually or as a member of a group.
 
 When reviewing assignments, teachers can leave feedback comments and upload files, such as marked-up student submissions, documents with comments or spoken audio feedback. Assignments can be graded using a numerical or custom scale or an advanced grading method such as a rubric. Final grades are recorded in the gradebook.';
 $string['modulename_link'] = 'mod/assignment/view';
-$string['modulenameplural'] = 'Assignments';
+//$string['modulenameplural'] = 'Assignments';
+$string['modulenameplural'] = 'Assignments (2.3)';
 $string['mysubmission'] = 'My submission: ';
 $string['newsubmissions'] = 'Assignments submitted';
 $string['noattempt'] = 'No attempt';
@@ -241,7 +243,8 @@ $string['page-mod-assign-x'] = 'Any assignment module page';
 $string['page-mod-assign-view'] = 'Assignment module main and submission page';
 $string['participant'] = 'Participant';
 $string['pluginadministration'] = 'Assignment administration';
-$string['pluginname'] = 'Assignment';
+//$string['pluginname'] = 'Assignment';
+$string['pluginname'] = 'Assignment (2.3)';
 $string['preventsubmissions'] = 'Prevent the user from making any more submissions to this assignment.';
 $string['preventsubmissionsshort'] = 'Prevent submission changes';
 $string['previous'] = 'Previous';
