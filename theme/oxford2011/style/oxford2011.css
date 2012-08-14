@@ -171,3 +171,5 @@ div.box.feedback_form fieldset, div.box.feedback_complete_cancel fieldset {borde
 div.blocksubtitle {font-size: .85em;}
 
 .small {font-size: .8em;}
+
+.activity.label .dimmed_text { opacity: 1; filter: alpha(opacity='100');}
