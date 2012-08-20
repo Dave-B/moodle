@@ -37,6 +37,7 @@
 -Learning Support|http://onlinesupport.conted.ox.ac.uk/nml/
 -Technical support|http://onlinesupport.conted.ox.ac.uk/TechnicalSupport/'),
         'core:debug'=>array('core', 'debug', '15'),
+        'core:enableajax'=>array('core', 'enableajax', '1'),
         'core:enableavailability'=>array('core', 'enableavailability', '1'),
         'core:filteruploadedfiles'=>array('core', 'filteruploadedfiles', '2'),
         'core:legacyfilesinnewcourses'=>array('core', 'legacyfilesinnewcourses', '1'),
