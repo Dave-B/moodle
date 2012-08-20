@@ -16,7 +16,11 @@ class mod_presubmit_form extends moodleform {
         if ($assignment->requiredeclaration && !empty($CFG->assignment_uploadtext)) {
             // Student statement
             $mform->addElement('header', 'displayinfo', get_string('confirmstatement', 'assignment'));
-            $mform->addElement('html', format_text('<div class="boxaligncenter boxwidthwide">'.sprintf($CFG->assignment_uploadtext, $USER->firstname.' '.$USER->lastname).'</div>'));
+            $mform->addElement('html', format_text('<div class="boxaligncenter boxwidthwide">'.
+                                                   sprintf($CFG->assignment_uploadtext, $USER->firstname.' '.$USER->lastname).'</div>',
+                                                   FORMAT_MOODLE,
+                                                   array('filter'=>false)
+                                        ));
             $mform->addElement('checkbox', 'confirmuploadtext', get_string('readconfirm','assignment'));
             $mform->addRule('confirmuploadtext', null, 'required', null, 'client');
         }
