@@ -170,7 +170,7 @@ for \'{$a->assignment}\'
 
 Files submitted: {$a->filelist}.
 
-The assignment was submitted $a->ontime.
+The assignment was submitted {$a->ontime}.
 
 It is available here:
 
