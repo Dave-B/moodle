@@ -65,14 +65,17 @@ class mod_extension_form extends moodleform {
         $mform->setType('lengthrequested', PARAM_INT, 'nonzero');
         $mform->addRule('lengthrequested', null, 'required', null, 'client');
         $mform->addRule('lengthrequested', get_string('maximumchars', '', 3), 'maxlength', 3, 'client', 'x');
-        $mform->addElement('html', '<div class="fitem"><div class="fitemtitle"> </div><div class="felement">'.get_string('extensionlengthguidance', 'extension').'</div></div.');
+        if ($COURSE->registryworkflow) {
+            /// Instruct users to contact Registry for long extensions
+            $mform->addElement('html', '<div class="fitem"><div class="fitemtitle"> </div><div class="felement">'.get_string('extensionlengthguidance', 'extension').'</div></div.');
+        }
 
     /// Reason for the extension
         $mform->addElement('textarea', 'reason', get_string('reasonforrequest', 'extension'), 'wrap="virtual" rows="10" cols="70"');
         $mform->addRule('reason', null, 'required', null, 'client');
 
-    /// Instruct users to send evidence files to Registry
         if ($COURSE->registryworkflow) {
+            /// Instruct users to send evidence files to Registry
             $info = new StdClass();
             $info->coursename = htmlentities($COURSE->fullname);
             $info->assignmentname = htmlentities($assignment->name);
