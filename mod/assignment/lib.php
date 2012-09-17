@@ -4882,7 +4882,11 @@ function list_submission_files($assignment, $selectedusers) {
 
             $dirnamestudent = clean_filename($a_user->lastname.'_'.$a_user->firstname.'_'.$a_userid);
 
-            $files = $fs->get_area_files($assignment->context->id, 'mod_assignment', 'submission', $submission->id, "timemodified", false);
+            // Get submission files
+            $submissionfiles = $fs->get_area_files($assignment->context->id, 'mod_assignment', 'submission', $submission->id, "timemodified", false);
+            // Get response files
+            $responsefiles = $fs->get_area_files($assignment->context->id, 'mod_assignment', 'response', $submission->id, "timemodified", false);
+            $files = array_merge($submissionfiles, $responsefiles);
             foreach ($files as $file) {
                 $fileforzipname = $dirnamecourse . $dirnameassignment . $dirnamestudent .
                                   clean_param($file->get_filepath(),PARAM_PATH) . clean_filename($file->get_filename());
@@ -4906,6 +4910,7 @@ function assignment_download_course_submissions($course, $id) {
     global $CFG, $DB;
 
     // Name of new zip file.
+    $filename = str_replace(' ', '_', clean_filename($course->shortname.date('_Y-m-d\THi').".zip"));
     $filename = str_replace(' ', '_', clean_filename($course->shortname.date('_Y-m-d\THi').".zip"));
 
     // Get all of the course's assignment details
