@@ -2242,6 +2242,10 @@ class assignment_base {
                 // If using workflow and not confirmed, so store grade as provisional
                 $submission->provisionalgrade = $feedback->xgrade;
                 $submission->grade            = '-1';
+                // Set $submission->mailed to 1, so student doesn't get emailed.
+                // This can be changed to 0 on confirmation.
+                $submission->mailed = 1;
+
                 // Notify Registry that a provisional mark has been set
                 $this->assignment_notify_provisional_grade($submission);
                 $submission->onlyprovisionalgrade = true;
