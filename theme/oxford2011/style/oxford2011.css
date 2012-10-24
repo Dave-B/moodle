@@ -134,9 +134,10 @@ li.activity.label hr {border: 0; border-bottom: 1px solid #ddd;}
 body#course-view .unread {
   margin-left: .5em;
 }
-
-.unread {
+span.unread {
   font-size: 75%;
+}
+.unread {
   background-color: #F5F6FA;
   border: 1px solid #D5D5D5;
   border-bottom: 2px solid #476A8F;
