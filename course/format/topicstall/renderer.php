@@ -112,7 +112,7 @@ class format_topicstall_renderer extends format_section_renderer_base {
      * @param bool $onsectionpage true if being printed on a single-section page
      * @return string HTML to output.
      */
-    protected function section_header($section, $course, $onsectionpage) {
+    protected function section_header($section, $course, $onsectionpage, $sectionreturn = 0) {
         global $PAGE;
 
         $o = '';
