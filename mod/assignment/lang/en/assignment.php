@@ -88,6 +88,30 @@ You can see it appended to your assignment submission:
 $string['assignmentmailhtml'] = 'Feedback is now available on your
 assignment submission for \'<i>{$a->assignment}</i>\'<br /><br />
 You can see it appended to your <a href="{$a->url}">assignment submission</a>.';
+$string['assignmentmailregistry'] = 'Marks and feedback are now available on your
+assignment submission for \'{$a->assignment}\'
+
+You can see it appended to your assignment submission:
+
+    {$a->url}
+
+Please note that the marks may be subject to moderation.  If any changes are warranted, the Registry team will contact you to let you know in due course. 
+If you would like to find out more about the moderation process, please see your course handbook in the first instance.
+
+Thank you
+
+Registry team
+01865 280348
+registry@conted.ox.ac.uk';
+$string['assignmentmailregistryhtml'] = 'Marks and feedback are now available on your
+assignment submission for \'<i>{$a->assignment}</i>\'<br /><br />
+You can see it appended to your <a href="{$a->url}">assignment submission</a>.<br /><br />
+Please note that the marks may be subject to moderation.  If any changes are warranted, the Registry team will contact you to let you know in due course.<br />
+If you would like to find out more about the moderation process, please see your course handbook in the first instance.<br /><br />
+Thank you<br /><br />
+Registry team<br />
+01865 280348<br />
+registry@conted.ox.ac.uk';
 $string['assignmentmailsmall'] = '{$a->teacher} has posted some feedback on your
 assignment submission for \'{$a->assignment}\' You can see it appended to your submission';
 $string['assignmentname'] = 'Assignment name';

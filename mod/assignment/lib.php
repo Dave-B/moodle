@@ -3684,6 +3684,9 @@ function assignment_cron () {
         }
     }
 
+    // Get list of courses with Registy workflow enabled
+    $registrycourses = $DB->get_records_select('course', 'registryworkflow = 1', null, '', 'id');
+
     /// Notices older than 1 day will not be mailed.  This is to avoid the problem where
     /// cron has not been running for a long time, and then suddenly people are flooded
     /// with mail from the past few weeks or months
@@ -3693,7 +3696,6 @@ function assignment_cron () {
     $starttime = $endtime - 24 * 3600;   /// One day earlier
 
     if ($submissions = assignment_get_unmailed_submissions($starttime, $endtime)) {
-
         $realuser = clone($USER);
 
         foreach ($submissions as $key => $submission) {
@@ -3703,7 +3705,6 @@ function assignment_cron () {
         $timenow = time();
 
         foreach ($submissions as $submission) {
-
             echo "Processing assignment submission $submission->id\n";
 
             if (! $user = $DB->get_record("user", array("id"=>$submission->userid))) {
@@ -3752,7 +3753,11 @@ function assignment_cron () {
             $postsubject = "$courseshortname: $strassignments: ".format_string($submission->name,true);
             $posttext  = "$courseshortname -> $strassignments -> ".format_string($submission->name,true)."\n";
             $posttext .= "---------------------------------------------------------------------\n";
-            $posttext .= get_string("assignmentmail", "assignment", $assignmentinfo)."\n";
+            if (array_key_exists($submission->course, $registrycourses)) {
+                $posttext .= get_string("assignmentmailregistry", "assignment", $assignmentinfo)."\n";
+            } else {
+                $posttext .= get_string("assignmentmail", "assignment", $assignmentinfo)."\n";
+            }
             $posttext .= "---------------------------------------------------------------------\n";
 
             if ($user->mailformat == 1) {  // HTML
@@ -3761,7 +3766,11 @@ function assignment_cron () {
                 "<a href=\"$CFG->wwwroot/mod/assignment/index.php?id=$course->id\">$strassignments</a> ->".
                 "<a href=\"$CFG->wwwroot/mod/assignment/view.php?id=$mod->id\">".format_string($submission->name,true)."</a></font></p>";
                 $posthtml .= "<hr /><font face=\"sans-serif\">";
-                $posthtml .= "<p>".get_string("assignmentmailhtml", "assignment", $assignmentinfo)."</p>";
+                if (array_key_exists($submission->course, $registrycourses)) {
+                    $posthtml .= "<p>".get_string("assignmentmailregistryhtml", "assignment", $assignmentinfo)."</p>";
+                } else {
+                    $posthtml .= "<p>".get_string("assignmentmailhtml", "assignment", $assignmentinfo)."</p>";
+                }
                 $posthtml .= "</font><hr />";
             } else {
                 $posthtml = "";
