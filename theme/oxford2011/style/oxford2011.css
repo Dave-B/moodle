@@ -87,7 +87,12 @@ div.logininfo, div.loginfailures {display: inline; margin-right: 1em;}
 #custommenu .yui3-menu .yui3-menu-content {background: #002147; color: #fff;}
 #custommenu .yui3-menu .yui3-menu-label-menuvisible, #custommenu .yui3-menu .yui3-menuitem-active, #custommenu .yui3-menu .yui3-menuitem-active a {background: #F5F6FA; color: #002B5F;}
 
-.path-course-view .weeks .content, .path-course-view .topics .content, .path-course-view .weeks .section, .path-course-view .topics .section {background-color:#FFF;}
+.path-course-view .weeks .content,
+.path-course-view .topics .content,
+.path-course-view .units .content,
+.path-course-view .weeks .section,
+.path-course-view .topics .section,
+.path-course-view .units .section {background-color:#FFF;}
 
 #page-mod-resource-view .resourcecontent {margin:0; border: 1px dotted red;}
 #page-mod-resource-view .resourcecontent object {border: 1px dotted green;}
@@ -111,9 +116,12 @@ h2.sectionname {margin:.5em; font-size:140%;}
 
 .course-content div.summary {margin-left:2em;}
 .course-content div.summary h2 {margin:0;}
-.course-content ul.topics li.section .content {margin-left: 0;}
-.course-content ul.topics li.section .left {width: 0;}
-.editing .course-content ul.topics li.section .left {width: 40px;}
+.course-content ul.topics li.section .content,
+.course-content ul.units li.section .content {margin-left: 0;}
+.course-content ul.topics li.section .left,
+.course-content ul.units li.section .left  {width: 0;}
+.editing .course-content ul.topics li.section .left,
+.editing .course-content ul.units li.section .left {width: 40px;}
 .section div.right {margin-top:2px;}
 .course-content ul.section li.activity {line-height:1.7em;}
 

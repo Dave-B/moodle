@@ -31,27 +31,35 @@
 
 .path-course-view .weeks .section,
 .path-course-view .topics .section,
+.path-course-view .units .section,
 .path-course-view .section td {border-color:#DDDDDD;}
 .path-course-view .weeks .content ,
 .path-course-view .topics .content,
+.path-course-view .units .content,
 .path-course-view .weeks .section,
-.path-course-view .topics .section {background: #FAFAFA;}
+.path-course-view .topics .section,
+.path-course-view .units .section {background: #FAFAFA;}
 .path-course-view .section td.side {background: #FFFFFF;}
 .path-course-view .weeks .current,
 .path-course-view .topics .current,
+.path-course-view .units .current,
 .path-course-view .current td.side {background: #FFD991;}
 .path-course-view .weeks .hidden,
 .path-course-view .topics .hidden,
+.path-course-view .units .hidden,
 .path-course-view .hidden td.side {background: #DDDDDD;}
 .path-course-view .section .weekdates {color: #777777;}
-.path-course-view .weeks .weekdates ,
-.path-course-view .topics .weekdates {color: #333333;}
+.path-course-view .weeks .weekdates,
+.path-course-view .topics .weekdates,
+.path-course-view .units .weekdates {color: #333333;}
 
-.weeks li.section ,
-.topics li.section {border-style:solid;border-width:1px;}
+.weeks li.section,
+.topics li.section,
+.units li.section {border-style:solid;border-width:1px;}
 
 .weeks .content,
-.topics .content {padding: 5px;}
+.topics .content,
+.units .content {padding: 5px;}
 
 .categoryboxcontent {border-color:#DDDDDD;}
 
