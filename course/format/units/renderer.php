@@ -60,25 +60,6 @@ class format_units_renderer extends format_section_renderer_base {
     }
 
     /**
-     * Generate the section title
-     *
-     * @param stdClass $section The course_section entry from DB
-     * @param stdClass $course The course entry from DB
-     * @return string HTML to output.
-     */
-    public function section_title($section, $course) {
-        $title = get_section_name($course, $section);
-        if (preg_match ('/^Unit ([0-9]+)$/', $title, $matches)) {
-            // Hack to start Section numbering at -1 (Welcome = -1, Induction = 0, Units start at 1)
-            $title = "Unit ". $matches[1] -= 1;
-        }
-        if ($section->section != 0 && $course->coursedisplay == COURSE_DISPLAY_MULTIPAGE) {
-            $title = html_writer::link(course_get_url($course, $section->section), $title);
-        }
-        return $title;
-    }
-
-    /**
      * Generate the edit controls of a section
      *
      * @param stdClass $course The course entry from DB

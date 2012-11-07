@@ -64,7 +64,7 @@ function callback_units_get_section_name($course, $section) {
     } else if ($section->section == 0) {
         return get_string('section0name', 'format_units');
     } else {
-        return get_string('unit', 'format_units').' '.$section->section;
+        return get_string('unit', 'format_units').' '.$section->section -= 1;
     }
 }
 
