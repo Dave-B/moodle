@@ -16,13 +16,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'filter_activitynames', language 'en', branch 'MOODLE_20_STABLE'
- *
- * @package   filter_activitynames
- * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    filter
+ * @subpackage activitynames
+ * @copyright  2010 David Mudrak <david@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['filtername'] = 'Activity names auto-linking';
-$string['settingresourcexhtml'] = 'Auto-link to (X)HTML resources';
-$string['settingresourcexhtml_desc'] = 'Check to allow auto-linking to (X)HTML file resources, which are skipped by default.';
+defined('MOODLE_INTERNAL') || die();
+
+if ($ADMIN->fulltree) {
+
+    $settings->add(new admin_setting_configcheckbox('filter_activitynames/fileresourcexhtml',
+            get_string('settingresourcexhtml', 'filter_activitynames'),
+            get_string('settingresourcexhtml_desc', 'filter_activitynames'),
+            0));
+}
