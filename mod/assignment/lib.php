@@ -2238,7 +2238,7 @@ class assignment_base {
         if (!($grading_info->items[0]->grades[$feedback->userid]->locked ||
             $grading_info->items[0]->grades[$feedback->userid]->overridden) ) {
 
-            if($this->course->registryworkflow && !$feedback->confirmgrade) {
+            if($this->course->registryworkflow && empty($feedback->confirmgrade)) {
                 // If using workflow and not confirmed, so store grade as provisional
                 $submission->provisionalgrade = $feedback->xgrade;
                 $submission->grade            = '-1';
@@ -2271,7 +2271,7 @@ class assignment_base {
             }
             $submission->submissioncomment = $feedback->submissioncomment_editor['text'];
             $submission->timemarked = time();
-            if(!$this->course->registryworkflow) {
+            if (!$this->course->registryworkflow) {
                 // If not registryworkflow, it won't be Registry setting the grade, so
                 // it's certainly ok to use the current user
                 $submission->teacher = $USER->id;
@@ -2288,6 +2288,23 @@ class assignment_base {
 
             // triger grade event
             $this->update_grade($submission);
+
+            if ($this->course->registryworkflow) {
+                // If registry workflow, hide unconfirmed grade
+                $gradeitemid = $DB->get_field('grade_items', 'id', array('iteminstance'=>$this->cm->instance, 'courseid'=>$this->course->id, 'itemmodule'=>'assignment'));
+
+                if (! $grade_grade = grade_grade::fetch(array('itemid'=>$gradeitemid,'userid'=>$feedback->userid))) {
+                    $grade_grade = new grade_grade();
+                    $grade_grade->userid = $this->user->id;
+                    $grade_grade->itemid = $grade_object->id;
+                }
+
+                if (empty($submission->timeconfirmed)) {
+                    $grade_grade->set_hidden(1);
+                } else {
+                    $grade_grade->set_hidden(0);
+                }
+            }
 
             add_to_log($this->course->id, 'assignment', 'update grades',
                        'submissions.php?id='.$this->cm->id.'&userid='.$feedback->userid.'&activeuser='.$USER->id, $feedback->userid, $this->cm->id);
@@ -3350,7 +3367,7 @@ class assignment_grading_form extends moodleform {
             $grademenu['-1'] = get_string('nograde');
 
             $gradingelement = $mform->addElement('select', 'xgrade', get_string('grade').':', $grademenu, $attributes);
-            if ($this->_customdata->submission->timeconfirmed) {
+            if (!empty($this->_customdata->submission->timeconfirmed)) {
                 $mform->setDefault('xgrade', $this->_customdata->submission->grade); //@fixme some bug when element called 'grade' makes it break
             } else {
                 $mform->setDefault('xgrade', $this->_customdata->submission->provisionalgrade);
