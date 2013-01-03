@@ -16,6 +16,7 @@ a {color: #fff; text-decoration: underline;}
 a:visited {color: #bbb; text-decoration: underline;}
 a:hover {color: #fff;}
 
+
 .navbar a {color: #fff; text-decoration: underline; font-weight: bold;}
 .navbar a:hover {color: #bbb;}
 
@@ -26,8 +27,8 @@ a:hover {color: #fff;}
 #page-content {background-color: #eee; color: #000;}
 #page-content-wrapper {margin: 1em;}
 
-.tree_item {color:#002D62;}
-.tree_item:hover {color:#476A8F;}
+.dock a, .tree_item {color:#002D62;}
+.dock a:hover, .tree_item:hover {color:#476A8F;}
 
  /**
   * Headings
