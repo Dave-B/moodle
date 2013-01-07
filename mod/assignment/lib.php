@@ -156,14 +156,6 @@ class assignment_base {
 
             // Add extension tally
             $this->assignment->extensiontally = $this->extensiongroup->get_extension_counts();
-
-            // Add any extension length and effective due date
-            // XXX: Needs review - does this handle individuals vs groups of users correctly?
-            if($this->assignment->timeextension = $this->extensiongroup->get_effective_date(null, true)) { // Yes that's an assignment, not a comparison.
-                $this->assignment->extensionlength = $this->extensiongroup->get_extension_length();
-                $this->assignment->extendedtimedue = $this->assignment->timedue + $this->assignment->timeextension;
-            }
-            //print_object($this->extensiongroup);
         }
 
         $this->strassignment = get_string('modulename', 'assignment');
@@ -298,12 +290,12 @@ class assignment_base {
 
                 if ($canRequest) {
                     // Extensions allowed, so check for extended due date
-                    if(isset($this->assignment->extendedtimedue)) {
+                    if(isset($this->assignment->extensiontally)) {
                         echo '<tr><td class="c0">'.get_string('newduedate','extension').':</td>';
 
                         if($this->assignment->extensiontally[1] > 0) {
                             // Found approved extension, display new due date
-                            echo '    <td class="c1">'.userdate($this->assignment->extendedtimedue);
+                            echo '    <td class="c1">'.userdate($this->extensiongroup->get_extension_time($USER->id, true));
                             // Describe total approved extensions
                             echo ' (<a href="/mod/extension/index.php?id='.$this->course->id.'&amp;a='.$this->cm->id.'&amp;status=1">';
 
@@ -314,8 +306,9 @@ class assignment_base {
                                 // Plural
                                 echo get_string('includesextensionstotaling', 'extension', $this->assignment->extensiontally[1]);
                             }
-                            echo $this->assignment->extensionlength.' ';
-                            if($this->assignment->extensionlength == 1) {
+                            $extlen = $this->extensiongroup->get_extension_length($USER->id);
+                            echo $extlen.' ';
+                            if($extlen == 1) {
                                 //singular
                                 echo get_string(substr($this->extensiongroup->activity->extensionunits, 0, -1), 'extension');
                             } else  {
@@ -327,9 +320,17 @@ class assignment_base {
 
                         } else {
                             // No approved extensions
-                            echo '    <td class="c1"><a href="/mod/extension/index.php?id='.$this->course->id.'&amp;a='.$this->cm->id.'">'.get_string('noextensionsapproved', 'extension').'</a></td></tr>';
+                            echo '    <td class="c1">'.get_string('noextensionsapproved', 'extension').'</a></td></tr>';
                         }
                     }
+                }
+
+                if (has_capability('mod/extension:viewanyextension', $context)) {
+                    // Link to extension list for users with extension admin rights
+                    echo '<tr><td class="c0">'.get_string('extensions','extension').':</td>';
+                    echo '    <td class="c1">';
+                    echo '<a href="/mod/extension/index.php?id='.$this->course->id.'&amp;a='.$this->cm->id.'">'.get_string('viewextensions', 'extension').'</a>';
+                    echo '.</td></tr>';
                 }
 
             }
@@ -1857,7 +1858,8 @@ class assignment_base {
                         }
 
                     ///Print provisional grade
-                        if($course->registryworkflow) {
+                        if ($course->registryworkflow) {
+                            $auser->extension = new stdClass();
                             if ($quickgrade && !$final_grade->grade && empty($auser->timeconfirmed)) {
                                 $attributes = array();
                                 $attributes['tabindex'] = $tabindex++;
@@ -1885,16 +1887,14 @@ class assignment_base {
                                 $studentmodifiedcontent = '&nbsp;';
                             }
                             // Note if any extensions have been granted
-                            if ($this->assignment->allowextension && $this->extensiongroup->extensions) {
-                                foreach($this->extensiongroup->extensions as $ext) {
-                                    if($ext->userid == $auser->id) {
-                                        // User has extensions on this assignment
-                                        if ($ext->status == 1 && ($ext->approvalconfirmed || !$course->registryworkflow)) {
-                                            // Extensions are approved and confirmed
-                                            $auser->extension->count += 1;
-                                            if (!isset($auser->extension->effectivedate)) {
-                                                $auser->extension->effectivedate = $this->assignment->timedue + $this->extensiongroup->get_extension_time($auser->id);
-                                            }
+                            if ($this->assignment->allowextension && isset($this->extensiongroup->extensions[$auser->id])) {
+                                // User has extensions on this assignment
+                                foreach($this->extensiongroup->extensions[$auser->id] as $ext) {
+                                    if ($ext->status == 1 && ($ext->approvalconfirmed || !$course->registryworkflow)) {
+                                        // Extensions are approved and confirmed
+                                        $auser->extension->count += 1;
+                                        if (!isset($auser->extension->effectivedate)) {
+                                            $auser->extension->effectivedate = $this->assignment->timedue + $this->extensiongroup->get_extension_time($auser->id);
                                         }
                                     }
                                 }
