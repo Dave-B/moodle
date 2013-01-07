@@ -866,7 +866,7 @@ class course_extension_collection {
                                                          get_string($assignment->extensiongroup->requeststatus[0], 'extension')."</a>";
                                         }
                                         // Effective due date for student including all extensions
-                                        $timestamp = $assignment->extensiongroup->get_extension_time($extension->userid);
+                                        $timestamp = $assignment->extensiongroup->get_extension_time($extension->userid, true);
                                         $effectivedate = userdate($timestamp, get_string('strftimedatetimeshort'));
 
                                         if ($extension->approvalconfirmed) {
