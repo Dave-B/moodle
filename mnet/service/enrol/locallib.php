@@ -584,7 +584,7 @@ class mnetservice_enrol_potential_users_selector extends user_selector_base {
 
         if (!$this->is_validating()) {
             $potentialmemberscount = $DB->count_records_sql($countfields . $sql, $params);
-            if ($potentialmemberscount > 100) {
+            if ($potentialmemberscount > 15000) { // Usually this is pegged at 100, but on our equipment 15000 gives a wait of ~3s, which is a good trade-off for MT's approach.
                 return $this->too_many_results($search, $potentialmemberscount);
             }
         }
