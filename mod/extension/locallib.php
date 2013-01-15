@@ -1093,7 +1093,8 @@ function extension_get_effective_date($courseid, $activitycmid, $displayunits, $
  * @param optional array $exclude Array of users to exclude from results
  */
 function get_extension_users_by_role($cm, $capability, $user, $exclude = NULL) {
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    global $COURSE;
+    $context = get_context_instance(CONTEXT_COURSE, $COURSE->id);
     // Get an array of potential users with given capability
     $potentialusers = get_users_by_capability($context, $capability, '', '', '', '', '', '', false, false);
 
