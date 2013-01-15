@@ -345,6 +345,7 @@ class extension {
                             $messagetext = get_string('studentextensiondecisionmessage', 'extension', $messagedata);
                             email_to_user($user, $from, $subject, $messagetext, '', '', false);
 
+/* Don't notify grader, per http://trac.conted.ox.ac.uk/course-qa/ticket/2826
                             // Notify grader (Tutor)
                             $exclude = $approvers + $confirmers + $userstoexclude;
                             //print_object($exclude);
@@ -356,6 +357,7 @@ class extension {
                                 $messagetext = get_string('graderextensiondecisionmessage', 'extension', $messagedata);
                                 email_to_user($grader, $from, $subject, $messagetext, '', '', false);
                             }
+*/
 
                             // Notify approver (Course Director)
                             //print_object($approvers);
