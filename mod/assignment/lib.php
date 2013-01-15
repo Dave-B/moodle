@@ -547,7 +547,6 @@ class assignment_base {
                                          .'</td><td>'.userdate($ext->timemodified)
                                          .'</td><td>'.$ext->privatenotes
                                          .'</td><td>'.$ext->studentmessage
-                                         .'</td><td>'
                                          ."</td></tr>\n";
                     }
                 }
@@ -561,7 +560,6 @@ class assignment_base {
                                          .'</td><td>'.userdate($ext->timemodified)
                                          .'</td><td>'.$ext->privatenotes
                                          .'</td><td>'.$ext->studentmessage
-                                         .'</td><td>'
                                          ."</td></tr>\n";
                     }
                 }
@@ -576,7 +574,6 @@ class assignment_base {
                                          .'</td><td>'.$timemod
                                          .'</td><td>'.$ext->privatenotes
                                          .'</td><td>'.$ext->studentmessage
-                                         .'</td><td>'
                                          ."</td></tr>\n";
                     }
                 }

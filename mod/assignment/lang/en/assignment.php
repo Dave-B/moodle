@@ -44,18 +44,19 @@ $string['assignmenthtmlsummary'] = '<!DOCTYPE html><html>
 <head><title>Assignment summary for {$a->assignment}, Student: $a->student</title>
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />
 <link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABIIgAASyQAAFEqBQBYNRUAYkQlAHpfSACfh3QAq5OAALOmmgDBrp8Av7GlAMe6rgDQx78A5dzUAOnm4QAAAAAAAAAAAAAAAAAAAAANwAAAAAAAAAeAAAAAAABGiqhkAAAABYo0Q6hQAABIxk3kbIQAAGqwAjAKpgAAjCru7nLIAACrCe7ucLoAAKsI7u5wugAAjABwBwDIAABsPemt08YAAEvDIAI8tAAABbqruqtQAAAARoqoZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" />
-<style type=\"text/css\">
-th {vertical-align: top; text-align: right}
+<style type="text/css">
+#extensions, #extensions th, #extensions td {border: 1px solid silver; border-spacing: 0;}
+#summary th {vertical-align: top; text-align: right}
 .groupend {border-bottom: 1px solid #eee;}
 </style>
 </head>
 <body><h1>Assignment summary</h1>
 <p>Summary generated on {$a->time}.</p>
 
-<table>
+<table id="summary">
 <tbody>
     <tr><th>Course:</th><td>{$a->course}</td></tr>
-    <tr class=\"groupend\"><th>Assignment:</th><td>{$a->assignment}</td></tr>
+    <tr class="groupend"><th>Assignment:</th><td>{$a->assignment}</td></tr>
 </tbody>
 <tbody>
     <tr><th>Student:</th><td>{$a->student}</td></tr>
@@ -64,12 +65,12 @@ th {vertical-align: top; text-align: right}
     <tr><th>Submission date:</th><td>{$a->submissiontimemodified}</td></tr>
     <tr><th>Reason for late submission:</th><td>{$a->reasonlate}</td></tr>
     <tr><th>Files:</th><td>{$a->files}</td></tr>
-    <tr class=\"groupend\"><th>Word count:</th><td>{$a->wordcount}</td></tr>
+    <tr class="groupend"><th>Word count:</th><td>{$a->wordcount}</td></tr>
 </tbody>
 <tbody>
     <tr><th>Date marked:</th><td>{$a->timemarked}</td></tr>
     <tr><th>Grade:</th><td>{$a->grade}</td></tr>
-    <tr class=\"groupend\"><th>Comment:</th><td>{$a->comment}</td></tr>
+    <tr class="groupend"><th>Comment:</th><td>{$a->comment}</td></tr>
 </tbody>
 </table>
 {$a->extensions}
