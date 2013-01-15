@@ -504,28 +504,26 @@ class assignment_base {
             $details->extensions = '';
         } else {
             $user->extensions = array();
-            foreach($this->extensiongroup->extensions as $ext) {
-                if($ext->userid == $user->id) {
-                    // User has extensions on this assignment
-                    if ($ext->approvalconfirmed || !$this->course->registryworkflow) {
-                        // Confirmed extensions
-                         if ($ext->status == 0) {
-                            // Pending extensions
-                            $user->extensions['pending'][] = $ext;
-                        } else if ($ext->status == 1) {
-                            // Approved extensions
-                            $user->extensions['approved'][] = $ext;
-                            if (!isset($user->extensions['effectivedate'])) {
-                                $user->extensions['effectivedate'] = $this->assignment->timedue + $this->extensiongroup->get_extension_time($user->id);
-                            }
-                        } else if ($ext->status == 2) {
-                            // Rejected extensions
-                            $user->extensions['rejected'][] = $ext;
-                        }
-                    } else {
-                        // Unconfirmed extensions count as pending
+            foreach($this->extensiongroup->extensions[$user->id] as $ext) {
+                // User has extensions on this assignment
+                if ($ext->approvalconfirmed || !$this->course->registryworkflow) {
+                    // Confirmed extensions
+                     if ($ext->status == 0) {
+                        // Pending extensions
                         $user->extensions['pending'][] = $ext;
+                    } else if ($ext->status == 1) {
+                        // Approved extensions
+                        $user->extensions['approved'][] = $ext;
+                        if (!isset($user->extensions['effectivedate'])) {
+                            $user->extensions['effectivedate'] = $this->assignment->timedue + $this->extensiongroup->get_extension_time($user->id);
+                        }
+                    } else if ($ext->status == 2) {
+                        // Rejected extensions
+                        $user->extensions['rejected'][] = $ext;
                     }
+                } else {
+                    // Unconfirmed extensions count as pending
+                    $user->extensions['pending'][] = $ext;
                 }
             }
 
