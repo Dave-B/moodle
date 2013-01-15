@@ -1898,7 +1898,7 @@ class assignment_base {
                                         }
                                     }
                                 }
-                                if (isset($auser->extension)) {
+                                if (isset($auser->extension->count)) {
                                     $studentmodifiedcontent .= '<div>('.$auser->extension->count.' ';
                                     if($auser->extension->count > 1) {
                                         $studentmodifiedcontent .= get_string('modulenameplural', 'extension');
