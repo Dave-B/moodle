@@ -44,6 +44,7 @@ add_to_log($course->id, 'extension', 'view all', 'index.php?id='.$course->id, ''
 $PAGE->set_url('/mod/extension/index.php', array('id' => $id));
 $PAGE->set_title(format_string($course->fullname));
 $PAGE->set_heading(format_string($course->fullname));
+$PAGE->set_pagelayout('standard');
 
 if ($u || $a || isset($status) || isset($excludeStatus)) {
     $PAGE->navbar->add(get_string('extensions', 'extension'), new moodle_url('/mod/extension/index.php', array('id' => $course->id)));

@@ -60,6 +60,7 @@ $PAGE->set_url('/mod/extension/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($cm->extension->name));
 $PAGE->set_heading(format_string($COURSE->fullname));
 $PAGE->set_context($context);
+$PAGE->set_pagelayout('standard');
 
 $PAGE->navbar->add(get_string('extensions', 'extension'), new moodle_url('/mod/extension/index.php', array('id' => $cm->course)));
 $PAGE->navbar->add(format_string($cm->extension->name), new moodle_url('/mod/extension/index.php', array('id' => $cm->course, 'a' => $cm->extension->activitycmid)));
