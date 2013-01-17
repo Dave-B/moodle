@@ -182,3 +182,9 @@ div.blocksubtitle {font-size: .85em;}
 .small {font-size: .8em;}
 
 .activity.label .dimmed_text { opacity: 1; filter: alpha(opacity='100');}
+
+.mform fieldset .existingprivatenotes div {
+  padding-bottom: .5em;
+  border-bottom: 1px solid #eee;
+  margin-bottom: .5em;
+}

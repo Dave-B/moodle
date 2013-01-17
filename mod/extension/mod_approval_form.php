@@ -64,7 +64,7 @@ class mod_extension_approval_form extends moodleform {
             // Show existing notes
             $notes = '<div class="fitem"><div class="fitemtitle">'.
                       get_string('privatenotesexisting', 'extension').
-                      '</div><div class="felement ftextarea">'.$cm->extension->privatenotes.'</div></div>';
+                      '</div><div class="felement ftextarea existingprivatenotes">'.$cm->extension->privatenotes.'</div></div>';
             $mform->addElement('html', $notes);
             
             // Include existing notes
