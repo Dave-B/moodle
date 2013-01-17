@@ -269,14 +269,7 @@ function extension_get_extra_capabilities() {
  * @return bool true if the scale is used by the given extension instance
  */
 function extension_scale_used($extensionid, $scaleid) {
-    global $DB;
-
-    /** @example */
-    if ($scaleid and $DB->record_exists('extension', array('id' => $extensionid, 'grade' => -$scaleid))) {
-        return true;
-    } else {
-        return false;
-    }
+    return false;
 }
 
 /**
@@ -288,14 +281,7 @@ function extension_scale_used($extensionid, $scaleid) {
  * @return boolean true if the scale is used by any extension instance
  */
 function extension_scale_used_anywhere($scaleid) {
-    global $DB;
-
-    /** @example */
-    if ($scaleid and $DB->record_exists('extension', array('grade' => -$scaleid))) {
-        return true;
-    } else {
-        return false;
-    }
+    return false;
 }
 
 /**
