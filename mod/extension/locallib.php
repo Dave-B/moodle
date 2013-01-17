@@ -219,7 +219,7 @@ class extension {
 
                 $fromform->timemodified = time();
 
-                if(!isset($fromform->existingprivatenotes)) {
+                if (!isset($fromform->existingprivatenotes)) {
                     $fromform->existingprivatenotes = '';
                 }
                 // TODO: Better recording of each note - user & datetime. Incorporate into log?
@@ -232,7 +232,7 @@ class extension {
 
                 $userstoexclude = get_admins(); // We'll exclude admins from notification emails.
 
-                if(!$COURSE->registryworkflow) {
+                if (!$COURSE->registryworkflow) {
                     // No workflow
                     $fromform->timeconfirmed = time();
                 } else {
