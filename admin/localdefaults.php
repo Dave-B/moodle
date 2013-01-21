@@ -37,6 +37,11 @@
                         // Set a block default weight (Site administration ► Plugins ► Blocks ► Manage blocks)
                         $updates[$key][1] = $DB->set_field('block_instances', 'defaultweight', $a_setting[2], array('blockname'=>$a_setting[1]));
                     }
+                } else if ($a_setting[0] == 'filter') {
+                    if (is_numeric($a_setting[2])) {
+                        // En/dis-able a filter (Site administration ► Plugins ► Filters ► Manage filters)
+                        $updates[$key][1] = $DB->set_field('filter_active', 'active', $a_setting[2], array('filter'=>'filter/'.$a_setting[1]));
+                    }
                 } else {
                     // Set a plugin setting
                     $updates[$key][1] = set_config($a_setting[1], $a_setting[2], $a_setting[0]);
@@ -121,6 +126,16 @@ YUI().use('node', function (Y) {
                     $currentvalue = $block->defaultweight;
                 } else {
                     $currentvalue = '[Block does not exist]';
+                    $class=' class="attention"';
+                }
+                if ($currentvalue != $a_setting[2]) {
+                    $class=' class="attention"';
+                }
+            } else if ($a_setting[0] == 'filter') {
+                if ($filter = $DB->get_record('filter_active', array('filter'=>'filter/'.$a_setting[1]))) {
+                    $currentvalue = $filter->active;
+                } else {
+                    $currentvalue = '[Filter does not exist]';
                     $class=' class="attention"';
                 }
                 if ($currentvalue != $a_setting[2]) {
