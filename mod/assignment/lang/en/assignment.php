@@ -268,6 +268,7 @@ $string['modulename'] = 'Assignment';
 $string['modulename_help'] = 'Assignments enable the teacher to specify a task either on or offline which can then be graded.';
 //$string['modulenameplural'] = 'Assignments (2.2)';
 $string['modulenameplural'] = 'Assignments';
+$string['mustconfirm'] = 'You must confirm this before proceeding';
 $string['newsubmissions'] = 'Assignments submitted';
 $string['noassignments'] = 'There are no assignments yet';
 $string['noattempts'] = 'No attempts have been made on this assignment';

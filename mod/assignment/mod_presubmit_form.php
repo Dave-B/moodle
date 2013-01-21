@@ -22,6 +22,8 @@ class mod_presubmit_form extends moodleform {
                                                    array('filter'=>false)
                                         ));
             $mform->addElement('checkbox', 'confirmuploadtext', get_string('readconfirm','assignment'));
+            $mform->registerRule('mustconfirm','regex', '/^1$/');
+            $mform->addRule('confirmuploadtext', get_string('mustconfirm', 'assignment'), 'mustconfirm', null, 'client', false, true);
             $mform->addRule('confirmuploadtext', null, 'required', null, 'client');
         }
 
@@ -30,10 +32,9 @@ class mod_presubmit_form extends moodleform {
             $mform->addElement('header', 'typedesc', get_string('wordcount', 'assignment'));
             $mform->addElement('text', 'wordcount', get_string('wordcount', 'assignment'), array('size'=>'10'));
 
-            $mform->addRule('wordcount', null, 'required', null, 'client');
-
             $mform->registerRule('positivenum','regex', '/^[\d]+$/');
             $mform->addRule('wordcount', get_string('positivenumber', 'assignment'), 'positivenum', null, 'client');
+            $mform->addRule('wordcount', null, 'required', null, 'client');
         }
 
         if ($COURSE->registryworkflow) {
