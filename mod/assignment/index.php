@@ -152,9 +152,11 @@ echo "<br />";
 
 echo html_writer::table($table);
 
-// print button offering zip file function to teacher
-echo '<div align="center">';
-echo html_writer::link(new moodle_url('index.php', array('id' => $course->id, 'download' => 'zip')), get_string('downloadall', 'assignment'));
-echo '</div>';
+if (has_capability('mod/assignment:grade', $PAGE->context)) {
+    // print button offering zip file function to teacher
+    echo '<div align="center">';
+    echo html_writer::link(new moodle_url('index.php', array('id' => $course->id, 'download' => 'zip')), get_string('downloadall', 'assignment'));
+    echo '</div>';
+}
 
 echo $OUTPUT->footer();
