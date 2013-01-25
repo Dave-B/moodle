@@ -504,26 +504,28 @@ class assignment_base {
             $details->extensions = '';
         } else {
             $user->extensions = array();
-            foreach($this->extensiongroup->extensions[$user->id] as $ext) {
-                // User has extensions on this assignment
-                if ($ext->approvalconfirmed || !$this->course->registryworkflow) {
-                    // Confirmed extensions
-                     if ($ext->status == 0) {
-                        // Pending extensions
-                        $user->extensions['pending'][] = $ext;
-                    } else if ($ext->status == 1) {
-                        // Approved extensions
-                        $user->extensions['approved'][] = $ext;
-                        if (!isset($user->extensions['effectivedate'])) {
-                            $user->extensions['effectivedate'] = $this->assignment->timedue + $this->extensiongroup->get_extension_time($user->id);
+            if (isset($this->extensiongroup->extensions[$user->id])) {
+                foreach($this->extensiongroup->extensions[$user->id] as $ext) {
+                    // User has extensions on this assignment
+                    if ($ext->approvalconfirmed || !$this->course->registryworkflow) {
+                        // Confirmed extensions
+                         if ($ext->status == 0) {
+                            // Pending extensions
+                            $user->extensions['pending'][] = $ext;
+                        } else if ($ext->status == 1) {
+                            // Approved extensions
+                            $user->extensions['approved'][] = $ext;
+                            if (!isset($user->extensions['effectivedate'])) {
+                                $user->extensions['effectivedate'] = $this->assignment->timedue + $this->extensiongroup->get_extension_time($user->id);
+                            }
+                        } else if ($ext->status == 2) {
+                            // Rejected extensions
+                            $user->extensions['rejected'][] = $ext;
                         }
-                    } else if ($ext->status == 2) {
-                        // Rejected extensions
-                        $user->extensions['rejected'][] = $ext;
+                    } else {
+                        // Unconfirmed extensions count as pending
+                        $user->extensions['pending'][] = $ext;
                     }
-                } else {
-                    // Unconfirmed extensions count as pending
-                    $user->extensions['pending'][] = $ext;
                 }
             }
 
@@ -4868,8 +4870,11 @@ function assignment_pack_files($filesforzipping) {
 
 /**
  * creates a list of all assignment submission files, suitable for zipping with assignment_pack_files.
+ * @param array $assignment - assignment to list files for.
+ * @param array $selectedusers - optional array of user ids whose files to get.
+ * @return array
  */
-function list_submission_files($assignment, $selectedusers) {
+function list_submission_files($assignment, $selectedusers = null) {
     global $CFG, $DB;
     require_once($CFG->libdir.'/filelib.php');
 
