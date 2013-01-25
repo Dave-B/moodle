@@ -263,6 +263,7 @@ function report_log_print_mnet_selector_form($hostid, $course, $selecteduser=0, 
 
     // Prepare the list of action options.
     $actions = array(
+        'login' => get_string('login'),
         'view' => get_string('view'),
         'add' => get_string('add'),
         'update' => get_string('update'),
@@ -515,6 +516,7 @@ function report_log_print_selector_form($course, $selecteduser=0, $selecteddate=
 
     // Prepare the list of action options.
     $actions = array(
+        'login' => get_string('login'),
         'view' => get_string('view'),
         'add' => get_string('add'),
         'update' => get_string('update'),
