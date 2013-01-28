@@ -15,8 +15,8 @@ require_course_login($course);
 
 // Download all assignment files
 if ($download == "zip") {
-    assignment_download_course_submissions($course, $id);
     add_to_log($course->id, "assignment", "download all in zip", "index.php?id=$course->id", "");
+    assignment_download_course_submissions($course, $id);
 }
 
 $PAGE->set_pagelayout('incourse');
