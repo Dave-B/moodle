@@ -14,7 +14,7 @@ if (!$course = $DB->get_record('course', array('id'=>$id))) {
 require_course_login($course);
 
 // Download all assignment files
-if ($download == "zip") {
+if ($download == "zip" && has_capability('mod/assignment:grade', $PAGE->context)) {
     add_to_log($course->id, "assignment", "download all in zip", "index.php?id=$course->id", "");
     assignment_download_course_submissions($course, $id);
 }
