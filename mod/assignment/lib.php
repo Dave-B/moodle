@@ -1845,7 +1845,7 @@ class assignment_base {
 
                         $picture = $OUTPUT->user_picture($auser);
 
-                        if (empty($auser->submissionid) || $auser->provisionalgrade == -1) {
+                        if (empty($auser->submissionid)) {
                             //no submission yet
                             $auser->provisionalgrade = -1;
                             $auser->grade = -1;
@@ -2235,44 +2235,67 @@ class assignment_base {
         if (!($grading_info->items[0]->grades[$feedback->userid]->locked ||
             $grading_info->items[0]->grades[$feedback->userid]->overridden) ) {
 
-            if($this->course->registryworkflow && empty($feedback->confirmgrade)) {
-                // If using workflow and not confirmed, so store grade as provisional
-                $submission->provisionalgrade = $feedback->xgrade;
-                $submission->grade            = '-1';
-                // Set $submission->mailed to 1, so student doesn't get emailed.
-                // This can be changed to 0 on confirmation.
-                $submission->mailed = 1;
+            $mailinfo = get_user_preferences('assignment_mailinfo', 0);
 
-                // Notify Registry that a provisional mark has been set
-                $this->assignment_notify_provisional_grade($submission);
-                $submission->onlyprovisionalgrade = true;
-                // In registryworkflow, prov grade is set by tutor, so store their ID
-                $submission->teacher = $USER->id;
-            } else {
-                // No workflow/confirmed grade, so store grade
-                $submission->grade = $feedback->xgrade;
-                $mailinfo = get_user_preferences('assignment_mailinfo', 0);
-                if ($mailinfo || $this->course->registryworkflow) {
-                     $submission->mailed = 0;       // Make sure mail goes out (again, even)
+            if($this->course->registryworkflow) {
+                if (empty($feedback->confirmgrade)) {
+                // Not confirmed, so store grade as provisional
+                    $submission->provisionalgrade = $feedback->xgrade;
+                    $submission->grade            = '-1';
+
+                    // Set $submission->mailed to 1, so student doesn't get emailed.
+                    // This can be changed to 0 on confirmation.
+                    $submission->mailed = 1;
+
+                    // Notify Registry that a provisional mark has been set
+                    $this->assignment_notify_provisional_grade($submission);
+                    $submission->onlyprovisionalgrade = true;
+
+                    // Set grading teacher to whoever is grading
+                    $submission->teacher = $USER->id;
                 } else {
-                    $submission->mailed = 1;       // treat as already mailed
-                }
-                $submission->onlyprovisionalgrade = false;
-                if($this->course->registryworkflow) {
+                // Confirmed
+                    $submission->grade = $feedback->xgrade;
+                    // When confirming, we don't set or change provisionalgrade.
+                    // If Grade is set at the same time the absence of provisionalgrade is a hint that the confirmer also graded.
+
+                    if ($mailinfo) {
+                        $submission->mailed = 0;       // Make sure mail goes out (again, even)
+                    } else {
+                        $submission->mailed = 1;       // treat as already mailed
+                    }
+
+                    $submission->onlyprovisionalgrade = false;
+
+                    // Usually $submission->teacher will be set with the grader's id,
+                    // which we don't want to overwrite with the Registry user's id.
+                    if ($submission->teacher == 0) {
+                        // No previous grader, use the current userid.
+                        $submission->teacher = $USER->id;
+                    }
+
                     $submission->timeconfirmed = time();
                     if(!empty($this->assignment->emailteachers)) {
                         // Notify marker that the mark has been approved
                         $this->assignment_notify_provisional_grade_approved($submission);
                     }
                 }
-            }
-            $submission->submissioncomment = $feedback->submissioncomment_editor['text'];
-            $submission->timemarked = time();
-            if (!$this->course->registryworkflow) {
+            } else {
+                // No workflow/confirmed grade, so store grade
+                $submission->grade = $feedback->xgrade;
+
+                if ($mailinfo) {
+                    $submission->mailed = 0;       // Make sure mail goes out (again, even)
+                } else {
+                    $submission->mailed = 1;       // treat as already mailed
+                }
+                $submission->onlyprovisionalgrade = false;
                 // If not registryworkflow, it won't be Registry setting the grade, so
                 // it's certainly ok to use the current user
                 $submission->teacher = $USER->id;
             }
+            $submission->submissioncomment = $feedback->submissioncomment_editor['text'];
+            $submission->timemarked = time();
 
             unset($submission->data1);  // Don't need to update this.
             unset($submission->data2);  // Don't need to update this.
