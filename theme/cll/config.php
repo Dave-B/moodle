@@ -35,6 +35,7 @@ $THEME->sheets = array(
     'cll',
 );
 $THEME->enable_dock = true;
+$THEME->custompix = true;
 
 $THEME->layouts = array(
     // Most backwards compatible layout without the blocks - this is the layout used by default
