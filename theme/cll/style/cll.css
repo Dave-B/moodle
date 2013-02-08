@@ -1,0 +1,68 @@
+html, body {
+  padding: 0;
+  font-family: Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 10pt;
+  background-color: #3e567a;
+}
+
+#page {
+  color: #fff;
+}
+
+a {
+  color: #f49320;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #ef6922;
+  text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: Tahoma, Verdana, Geneva, sans-serif;
+}
+
+.pagelayout-frontpage #page-header {
+  margin: 0;
+}
+
+#page-header {
+  background: #3e567a url([[pix:theme|students]]) no-repeat 101% 100%;
+}
+
+.header {
+  background: none;
+}
+
+.logininfo {
+  background-color: rgba(62,86,122,.5);
+}
+
+#custommenu {
+  float: right;
+  margin-top: -3em;
+  background-color: rgba(62,86,122,.5);
+}
+
+#custommenu .yui3-menu,
+#page .navbar {
+  color: #fff;
+  background: none;
+  border: none;
+}
+
+#page-content {
+  color: #505050;
+  background-color: #fff;
+}
+
+#page-header a,
+#page-footer a {
+  color: #fff;
+}
+
+#page-footer,
+#page-footer .sitelink {
+  padding: 1em 0;
+}
