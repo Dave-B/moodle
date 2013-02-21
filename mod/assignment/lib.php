@@ -4939,7 +4939,7 @@ function list_submission_files($assignment, $selectedusers = null) {
             $a_assignid = $submission->assignment; //get name of this assignment for use in the file names.
             $a_user = $DB->get_record("user", array("id"=>$a_userid),'id,username,firstname,lastname'); //get user firstname/lastname
 
-            $dirnamestudent = clean_filename($a_user->lastname.'_'.$a_user->firstname.'_'.$a_userid);
+            $dirnamestudent = clean_filename($a_user->lastname.'_'.$a_user->firstname.'_'.$a_userid).'/';
 
             // Get submission files
             $submissionfiles = $fs->get_area_files($assignment->context->id, 'mod_assignment', 'submission', $submission->id, "timemodified", false);
@@ -4948,14 +4948,13 @@ function list_submission_files($assignment, $selectedusers = null) {
             $files = array_merge($submissionfiles, $responsefiles);
             foreach ($files as $file) {
                 // Get files new name
-                $fileforzipname = $dirnamecourse . $dirnameassignment . $dirnamestudent .
-                                  clean_param($file->get_filepath(),PARAM_PATH) . clean_filename($file->get_filename());
+                $fileforzipname = $dirnamecourse . $dirnameassignment . $dirnamestudent . clean_filename($file->get_filename());
                 //save file name to array for zipping.
                 $filesforzipping[$fileforzipname] = $file;
             }
 
             // Include Assignment summary HTML file
-            $summaryzipname = $dirnamecourse . $dirnameassignment . $dirnamestudent . '/submission_details.html';
+            $summaryzipname = $dirnamecourse . $dirnameassignment . $dirnamestudent . 'submission_details.html';
             $filesforzipping[$summaryzipname] = array($assignment->get_html_summary($a_user, $submission));
         }
     } // end of foreach loop
