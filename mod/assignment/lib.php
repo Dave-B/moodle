@@ -4929,6 +4929,12 @@ function list_submission_files($assignment, $selectedusers = null) {
             $selecteduser = true;
         }
 
+        // If assignment is open and submission is not finalized and marking button enabled then don't add it to zip.
+        $submissionstatus = $assignment->is_finalized($submission);
+        if ($assignment->isopen() && empty($submissionstatus) && !empty($assignment->assignment->var4)) {
+            continue;
+        }
+
         if ($selecteduser && (groups_is_member($groupid,$a_userid)or !$groupmode or !$groupid)) {
             $a_assignid = $submission->assignment; //get name of this assignment for use in the file names.
             $a_user = $DB->get_record("user", array("id"=>$a_userid),'id,username,firstname,lastname'); //get user firstname/lastname
@@ -4941,6 +4947,7 @@ function list_submission_files($assignment, $selectedusers = null) {
             $responsefiles = $fs->get_area_files($assignment->context->id, 'mod_assignment', 'response', $submission->id, "timemodified", false);
             $files = array_merge($submissionfiles, $responsefiles);
             foreach ($files as $file) {
+                // Get files new name
                 $fileforzipname = $dirnamecourse . $dirnameassignment . $dirnamestudent .
                                   clean_param($file->get_filepath(),PARAM_PATH) . clean_filename($file->get_filename());
                 //save file name to array for zipping.
@@ -4957,13 +4964,12 @@ function list_submission_files($assignment, $selectedusers = null) {
 }
 
 /**
- * creates a zip of all Upload and Upload single assignment submissions and sends a zip to the browser
+ * Creates a zip of all the course's Upload and Upload single assignment submissions, and sends it to the browser.
  */
 function assignment_download_course_submissions($course, $id) {
     global $CFG, $DB;
 
     // Name of new zip file.
-    $filename = str_replace(' ', '_', clean_filename($course->shortname.date('_Y-m-d\THi').".zip"));
     $filename = str_replace(' ', '_', clean_filename($course->shortname.date('_Y-m-d\THi').".zip"));
 
     // Get all of the course's assignment details
