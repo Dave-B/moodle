@@ -4919,7 +4919,7 @@ function list_submission_files($assignment, $selectedusers = null) {
 
     // Path elements inside zip
     $dirnamecourse = clean_filename($assignment->course->shortname).'/';
-    $dirnameassignment = clean_filename($assignment->assignment->name).'/';
+    $dirnameassignment = clean_filename( substr( str_replace(' ', '', $assignment->assignment->name), 0, 50 ) ).'/';
 
     foreach ($submissions as $submission) {
         $a_userid = $submission->userid; //get userid
@@ -4948,7 +4948,12 @@ function list_submission_files($assignment, $selectedusers = null) {
             $files = array_merge($submissionfiles, $responsefiles);
             foreach ($files as $file) {
                 // Get files new name
-                $fileforzipname = $dirnamecourse . $dirnameassignment . $dirnamestudent . clean_filename($file->get_filename());
+                $fileext = strstr($file->get_filename(), '.');
+                $fileoriginal = str_replace($fileext, '', $file->get_filename());
+                // Limit file name length
+                $thisfile = clean_filename( substr( str_replace(' ', '', $fileoriginal), 0, 50 ) ).$fileext;
+
+                $fileforzipname = $dirnamecourse . $dirnameassignment . $dirnamestudent . $thisfile;
                 //save file name to array for zipping.
                 $filesforzipping[$fileforzipname] = $file;
             }
