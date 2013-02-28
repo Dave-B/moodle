@@ -2010,7 +2010,7 @@ class assignment_base {
                         $button = $OUTPUT->action_link($popup_url, $buttontext);
                         if (!empty($auser->timeconfirmed)) {
                             $button .= ' <span class="small">('.get_string('gradeconfirmed', 'assignment').')</span>';
-                        } else if ($auser->provisionalgrade != -1) {
+                        } else if (isset($auser->provisionalgrade) && $auser->provisionalgrade != -1) {
                             $button .= ' <span class="small">('.get_string('awaitingconfirmation', 'assignment').')</span>';
                         }
 
