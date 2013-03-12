@@ -59,49 +59,6 @@ class format_topicstall_renderer extends format_section_renderer_base {
         return get_string('topicoutline');
     }
 
-    /**
-     * Generate the edit controls of a section
-     *
-     * @param stdClass $course The course entry from DB
-     * @param stdClass $section The course_section entry from DB
-     * @param bool $onsectionpage true if being printed on a section page
-     * @return array of links with edit controls
-     */
-    protected function section_edit_controls($course, $section, $onsectionpage = false) {
-        global $PAGE;
-
-        if (!$PAGE->user_is_editing()) {
-            return array();
-        }
-
-        if (!has_capability('moodle/course:update', context_course::instance($course->id))) {
-            return array();
-        }
-
-        if ($onsectionpage) {
-            $url = course_get_url($course, $section->section);
-        } else {
-            $url = course_get_url($course);
-        }
-        $url->param('sesskey', sesskey());
-
-        $controls = array();
-        if ($course->marker == $section->section) {  // Show the "light globe" on/off.
-            $url->param('marker', 0);
-            $controls[] = html_writer::link($url,
-                                html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marked'),
-                                    'class' => 'icon ', 'alt' => get_string('markedthistopic'))),
-                                array('title' => get_string('markedthistopic'), 'class' => 'editing_highlight'));
-        } else {
-            $url->param('marker', $section->section);
-            $controls[] = html_writer::link($url,
-                            html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marker'),
-                                'class' => 'icon', 'alt' => get_string('markthistopic'))),
-                            array('title' => get_string('markthistopic'), 'class' => 'editing_highlight'));
-        }
-
-        return array_merge($controls, parent::section_edit_controls($course, $section, $onsectionpage));
-    }
 
     /**
      * Generate the display of the header part of a section before
@@ -138,10 +95,14 @@ class format_topicstall_renderer extends format_section_renderer_base {
         $o.= html_writer::tag('div', $rightcontent, array('class' => 'right side'));
         $o.= html_writer::start_tag('div', array('class' => 'content'));
 
-        if (!$onsectionpage) {
+        // When not on a section page, we display the section titles except the general section if null
+        $hasnamenotsecpg = (!$onsectionpage && ($section->section != 0 || !is_null($section->name)));
+
+        // When on a section page, we only display the general section title, if title is not the default one
+        $hasnamesecpg = ($onsectionpage && ($section->section == 0 && !is_null($section->name)));
+
+        if ($hasnamenotsecpg || $hasnamesecpg) {
             $o.= $this->output->heading($this->section_title($section, $course), 2, 'sectionname');
-        } else {
-            $o.= $this->output->heading($this->section_title($section, $course), 1, 'sectionname');
         }
 
         $o.= html_writer::start_tag('div', array('class' => 'summary'));
@@ -161,7 +122,8 @@ class format_topicstall_renderer extends format_section_renderer_base {
         }
         $o.= html_writer::end_tag('div');
 
-        $o .= $this->section_availability_message($section);
+        $o .= $this->section_availability_message($section,
+                has_capability('moodle/course:viewhiddensections', $context));
 
         return $o;
     }
