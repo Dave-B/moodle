@@ -274,7 +274,7 @@ class extension {
 
                 // Update Extension record
                 if(!$DB->update_record('extension', $fromform)) {
-                    error(get_string('inserterror' , 'extension'));
+                    print_error(get_string('inserterror' , 'extension'));
                 } else if ($fromform->status > 0) {
                     // Success
                     // Extension accepted or rejected - so send notifications
@@ -468,7 +468,7 @@ class extension_group {
             // TODO: Get module name from course module
             $modulename = 'assignment';
             if (! $this->activity = $DB->get_record($modulename, 'id', $activitycmid)) {
-                error('activity ID was incorrect');
+                print_error('activity ID was incorrect');
             }
         }
 
@@ -640,7 +640,7 @@ class course_extension_collection {
             $cm = get_coursemodule_from_id('assignment', $this->activitycmid);
 
             if (! $assignment = $DB->get_record("assignment", array("id" => $cm->instance))) {
-                error("assignment ID was incorrect");
+                print_error("assignment ID was incorrect");
             }
 
             require_once ("$CFG->dirroot/mod/assignment/lib.php");
@@ -669,7 +669,7 @@ class course_extension_collection {
                 $error .= $this->activitycmid ? get_string('invalidactivityq', 'extension') : '';
                 $error .= $this->userid ? get_string('invaliduserq', 'extension') : '';
                 $error .= $this->status !== NULL ? get_string('invalidstatusq', 'extension') : '';
-                error($error);
+                print_error($error);
             }
             //print_object($cms);
 
