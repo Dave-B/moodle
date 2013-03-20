@@ -4929,7 +4929,7 @@ function list_submission_files($assignment, $selectedusers = null) {
             $selecteduser = true;
         }
 
-        // If assignment is advand upload, open, and submission is not finalized and marking button enabled then don't add it to zip.
+        // If assignment is advanced upload, open, and submission is not finalized and marking button enabled then don't add it to zip.
         if ($assignment->assignment->assignmenttype == 'upload') {
             $submissionstatus = $assignment->is_finalized($submission);
             if ($assignment->isopen() && empty($submissionstatus) && !empty($assignment->assignment->var4)) {
