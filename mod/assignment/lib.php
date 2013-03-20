@@ -4929,10 +4929,12 @@ function list_submission_files($assignment, $selectedusers = null) {
             $selecteduser = true;
         }
 
-        // If assignment is open and submission is not finalized and marking button enabled then don't add it to zip.
-        $submissionstatus = $assignment->is_finalized($submission);
-        if ($assignment->isopen() && empty($submissionstatus) && !empty($assignment->assignment->var4)) {
-            continue;
+        // If assignment is advand upload, open, and submission is not finalized and marking button enabled then don't add it to zip.
+        if ($assignment->assignment->assignmenttype == 'upload') {
+            $submissionstatus = $assignment->is_finalized($submission);
+            if ($assignment->isopen() && empty($submissionstatus) && !empty($assignment->assignment->var4)) {
+                continue;
+            }
         }
 
         if ($selecteduser && (groups_is_member($groupid,$a_userid)or !$groupmode or !$groupid)) {
