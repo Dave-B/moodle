@@ -378,8 +378,10 @@ class assignment_base {
             $userid = $submission->userid;
         }
 
-        if($this->course->registryworkflow && empty($submission->timeconfirmed)) { /// No confirmed grade
-            return;
+        if($this->type != 'uploadsingle') {
+            if($this->course->registryworkflow && empty($submission->timeconfirmed)) { /// No confirmed grade
+                return;
+            }
         }
 
         // Check the user can submit
