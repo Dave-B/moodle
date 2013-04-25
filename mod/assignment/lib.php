@@ -377,6 +377,11 @@ class assignment_base {
         } else {
             $userid = $submission->userid;
         }
+
+        if($this->course->registryworkflow && empty($submission->timeconfirmed)) { /// No confirmed grade
+            return;
+        }
+
         // Check the user can submit
         $canviewfeedback = ($userid == $USER->id && has_capability('mod/assignment:submit', $this->context, $USER->id, false));
         // If not then check if the user still has the view cap and has a previous submission
