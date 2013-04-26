@@ -218,6 +218,7 @@ $string['failedupdatefeedback'] = 'Failed to update submission feedback for user
 $string['feedback'] = 'Feedback';
 $string['feedbackfromteacher'] = 'Feedback from {$a}';
 $string['feedbackupdated'] = 'Submissions feedback updated for {$a} people';
+$string['filenameshortened'] = 'Due to limitations on file name length in MS Windows, the file names in this zip file are shortened, and may not exactly match the names of the same files downloaded individually. The file contents are the same as when downloaded individually.';
 $string['finalize'] = 'Prevent submission updates';
 $string['finalizeerror'] = 'An error occurred and that submission could not be finalised';
 $string['futureaassignment'] = 'This assignment is not yet available.';
