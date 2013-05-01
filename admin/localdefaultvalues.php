@@ -19,6 +19,24 @@
     $courseidsdata->param2 = '512';
     $courseidsdata->param3 = '0';
 
+// Piwik web stats loader: http://webstats.conted.ox.ac.uk/
+$webstats = <<<EOT
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://webstats.conted.ox.ac.uk//";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 1]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
+    g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+
+</script>
+<noscript><p><img src="http://webstats.conted.ox.ac.uk/piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>
+EOT;
+
 // Array of settings
     $settings = array(
         // Site settings. Each setting has a has, and is an array of: 
@@ -29,6 +47,7 @@
       /// Core
         'header:core'=>array('header', 'Core settings'),
 
+        'core:additionalhtmlfooter'=>array('core', 'additionalhtmlfooter', $webstats),
         'core:allowcoursethemes'=>array('core', 'allowcoursethemes', '1'),
         'core:bloglevel'=>array('core', 'bloglevel', '1'),
         'core:cachetext'=>array('core', 'cachetext', '1800'),
