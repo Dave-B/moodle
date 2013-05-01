@@ -37,6 +37,13 @@ $webstats = <<<EOT
 <noscript><p><img src="http://webstats.conted.ox.ac.uk/piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>
 EOT;
 
+$onlinesupportmenu = <<<EOT
+Online support|http://onlinesupport.conted.ox.ac.uk/
+-Courseware Guide|http://onlinesupport.conted.ox.ac.uk/CoursewareGuide/
+-Learning Support|http://onlinesupport.conted.ox.ac.uk/nml/
+-Technical support|http://onlinesupport.conted.ox.ac.uk/TechnicalSupport/
+EOT;
+
 // Array of settings
     $settings = array(
         // Site settings. Each setting has a has, and is an array of: 
@@ -51,10 +58,7 @@ EOT;
         'core:allowcoursethemes'=>array('core', 'allowcoursethemes', '1'),
         'core:bloglevel'=>array('core', 'bloglevel', '1'),
         'core:cachetext'=>array('core', 'cachetext', '1800'),
-        'core:custommenuitems'=>array('core', 'custommenuitems', 'Online support|http://onlinesupport.conted.ox.ac.uk/
--Courseware Guide|http://onlinesupport.conted.ox.ac.uk/CoursewareGuide/
--Learning Support|http://onlinesupport.conted.ox.ac.uk/nml/
--Technical support|http://onlinesupport.conted.ox.ac.uk/TechnicalSupport/'),
+        'core:custommenuitems'=>array('core', 'custommenuitems', $onlinesupportmenu),
         'core:debug'=>array('core', 'debug', '15'),
         'core:enableajax'=>array('core', 'enableajax', '1'),
         'core:enableavailability'=>array('core', 'enableavailability', '1'),
