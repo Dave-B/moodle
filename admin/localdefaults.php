@@ -149,11 +149,11 @@ YUI().use('node', function (Y) {
             }
             $tablerows .= '<td><input type="checkbox" name="'.$key.'" value="1" class="setting"/></td><td>'.$a_setting[0].'</td>';
             $tablerows .= '<td>'.$a_setting[1].'</td>';
-            $tablerows .= '<td>'.$currentvalue.'</td><td'.$class.'>';
+            $tablerows .= '<td>'.htmlentities($currentvalue).'</td><td'.$class.'>';
             if ($a_setting[0] == 'profilefield') {
                 $tablerows .= '[Create profile field]';
             } else {
-                $tablerows .= $a_setting[2];
+                $tablerows .= htmlentities($a_setting[2]);
             }
             $tablerows .= "</td>\n";
         }
