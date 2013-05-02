@@ -19,8 +19,20 @@
     $courseidsdata->param2 = '512';
     $courseidsdata->param3 = '0';
 
-// Piwik web stats loader: http://webstats.conted.ox.ac.uk/
-$webstats = <<<EOT
+
+// Piwik web stats JS loader: http://webstats.conted.ox.ac.uk/
+$webstats = '';
+$shortcourseurls = '~^http://(hilary)|(trinity)|(michaelmas)\d{4,}.conted.ox.ac.uk$~';
+if ($CFG->wwwroot == 'http://study.conted.ox.ac.uk') {
+    $piwik_id = 2;
+} else if (preg_match($shortcourseurls, $CFG->wwwroot)) {
+    $piwik_id = 3;
+} else {
+    $piwik_id = null;
+}
+
+if ($piwik_id) {
+    $webstats = <<<EOT
 <script type="text/javascript">
   var _paq = _paq || [];
   _paq.push(['trackPageView']);
@@ -28,7 +40,11 @@ $webstats = <<<EOT
   (function() {
     var u=(("https:" == document.location.protocol) ? "https" : "http") + "://webstats.conted.ox.ac.uk//";
     _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', 1]);
+    _paq.push(['setSiteId', 
+EOT;
+    $webstats .= $piwik_id;
+    $webstats .= <<<EOT
+]);
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
     g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
   })();
@@ -36,6 +52,7 @@ $webstats = <<<EOT
 </script>
 <noscript><p><img src="http://webstats.conted.ox.ac.uk/piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>
 EOT;
+}
 
 $onlinesupportmenu = <<<EOT
 Online support|http://onlinesupport.conted.ox.ac.uk/
