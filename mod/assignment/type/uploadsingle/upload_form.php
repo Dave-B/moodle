@@ -32,6 +32,11 @@ class mod_assignment_uploadsingle_form extends moodleform {
         $mform->addElement('filepicker', 'assignment_file', get_string('uploadafile'), null, $instance['options']);
         $mform->addRule('assignment_file', get_string('uploadnofilefound'), 'required', null, 'client');
 
+        if (is_array($instance['options']['accepted_types'])) {
+            $typesstring = get_string('acceptedfiles', 'assignment').': '.implode(', ', $instance['options']['accepted_types']).'.';
+            $mform->addElement('html', '<div class="fitem"><div class="fitemtitle"> </div><div class="felement small">'.$typesstring.'</div></div>');
+        }
+
         // hidden params
         $mform->addElement('hidden', 'contextid', $instance['contextid']);
         $mform->setType('contextid', PARAM_INT);

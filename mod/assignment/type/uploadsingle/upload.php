@@ -59,7 +59,14 @@ $title = strip_tags($fullname.': '.get_string('modulename', 'assignment').': '.f
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
 
-$options = array('subdirs'=>0, 'maxbytes'=>get_max_upload_file_size($CFG->maxbytes, $course->maxbytes, $assignment->maxbytes), 'maxfiles'=>1, 'accepted_types'=>'*', 'return_types'=>FILE_INTERNAL);
+$types = array('.txt', '.rtf', '.pdf', // Open text formats
+               '.doc', '.xls', '.ppt', '.docx', '.xlsx', '.pptx', '.mdb', '.accdb', // MS Office formats
+               '.odt', '.ods', '.odp', '.odg', '.odb', // OpenDocument formats
+               '.png', '.jpg', '.gif', // Images
+               '.zip' // Archive
+              );
+
+$options = array('subdirs'=>0, 'maxbytes'=>get_max_upload_file_size($CFG->maxbytes, $course->maxbytes, $assignment->maxbytes), 'maxfiles'=>1, 'accepted_types'=>$types, 'return_types'=>FILE_INTERNAL);
 
     $mform = new mod_assignment_uploadsingle_form(null, array('contextid'=>$contextid, 'userid'=>$formdata->userid, 'options'=>$options));
 
