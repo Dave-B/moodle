@@ -321,6 +321,7 @@ $string['quickgrade'] = 'Allow quick grading';
 $string['quickgrade_help'] = 'If enabled, multiple assignments can be graded on one page. Add grades and comments then click the "Save all my feedback" button to save all changes for that page.';
 $string['readconfirm'] = 'I confirm that I have read, understood, and complied with the statement.';
 $string['reasonlate'] = 'Reason for late submission';
+$string['requirefileext'] = 'Please ensure that your filename includes the file-type extension (e.g. ".doc", ".docx"), otherwise your tutor may not be able to open it.';
 $string['requiregrading'] = 'Require grading';
 $string['responsefiles'] = 'Response files';
 $string['reviewed'] = 'Reviewed';

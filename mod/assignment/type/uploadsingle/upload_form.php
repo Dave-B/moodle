@@ -36,6 +36,7 @@ class mod_assignment_uploadsingle_form extends moodleform {
             $typesstring = get_string('acceptedfiles', 'assignment').': '.implode(', ', $instance['options']['accepted_types']).'.';
             $mform->addElement('html', '<div class="fitem"><div class="fitemtitle"> </div><div class="felement small">'.$typesstring.'</div></div>');
         }
+        $mform->addElement('html', '<div class="fitem"><div class="fitemtitle"> </div><div class="felement small">'.get_string('requirefileext', 'assignment').'</div></div>');
 
         // hidden params
         $mform->addElement('hidden', 'contextid', $instance['contextid']);
