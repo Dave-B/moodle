@@ -248,7 +248,8 @@ class extension {
                     $confirmers = get_extension_users_by_role($this->cm, 'mod/extension:confirmextension', $this->user, $userstoexclude);
                     foreach ($confirmers as $confirmer) {
                         if(!isset($firstconfirmer)) {
-                            // TODO: Find a better way of choosing from more than one user in the relevant role
+                            // TODO: #3010 Find a better way of choosing from more than one user in the relevant role
+                            //   * Check old submission record for last staff modification?
                             $firstconfirmer = $confirmer;
                             $messagedata->confirmername = $firstconfirmer->firstname.' '.$firstconfirmer->lastname;
                         }
@@ -259,7 +260,8 @@ class extension {
                     $approvers = get_extension_users_by_role($this->cm, 'mod/extension:approveextension', $this->user, $userstoexclude+$confirmers);
                     foreach ($approvers as $approver) {
                         if(!isset($firstapprover)) {
-                            // TODO: Find a better way of choosing from more than one user in the relevant role
+                            // TODO: #3010 Find a better way of choosing from more than one user in the relevant role
+                            //   * Check old submission record for last staff modification?
                             $firstapprover = $approver;
                             $messagedata->approvername = $firstapprover->firstname.' '.$firstapprover->lastname;
                         }
