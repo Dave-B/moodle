@@ -324,7 +324,7 @@ class extension {
                             $subject = get_string('extensionawaitingconfirmation', 'extension');
 
                             foreach ($confirmers as $confirmer) {
-                                $messagedata->approvername = $firstapprover->firstname.' '.$firstapprover->lastname; // TODO: Approver is current user, right?
+                                $messagedata->approvername = $USER->firstname.' '.$USER->lastname;
                                 $messagedata->confirmername = $confirmer->firstname.' '.$confirmer->lastname;
 
                                 $messagetext = get_string('extensionawaitingconfirmationmessage', 'extension', $messagedata);
