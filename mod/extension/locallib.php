@@ -200,7 +200,7 @@ class extension {
      *
      */
     function view_approval_form($context) {
-        global $CFG, $DB, $SITE, $COURSE, $extension_requeststatus;
+        global $CFG, $DB, $SITE, $COURSE, $USER, $extension_requeststatus;
 
         // Check permissions for approval form
         if (has_capability('mod/extension:approveextension', $context)
