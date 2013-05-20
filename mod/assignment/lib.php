@@ -2323,16 +2323,6 @@ class assignment_base {
     }
 
     /**
-     * @param string $filearea
-     * @param array $args
-     * @return bool
-     */
-    function send_file($filearea, $args) {
-        debugging('plugin does not implement file sending', DEBUG_DEVELOPER);
-        return false;
-    }
-
-    /**
      * Alerts Registry by email of new or changed assignments that need grading
      *
      * First checks whether the registry workflow is set for this course.
