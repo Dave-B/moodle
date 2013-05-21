@@ -132,7 +132,7 @@ YUI().use('node', function (Y) {
                     $class=' class="attention"';
                 }
             } else if ($a_setting[0] == 'filter') {
-                if ($filter = $DB->get_record('filter_active', array('filter'=>'filter/'.$a_setting[1]))) {
+                if ($filter = $DB->get_record('filter_active', array('filter'=>$a_setting[1]))) {
                     $currentvalue = $filter->active;
                 } else {
                     $currentvalue = '[Filter does not exist]';
