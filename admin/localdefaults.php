@@ -40,7 +40,7 @@
                 } else if ($a_setting[0] == 'filter') {
                     if (is_numeric($a_setting[2])) {
                         // En/dis-able a filter (Site administration ► Plugins ► Filters ► Manage filters)
-                        $updates[$key][1] = $DB->set_field('filter_active', 'active', $a_setting[2], array('filter'=>'filter/'.$a_setting[1]));
+                        $updates[$key][1] = $DB->set_field('filter_active', 'active', $a_setting[2], array('filter'=>$a_setting[1]));
                     }
                 } else {
                     // Set a plugin setting
