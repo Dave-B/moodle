@@ -96,13 +96,13 @@ EOT;
         'blockweight:settings'=>array('blockweight', 'settings', '9'), // Default Settings block weight
         'blockweight:navigation'=>array('blockweight', 'navigation', '10'), // Default Nav block weight
 
-      /// Filters "1" is enabled, "-9999" is disabled
+      /// Filters "1" is enabled by default, "-1" is off but available, "-9999" is disabled
         'header:filters'=>array('header', 'Enabled filters'),
 
         'filter:activitynames'=>array('filter', 'activitynames', '1'),
         'filter:emoticon'=>array('filter', 'emoticon', '1'),
         'filter:glossary'=>array('filter', 'glossary', '1'),
-        'filter:mediaplugin'=>array('filter', 'mediaplugin', '-9999'),
+        'filter:mediaplugin'=>array('filter', 'mediaplugin', '-1'),
         'filter:oxref'=>array('filter', 'oxref', '1'),
 
 
