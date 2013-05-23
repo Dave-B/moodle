@@ -18,7 +18,7 @@
 /**
  * @package    filter
  * @subpackage activitynames
- * @copyright  2010 David Mudrak <david@moodle.com>
+ * @copyright  2013 David Balch <david.balch@conted.ox.ac.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
