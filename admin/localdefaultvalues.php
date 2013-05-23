@@ -128,6 +128,12 @@ EOT;
         'resource:framesize'=>array('resource', 'framesize', '108'),
         'resource:requiremodintro'=>array('resource', 'requiremodintro', '0'),
 
+        'editor_tinymce:customtoolbar'=>array('editor_tinymce', 'customtoolbar', 'fontselect,fontsizeselect,formatselect,|,undo,redo,|,search,replace,|,fullscreen
+
+bold,italic,underline,strikethrough,sub,sup,|,justifyleft,justifycenter,justifyright,|,cleanup,removeformat,pastetext,pasteword,|,forecolor,backcolor,|,ltr,rtl
+
+bullist,numlist,outdent,indent,|,hr,|,link,unlink,|,image,nonbreaking,charmap,table,|,code'),
+
         'url:framesize'=>array('url', 'framesize', '108'),
         'url:requiremodintro'=>array('url', 'requiremodintro', '0'),
     );
