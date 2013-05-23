@@ -102,6 +102,7 @@ EOT;
         'filter:activitynames'=>array('filter', 'activitynames', '1'),
         'filter:emoticon'=>array('filter', 'emoticon', '1'),
         'filter:glossary'=>array('filter', 'glossary', '1'),
+        'filter:mathjax'=>array('filter', 'mathjax', '-1'),
         'filter:mediaplugin'=>array('filter', 'mediaplugin', '-1'),
         'filter:oxref'=>array('filter', 'oxref', '1'),
 
