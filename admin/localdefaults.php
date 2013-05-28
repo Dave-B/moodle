@@ -183,6 +183,7 @@ function find_profile_field($name) {
 function add_profile_category($name, $sortorder=1) {
     global $DB;
 
+    $data = new stdClass();
     $data->name = $name;
     $data->sortorder = $sortorder;
 
