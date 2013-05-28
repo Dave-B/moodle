@@ -62,7 +62,7 @@
     <div class="localsettings">
 
     <script type="text/javascript">
-YUI().use('node', function (Y) {
+window.onload = function() {
     var settingcheckboxes = Y.all('input.setting');
     Y.one("#selectall").on("click", function(e) {
         if (e.target.get('checked')) {
@@ -71,7 +71,7 @@ YUI().use('node', function (Y) {
             settingcheckboxes.set('checked', '');
         }
     });
-});
+}
     </script>
 
     <h1>Local defaults</h1>
