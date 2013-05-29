@@ -59,15 +59,17 @@ class filter_activitynames extends moodle_text_filter {
                 $sortedactivities = fullclone($modinfo->cms);
                 usort($sortedactivities, 'filter_activitynames_comparemodulenamesbylength');
 
+                $fileresourcexhtml = get_config('filter_activitynames', 'fileresourcexhtml') ? true : false;
+
                 foreach ($sortedactivities as $cm) {
+                    if (!$fileresourcexhtml and $cm->modname == 'resource' and strpos($cm->icon, "html") === 2) {
+                        $linkactivity = false;
+                    } else {
+                        $linkactivity = true;
+                    }
+
                     //Exclude labels, hidden activities and activities for group members only
-                    if ($cm->visible and empty($cm->groupmembersonly) and $cm->has_view()) {
-
-                        if ($cm->modname == "resource" && ( strpos($cm->icon, "f/html") === 0 ) && !get_config('filter_activitynames', 'fileresourcexhtml')) {
-                            // Skip (X)HTML resource files, if filter settings say so.
-                            continue;
-                        }
-
+                    if ($cm->visible and empty($cm->groupmembersonly) and $cm->has_view() and $linkactivity) {
                         $title = s(trim(strip_tags($cm->name)));
                         $currentname = trim($cm->name);
                         $entitisedname  = s($currentname);
