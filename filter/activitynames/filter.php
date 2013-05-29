@@ -63,13 +63,11 @@ class filter_activitynames extends moodle_text_filter {
 
                 foreach ($sortedactivities as $cm) {
                     if (!$fileresourcexhtml and $cm->modname == 'resource' and strpos($cm->icon, "html") === 2) {
-                        $linkactivity = false;
-                    } else {
-                        $linkactivity = true;
+                        continue;
                     }
 
                     //Exclude labels, hidden activities and activities for group members only
-                    if ($cm->visible and empty($cm->groupmembersonly) and $cm->has_view() and $linkactivity) {
+                    if ($cm->visible and empty($cm->groupmembersonly) and $cm->has_view()) {
                         $title = s(trim(strip_tags($cm->name)));
                         $currentname = trim($cm->name);
                         $entitisedname  = s($currentname);
