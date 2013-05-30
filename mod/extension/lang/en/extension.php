@@ -185,6 +185,7 @@ $string['newduedate'] = 'New due date';
 $string['newextensionrequest'] = 'New extension request';
 $string['noextensionsapproved'] = 'No extensions approved.';
 $string['noextensionsfound'] = 'No extensions found.';
+$string['nonewextensions'] = 'No new extensions allowed.';
 $string['notenabled'] = 'Not enabled.';
 $string['nopermission'] = 'You do not have permission to view this extension.';
 $string['noresults'] = 'No results';

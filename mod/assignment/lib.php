@@ -273,13 +273,18 @@ class assignment_base {
                 $canRequest = has_capability('mod/extension:request', $context);
 
                 if ($canRequest && $this->isopen()) {
-                    // If extensions are allowed, provide a link to the add extension page
+                    // If user has request capability and assignment open
                     echo '<tr><td class="c0">'.get_string('extensions','extension').':</td>';
                     echo '    <td class="c1">';
-                    echo '<a href="/mod/extension/add.php?course='.$this->course->id;
-                    echo '&amp;type=assignment';
-                    echo '&amp;id='.$this->cm->id.'">';
-                    echo get_string('requestextension', 'extension').'</a>';
+                    if ($this->assignment->timedue > time()) {
+                        // If original due date not passed
+                        echo '<a href="/mod/extension/add.php?course='.$this->course->id;
+                        echo '&amp;type=assignment';
+                        echo '&amp;id='.$this->cm->id.'">';
+                        echo get_string('requestextension', 'extension').'</a>';
+                    } else {
+                        echo get_string('nonewextensions', 'extension');
+                    }
                     if(isset($this->assignment->extensiontally)) {
                         // Link to list of any extensions
                         echo ' ('.$this->extensiongroup->get_extension_summary();
