@@ -2271,11 +2271,7 @@ class assignment_base {
                     // When confirming, we don't set or change provisionalgrade.
                     // If Grade is set at the same time the absence of provisionalgrade is a hint that the confirmer also graded.
 
-                    if ($mailinfo) {
-                        $submission->mailed = 0;       // Make sure mail goes out (again, even)
-                    } else {
-                        $submission->mailed = 1;       // treat as already mailed
-                    }
+                    $submission->mailed = 0;       // Make sure mail goes out (again, even)
 
                     $submission->onlyprovisionalgrade = false;
 
