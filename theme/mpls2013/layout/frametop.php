@@ -38,8 +38,8 @@ echo $OUTPUT->doctype() ?>
 <?php if ($hasheading || $hasnavbar) { ?>
     <div id="page-header">
         <?php if ($hasheading) { ?>
-        <img src="<?php echo $OUTPUT->pix_url('ox', 'theme');?>" width="141" height="46" alt="University of Oxford" class="logo"/>
-        <img src="<?php echo $OUTPUT->pix_url('mpls', 'theme');?>" width="152" height="46" alt="Mathematical, Physical &amp; Life Sciences Division" class="logo"/>
+        <a href="http://www.ox.ac.uk/"><img src="<?php echo $OUTPUT->pix_url('ox', 'theme');?>" width="141" height="46" alt="University of Oxford" class="logo"/></a>
+        <a href="http://www.mpls.ox.ac.uk/"><img src="<?php echo $OUTPUT->pix_url('mpls', 'theme');?>" width="152" height="46" alt="Mathematical, Physical &amp; Life Sciences Division" class="logo"/></a>
         <h1 class="headermain"><a href="/"><?php echo $PAGE->heading ?></a></h1>
         <div class="headermenu"><?php
             if ($haslogininfo) {
