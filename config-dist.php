@@ -558,6 +558,11 @@ $CFG->emaillog = true;
 //=========================================================================
 // 11. BEHAT SUPPORT
 //=========================================================================
+// Behat needs a separate data directory and unique database prefix:
+//
+// $CFG->behat_prefix = 'bht_';
+// $CFG->behat_dataroot = '/home/example/bht_moodledata';
+//
 // Behat uses http://localhost:8000 as default URL to run
 // the acceptance tests, you can override this value.
 // Example:
@@ -578,6 +583,32 @@ $CFG->emaillog = true;
 //                   'verbose' => false
 //               )
 //           )
+//       ),
+//       'Mac-Firefox' => array(
+//           'extensions' => array(
+//               'Behat\MinkExtension\Extension' => array(
+//                   'selenium2' => array(
+//                       'browser' => 'firefox',
+//                       'capabilities' => array(
+//                           'platform' => 'OS X 10.6',
+//                           'version' => 20
+//                       )
+//                   )
+//               )
+//           )
+//       ),
+//       'Mac-Safari' => array(
+//           'extensions' => array(
+//               'Behat\MinkExtension\Extension' => array(
+//                   'selenium2' => array(
+//                       'browser' => 'safari',
+//                       'capabilities' => array(
+//                           'platform' => 'OS X 10.8',
+//                           'version' => 6
+//                       )
+//                   )
+//               )
+//           )
 //       )
 //   );
 //
@@ -590,6 +621,13 @@ $CFG->emaillog = true;
 // value will be the regular $CFG->wwwroot value.
 // Example:
 //   $CFG->behat_switchcompletely = true;
+//
+// You can force the browser session (not user's sessions) to restart after N seconds. This could
+// be useful if you are using a cloud-based service with time restrictions in the browser side.
+// Setting this value the browser session that Behat is using will be restarted. Set the time in
+// seconds. Is not recommended to use this setting if you don't explicitly need it.
+// Example:
+//   $CFG->behat_restart_browser_after = 7200;     // Restarts the browser session after 2 hours
 //
 
 //=========================================================================

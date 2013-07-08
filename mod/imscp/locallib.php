@@ -62,14 +62,42 @@ function imscp_htmllize_item($item, $imscp, $cm) {
     global $CFG;
 
     if ($item['href']) {
-        $context = context_module::instance($cm->id);
-        $urlbase = "$CFG->wwwroot/pluginfile.php";
-        $path = '/'.$context->id.'/mod_imscp/content/'.$imscp->revision.'/'.$item['href'];
-        $url = file_encode_url($urlbase, $path, false);
+        if (preg_match('|^https?://|', $item['href'])) {
+            $url = $item['href'];
+        } else {
+            $context = context_module::instance($cm->id);
+            $urlbase = "$CFG->wwwroot/pluginfile.php";
+            $path = '/'.$context->id.'/mod_imscp/content/'.$imscp->revision.'/'.$item['href'];
+            $url = file_encode_url($urlbase, $path, false);
+        }
         $result = "<li><a href=\"$url\">".$item['title'].'</a>';
     } else {
         $result = '<li>'.$item['title'];
     }
+
+/*
+<<<<<<< HEAD
+    if ($item['href']) {
+=======
+    if (preg_match('|^https?://|', $item['href'])) {
+        $url = $item['href'];
+    } else {
+>>>>>>> MOODLE_25_STABLE
+        $context = context_module::instance($cm->id);
+        $urlbase = "$CFG->wwwroot/pluginfile.php";
+        $path = '/'.$context->id.'/mod_imscp/content/'.$imscp->revision.'/'.$item['href'];
+        $url = file_encode_url($urlbase, $path, false);
+<<<<<<< HEAD
+        $result = "<li><a href=\"$url\">".$item['title'].'</a>';
+    } else {
+        $result = '<li>'.$item['title'];
+    }
+=======
+    }
+    $result = "<li><a href=\"$url\">".$item['title'].'</a>';
+>>>>>>> MOODLE_25_STABLE
+*/
+
     if ($item['subitems']) {
         $result .= '<ul>';
         foreach ($item['subitems'] as $subitem) {
