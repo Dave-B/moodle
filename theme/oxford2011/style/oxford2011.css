@@ -8,7 +8,6 @@ body.lang-vi {font-family:Arial, Verdana, Helvetica, sans-serif !important;}
 a, .fakelink {text-decoration:none;color:#002D62;}
 a:hover, .fakelink:hover {text-decoration:underline;color:#476A8F;}
 a.autolink {background-color: #f9f9f9;color:#002D62;}
-.specificfeedback a.autolink {background-color: #FFF8D9;}
 
 #page-header a {text-decoration:none;color:#FFF;font-weight:bold;}
 #page-header a:hover {text-decoration:underline;color:#FFF;}
@@ -189,3 +188,8 @@ div.blocksubtitle {font-size: .85em;}
   border-bottom: 1px solid #eee;
   margin-bottom: .5em;
 }
+
+/* Quiz */
+.specificfeedback a.autolink {background-color: #FFF6CC;}
+.answer div.filter-mathjax {display: inline;}
+.questioncorrectnessicon {padding: 0 .5em;}
