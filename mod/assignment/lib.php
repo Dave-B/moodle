@@ -281,7 +281,7 @@ class assignment_base {
                         echo '<a href="/mod/extension/add.php?course='.$this->course->id;
                         echo '&amp;type=assignment';
                         echo '&amp;id='.$this->cm->id.'">';
-                        echo get_string('requestextension', 'extension').'</a>';
+                        echo get_string('requestextension', 'extension').'</a>.';
                     } else {
                         echo get_string('nonewextensions', 'extension');
                     }
@@ -290,7 +290,7 @@ class assignment_base {
                         echo ' ('.$this->extensiongroup->get_extension_summary();
                         echo ')';
                     }
-                    echo '.</td></tr>';
+                    echo '</td></tr>';
                 }
 
                 if ($canRequest) {
