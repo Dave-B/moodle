@@ -4619,9 +4619,8 @@ function assignment_print_overview($courses, &$htmlarray) {
     }
     $rs->close();
 
-
     // get all user submissions, indexed by assignment id
-    $mysubmissions = $DB->get_records_sql("SELECT assignment, timemarked, teacher, grade
+    $mysubmissions = $DB->get_records_sql("SELECT assignment, timemarked, teacher, grade, provisionalgrade
                                       FROM {assignment_submissions}
                                       WHERE userid = ? AND
                                       assignment $sqlassignmentids", array_merge(array($USER->id), $assignmentidparams));
@@ -4663,7 +4662,7 @@ function assignment_print_overview($courses, &$htmlarray) {
 
                 $submission = $mysubmissions[$assignment->id];
 
-                if ($submission->teacher == 0 && $submission->timemarked == 0 && !$final_grade->grade) {
+                if (($submission->teacher == 0 && $submission->timemarked == 0 && !$final_grade->grade) || $submission->provisionalgrade != $submission->grade) {
                     $str .= $strsubmitted . ', ' . $strnotgradedyet;
                 } else if ($submission->grade <= 0 && !$final_grade->grade) {
                     $str .= $strsubmitted . ', ' . $strreviewed;
