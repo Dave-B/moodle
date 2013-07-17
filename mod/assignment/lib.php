@@ -1698,11 +1698,11 @@ class assignment_base {
         if ($course->registryworkflow) {
             $massfields[] = 'provisionalgrade';
         }
-        $tablecolumns = array_merge(array('picture', 'fullname'), $extrafields, $massfields,
-                array('grade', 'submissioncomment', 'timemodified', 'timemarked', 'status', 'finalgrade'));
+        $tablecolumns = array_merge(array('', 'fullname', 'status', 'timemodified'), $extrafields, $massfields,
+                array('grade', 'submissioncomment', 'timemarked', 'finalgrade', 'picture'));
         if($this->assignment->requirewordcount) {
-            // Index to insert after student timemodified
-            $wordcountindex = array_search('timemodified', $tablecolumns) + 1;
+            // Index to insert after comment
+            $wordcountindex = array_search('submissioncomment', $tablecolumns) + 1;
             array_splice($tablecolumns, $wordcountindex, 0, 'wordcount');
         }
         if ($uses_outcomes) {
@@ -1719,16 +1719,20 @@ class assignment_base {
             $massfieldnames[] = get_string('provisionalgrade', 'grades');
         }
         $tableheaders = array_merge(
-                array('', get_string('fullnameuser')),
+                array(
+                    '',
+                    get_string('fullnameuser'),
+                    get_string('status'),
+                    get_string('lastmodified').' ('.get_string('submission', 'assignment').')',
+                ),
                 $extrafieldnames,
                 $massfieldnames,
                 array(
                     get_string('grade'),
                     get_string('comment', 'assignment'),
-                    get_string('lastmodified').' ('.get_string('submission', 'assignment').')',
                     get_string('lastmodified').' ('.get_string('grade').')',
-                    get_string('status'),
                     get_string('finalgrade', 'grades'),
+                    '',
                 ));
         if($this->assignment->requirewordcount) {
             array_splice($tableheaders, $wordcountindex, 0, get_string('wordcount', 'assignment'));
@@ -2057,16 +2061,14 @@ class assignment_base {
                             $extradata[] = $auser->{$field};
                         }
                         if($course->registryworkflow) {
-                            $row = array_merge(array($picture, $userlink), $extradata, array($provisionalgrade),
-                                    array($grade, $comment, $studentmodified, $teachermodified,
-                                    $status, $finalgrade));
+                            $row = array_merge(array($userlink, $status, $studentmodified), $extradata, array($provisionalgrade),
+                                    array($grade, $comment, $teachermodified, $finalgrade, $picture));
                         } else {
-                            $row = array_merge(array($picture, $userlink), $extradata,
-                                    array($grade, $comment, $studentmodified, $teachermodified,
-                                    $status, $finalgrade));
+                            $row = array_merge(array($userlink, $status, $studentmodified), $extradata,
+                                    array($grade, $comment, $teachermodified, $finalgrade, $picture));
                         }
                         if($this->assignment->requirewordcount) {
-                            array_splice($row, $wordcountindex, 0, $wordcount);
+                            array_splice($row, $wordcountindex - 1, 0, $wordcount);
                         }
                         if ($uses_outcomes) {
                             $row[] = $outcomes;
@@ -2077,7 +2079,7 @@ class assignment_base {
                             // Checkbox for selective Zip & Download of specified submissions.
                             $rowactions .= ' <input name="selecteddownloads['.$auser->id.']" type="checkbox" value="'.$auser->id.'" title="'.get_string('selectsubmissionforzip', 'assignment').'"/>';
                         }
-                        $row[] = $rowactions;
+                        $row = array_merge(array($rowactions), $row);
 
                         $table->add_data($row, $rowclass);
                     }
