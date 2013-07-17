@@ -817,7 +817,7 @@ class core_media_player_qt extends core_media_player {
         <param name="pluginspage" value="http://www.apple.com/quicktime/download/" />
         <param name="src" value="$url" />
         <param name="controller" value="true" />
-        <param name="loop" value="true" />
+        <param name="loop" value="false" />
         <param name="autoplay" value="false" />
         <param name="autostart" value="false" />
         <param name="scale" value="aspect" />
@@ -826,7 +826,7 @@ class core_media_player_qt extends core_media_player {
             <param name="src" value="$url" />
             <param name="pluginurl" value="http://www.apple.com/quicktime/download/" />
             <param name="controller" value="true" />
-            <param name="loop" value="true" />
+            <param name="loop" value="false" />
             <param name="autoplay" value="false" />
             <param name="autostart" value="false" />
             <param name="scale" value="aspect" />
