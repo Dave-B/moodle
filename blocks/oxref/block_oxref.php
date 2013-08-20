@@ -43,7 +43,7 @@ class block_oxref extends block_base {
             . '<p>Please be aware that for the Oxford Reference resources to work '
             . '<b>you must access them through the link below</b>. '
             . 'Bookmarking the links or navigating directly to them will not work.</p>'
-            . '<p><b><a href="/oxref.php">Oxford Reference Online</a></b></p>'
+            . '<p><b><a href="/oxref.php" target="_blank">Oxford Reference Online</a></b></p>'
             . '</div>';
 
         //no footer, thanks
