@@ -60,7 +60,7 @@ class format_units extends format_base {
         } else if ($section->section == 0) {
             return get_string('section0name', 'format_units');
         } else {
-            return get_string('sectionname', 'format_units').' '.$section->section;
+            return get_string('sectionname', 'format_units').' '.($section->section -1);
         }
     }
 
