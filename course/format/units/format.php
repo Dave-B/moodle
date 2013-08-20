@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Topics course format.  Display the whole course as "topics" made of modules.
+ * Units course format.  Display the whole course as "units" made of modules.
  *
- * @package format_topics
+ * @package format_units
  * @copyright 2006 The Open University
  * @author N.D.Freear@open.ac.uk, and others.
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,10 +29,10 @@ require_once($CFG->libdir.'/filelib.php');
 require_once($CFG->libdir.'/completionlib.php');
 
 // Horrible backwards compatible parameter aliasing..
-if ($topic = optional_param('topic', 0, PARAM_INT)) {
+if ($unit = optional_param('unit', 0, PARAM_INT)) {
     $url = $PAGE->url;
-    $url->param('section', $topic);
-    debugging('Outdated topic param passed to course/view.php', DEBUG_DEVELOPER);
+    $url->param('section', $unit);
+    debugging('Outdated unit param passed to course/view.php', DEBUG_DEVELOPER);
     redirect($url);
 }
 // End backwards-compatible aliasing..
@@ -48,7 +48,7 @@ if (($marker >=0) && has_capability('moodle/course:setcurrentsection', $context)
 $course = course_get_format($course)->get_course();
 course_create_sections_if_missing($course, range(0, $course->numsections));
 
-$renderer = $PAGE->get_renderer('format_topics');
+$renderer = $PAGE->get_renderer('format_units');
 
 if (!empty($displaysection)) {
     $renderer->print_single_section_page($course, null, null, null, null, $displaysection);
@@ -57,4 +57,4 @@ if (!empty($displaysection)) {
 }
 
 // Include course format js module
-$PAGE->requires->js('/course/format/topics/format.js');
+$PAGE->requires->js('/course/format/units/format.js');

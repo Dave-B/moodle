@@ -16,18 +16,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'format_topics', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'format_unit', language 'en', branch 'MOODLE_20_STABLE'
  *
- * @package   format_topics
+ * @package   format_unit
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['currentsection'] = 'This topic';
-$string['sectionname'] = 'Topic';
-$string['pluginname'] = 'Topics format';
-$string['section0name'] = 'General';
-$string['page-course-view-topics'] = 'Any course main page in topics format';
-$string['page-course-view-topics-x'] = 'Any course page in topics format';
-$string['hidefromothers'] = 'Hide topic';
-$string['showfromothers'] = 'Show topic';
+$string['currentsection'] = 'This unit';
+$string['sectionname'] = 'Unit';
+$string['pluginname'] = 'Units format';
+$string['section0name'] = 'Welcome';
+$string['page-course-view-units'] = 'Any course main page in units format';
+$string['page-course-view-units-x'] = 'Any course page in units format';
+$string['hidefromothers'] = 'Hide unit';
+$string['showfromothers'] = 'Show unit';

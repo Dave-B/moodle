@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains main class for the course format Topic
+ * This file contains main class for the course format Units
  *
  * @since     2.0
- * @package   format_topics
+ * @package   format_units
  * @copyright 2009 Sam Hemelryk
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,13 +27,13 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot. '/course/format/lib.php');
 
 /**
- * Main class for the Topics course format
+ * Main class for the Units course format
  *
- * @package    format_topics
+ * @package    format_units
  * @copyright  2012 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class format_topics extends format_base {
+class format_units extends format_base {
 
     /**
      * Returns true if this course format uses sections
@@ -47,10 +47,10 @@ class format_topics extends format_base {
     /**
      * Returns the display name of the given section that the course prefers.
      *
-     * Use section name is specified by user. Otherwise use default ("Topic #")
+     * Use section name is specified by user. Otherwise use default ("Unit #")
      *
      * @param int|stdClass $section Section object from database or just field section.section
-     * @return string Display name that the course format prefers, e.g. "Topic 2"
+     * @return string Display name that the course format prefers, e.g. "Unit 2"
      */
     public function get_section_name($section) {
         $section = $this->get_section($section);
@@ -58,9 +58,9 @@ class format_topics extends format_base {
             return format_string($section->name, true,
                     array('context' => context_course::instance($this->courseid)));
         } else if ($section->section == 0) {
-            return get_string('section0name', 'format_topics');
+            return get_string('section0name', 'format_units');
         } else {
-            return get_string('topic').' '.$section->section;
+            return get_string('unit').' '.$section->section;
         }
     }
 
@@ -184,7 +184,7 @@ class format_topics extends format_base {
     /**
      * Definitions of the additional options that this course format uses for course
      *
-     * Topics format uses the following options:
+     * Units format uses the following options:
      * - coursedisplay
      * - numsections
      * - hiddensections
@@ -291,7 +291,7 @@ class format_topics extends format_base {
     /**
      * Updates format options for a course
      *
-     * In case if course format was changed to 'topics', we try to copy options
+     * In case if course format was changed to 'units', we try to copy options
      * 'coursedisplay', 'numsections' and 'hiddensections' from the previous format.
      * If previous course format did not have 'numsections' option, we populate it with the
      * current number of sections

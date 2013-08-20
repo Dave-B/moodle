@@ -18,13 +18,13 @@
  * Version details
  *
  * @package    format
- * @subpackage topics
+ * @subpackage units
  * @copyright  1999 onwards Martin Dougiamas (http://dougiamas.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2013050100;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2013050101;        // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2013050100;        // Requires this Moodle version.
-$plugin->component = 'format_topics';    // Full name of the plugin (used for diagnostics).
+$plugin->component = 'format_units';    // Full name of the plugin (used for diagnostics).
