@@ -25,7 +25,7 @@
 
 $string['currentsection'] = 'This unit';
 $string['sectionname'] = 'Unit';
-$string['pluginname'] = 'Units format';
+$string['pluginname'] = 'TALL Units format';
 $string['section0name'] = 'Welcome';
 $string['page-course-view-units'] = 'Any course main page in units format';
 $string['page-course-view-units-x'] = 'Any course page in units format';
