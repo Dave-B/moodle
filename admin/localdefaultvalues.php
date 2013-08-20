@@ -85,7 +85,7 @@ EOT;
         'core:updateautocheck'=>array('core', 'updateautocheck', '0'),
         'core:usetags'=>array('core', 'usetags', '0'),
 
-        'moodlecourse:format'=>array('moodlecourse', 'format', 'topicstall'),
+        'moodlecourse:format'=>array('moodlecourse', 'format', 'units'),
         'moodlecourse:maxbytes'=>array('moodlecourse', 'maxbytes', '5242880'),
 
 
