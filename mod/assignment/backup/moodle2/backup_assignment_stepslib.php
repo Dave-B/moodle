@@ -60,7 +60,8 @@ class backup_assignment_activity_structure_step extends backup_activity_structur
             'course', 'name', 'timecreated', 'timemodified', 'userid',
             'activitycmid', 'reason', 'evidencefile', 'status',
             'lengthrequested', 'lengthgranted', 'privatenotes',
-            'studentmessage', 'approvalconfirmed', 'timeconfirmed'));
+            'studentmessage', 'approvalconfirmed', 'timeconfirmed',
+            'sharedetails', 'howunforeseen', 'impact', 'circumstancedate', 'progress'));
 
         // Build the tree
 
