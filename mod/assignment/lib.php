@@ -556,11 +556,8 @@ class assignment_base {
                         $extdetailstbl .= '<tr><td>'.get_string('approved', 'extension')
                                          .'</td><td>'.userdate($ext->timecreated)
                                          .'</td><td>'.$ext->lengthrequested.' '.$ext->strunits
-                                         .'</td><td>'.$ext->reason
                                          .'</td><td>'.$ext->lengthgranted.' '.$ext->strunits
                                          .'</td><td>'.userdate($ext->timemodified)
-                                         .'</td><td>'.$ext->privatenotes
-                                         .'</td><td>'.$ext->studentmessage
                                          ."</td></tr>\n";
                     }
                 }
@@ -569,11 +566,8 @@ class assignment_base {
                         $extdetailstbl .= '<tr><td>'.get_string('rejected', 'extension')
                                          .'</td><td>'.userdate($ext->timecreated)
                                          .'</td><td>'.$ext->lengthrequested.' '.$ext->strunits
-                                         .'</td><td>'.$ext->reason
                                          .'</td><td>-'
                                          .'</td><td>'.userdate($ext->timemodified)
-                                         .'</td><td>'.$ext->privatenotes
-                                         .'</td><td>'.$ext->studentmessage
                                          ."</td></tr>\n";
                     }
                 }
@@ -583,11 +577,8 @@ class assignment_base {
                         $extdetailstbl .= '<tr><td>'.get_string('pending', 'extension')
                                          .'</td><td>'.userdate($ext->timecreated)
                                          .'</td><td>'.$ext->lengthrequested.' '.$ext->strunits
-                                         .'</td><td>'.$ext->reason
                                          .'</td><td>-'
                                          .'</td><td>'.$timemod
-                                         .'</td><td>'.$ext->privatenotes
-                                         .'</td><td>'.$ext->studentmessage
                                          ."</td></tr>\n";
                     }
                 }
@@ -597,11 +588,8 @@ class assignment_base {
                                       .'<th>'.get_string('status').'</th>'
                                       .'<th>'.get_string('requestdate', 'extension').'</th>'
                                       .'<th>'.get_string('extensionlength', 'extension').'</th>'
-                                      .'<th>'.get_string('reasonforrequest', 'extension').'</th>'
                                       .'<th>'.get_string('extensiongranted', 'extension').'</th>'
                                       .'<th>'.get_string('datechanged').'</th>'
-                                      .'<th>'.get_string('privatenotes', 'extension').'</th>'
-                                      .'<th>'.get_string('feedback').'</th>'
                                       .'</thead><tbody>'.$extdetailstbl.'</tbody></table>';
 
                 // Summarise extensions
