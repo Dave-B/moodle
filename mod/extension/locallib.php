@@ -145,8 +145,14 @@ class extension {
 
         $output .= '<tr><td class="c0">'.get_string('user', 'moodle').':</td>';
         $output .= '    <td class="c1">'.$studentLink.'</td></tr>';
+
+        $output .= '<tr><td class="c0">'.get_string('studentpermitssharing','extension').':</td>';
+        $output .= '    <td class="c1">'.get_string($this->sharedetails,'extension').'</td></tr>';
+
+
         $output .= '<tr><td class="c0">'.get_string('originalduedate','extension').':</td>';
         $output .= '    <td class="c1">'.userdate($this->activity->timedue).'</td></tr>';
+
         $output .= '<tr><td class="c0">'.get_string('extensionrequested','extension').':</td>';
         $output .= '    <td class="c1">'.$this->lengthrequested.' '.$this->strunits.'</td></tr>';
 
@@ -157,6 +163,15 @@ class extension {
 
         $output .= '<tr><td class="c0">'.get_string('reasonforrequest','extension').':</td>';
         $output .= '    <td class="c1">'.$this->reason.'</td></tr>';
+
+        $output .= '<tr><td class="c0">'.get_string('howunforeseen','extension').':</td>';
+        $output .= '    <td class="c1">'.$this->howunforeseen.'</td></tr>';
+        $output .= '<tr><td class="c0">'.get_string('impact','extension').':</td>';
+        $output .= '    <td class="c1">'.$this->impact.'</td></tr>';
+        $output .= '<tr><td class="c0">'.get_string('whencircumstances','extension').':</td>';
+        $output .= '    <td class="c1">'.$this->circumstancedate.'</td></tr>';
+        $output .= '<tr><td class="c0">'.get_string('progress','extension').':</td>';
+        $output .= '    <td class="c1">'.$this->progress.'</td></tr>';
 
         $output .= '<tr><td class="c0">'.get_string('supportingevidence','extension').':</td>';
         $output .= '    <td class="c1">';

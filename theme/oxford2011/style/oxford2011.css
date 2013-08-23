@@ -189,6 +189,11 @@ div.blocksubtitle {font-size: .85em;}
   margin-bottom: .5em;
 }
 
+.mform .fitem fieldset.fgroup label {
+    margin-left: 0;
+    margin-right: 1em;
+}
+
 /* Quiz */
 .specificfeedback a.autolink {background-color: #FFF6CC;}
 .answer div.filter-mathjax {display: inline;}

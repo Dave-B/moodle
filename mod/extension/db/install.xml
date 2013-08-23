@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/extension/db" VERSION="20100108" COMMENT="XMLDB file for Moodle mod/extension - time extensions for Moodle activities."
+<XMLDB PATH="mod/extension/db" VERSION="20130823" COMMENT="XMLDB file for Moodle mod/extension - time extensions for Moodle activities."
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
     <TABLE NAME="extension" COMMENT="All extension request records.">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="course"/>
-        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Course extension activity belongs to" PREVIOUS="id" NEXT="name"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances" PREVIOUS="course" NEXT="timecreated"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="name" NEXT="timemodified"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timecreated" NEXT="userid"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id of the student requesting an extension." PREVIOUS="timemodified" NEXT="activitycmid"/>
-        <FIELD NAME="activitycmid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The course_modules id of the activity to which this extension relates." PREVIOUS="userid" NEXT="reason"/>
-        <FIELD NAME="reason" TYPE="text" LENGTH="big" NOTNULL="true" SEQUENCE="false" COMMENT="Reason given by student to justify the extension." PREVIOUS="activitycmid" NEXT="evidencefile"/>
-        <FIELD NAME="evidencefile" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" PREVIOUS="reason" NEXT="status"/>
-        <FIELD NAME="status" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Status of the extension application: 0 = Pending 1 = Approved 2 = Rejected" PREVIOUS="evidencefile" NEXT="lengthrequested"/>
-        <FIELD NAME="lengthrequested" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Length of time requested, in seconds (for ease of use with unix timestamps)." PREVIOUS="status" NEXT="lengthgranted"/>
-        <FIELD NAME="lengthgranted" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Length of time granted, in seconds (for ease of use with unix epoch timestamps)." PREVIOUS="lengthrequested" NEXT="privatenotes"/>
-        <FIELD NAME="privatenotes" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="Space for text from staff, discussing the extension request." PREVIOUS="lengthgranted" NEXT="studentmessage"/>
-        <FIELD NAME="studentmessage" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="Space for comments back to the student when the extension is approved/rejected." PREVIOUS="privatenotes" NEXT="approvalconfirmed"/>
-        <FIELD NAME="approvalconfirmed" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Flag for Registry to set when they confirm the extension is acceptable. No status changes should be visible to the student until this is set." PREVIOUS="studentmessage" NEXT="timeconfirmed"/>
-        <FIELD NAME="timeconfirmed" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time that approvalconfirmed was set, for auditing." PREVIOUS="approvalconfirmed"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Course extension activity belongs to"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id of the student requesting an extension."/>
+        <FIELD NAME="activitycmid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The course_modules id of the activity to which this extension relates."/>
+        <FIELD NAME="reason" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Reason given by student to justify the extension."/>
+        <FIELD NAME="evidencefile" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Status of the extension application: 0 = Pending 1 = Approved 2 = Rejected"/>
+        <FIELD NAME="lengthrequested" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Length of time requested, in seconds (for ease of use with unix timestamps)."/>
+        <FIELD NAME="lengthgranted" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Length of time granted, in seconds (for ease of use with unix epoch timestamps)."/>
+        <FIELD NAME="privatenotes" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Space for text from staff, discussing the extension request."/>
+        <FIELD NAME="studentmessage" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Space for comments back to the student when the extension is approved/rejected."/>
+        <FIELD NAME="approvalconfirmed" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Flag for Registry to set when they confirm the extension is acceptable. No status changes should be visible to the student until this is set."/>
+        <FIELD NAME="timeconfirmed" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time that approvalconfirmed was set, for auditing."/>
+        <FIELD NAME="sharedetails" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Does student permit sharing of request details"/>
+        <FIELD NAME="howunforeseen" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Student text"/>
+        <FIELD NAME="impact" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Student text"/>
+        <FIELD NAME="circumstancedate" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Student text"/>
+        <FIELD NAME="progress" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Student text"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

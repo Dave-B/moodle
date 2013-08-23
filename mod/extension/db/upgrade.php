@@ -63,6 +63,64 @@ function xmldb_extension_upgrade($oldversion) {
         $dbman->change_field_precision($table, $field);
     }
 
+    /// Extra extension request details - ticket #3088
+    if ($oldversion < 2013082300) {
+
+        // Define field sharedetails to be added to extension.
+        $table = new xmldb_table('extension');
+        $field = new xmldb_field('sharedetails', XMLDB_TYPE_TEXT, null, null, null, null, null, 'timeconfirmed');
+
+        // Conditionally launch add field sharedetails.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // Define field howunforeseen to be added to extension.
+        $table = new xmldb_table('extension');
+        $field = new xmldb_field('howunforeseen', XMLDB_TYPE_TEXT, null, null, null, null, null, 'sharedetails');
+
+        // Conditionally launch add field howunforeseen.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // Define field impact to be added to extension.
+        $table = new xmldb_table('extension');
+        $field = new xmldb_field('impact', XMLDB_TYPE_TEXT, null, null, null, null, null, 'howunforeseen');
+
+        // Conditionally launch add field impact.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // Define field circumstancedate to be added to extension.
+        $table = new xmldb_table('extension');
+        $field = new xmldb_field('circumstancedate', XMLDB_TYPE_TEXT, null, null, null, null, null, 'impact');
+
+        // Conditionally launch add field circumstancedate.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // Define field progress to be added to extension.
+        $table = new xmldb_table('extension');
+        $field = new xmldb_field('progress', XMLDB_TYPE_TEXT, null, null, null, null, null, 'circumstancedate');
+
+        // Conditionally launch add field progress.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // Extension savepoint reached.
+        upgrade_mod_savepoint(true, 2013082300, 'extension');
+    }
+
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

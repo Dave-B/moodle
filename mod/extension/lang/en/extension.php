@@ -40,6 +40,8 @@ $string['clicktoviewapprove'] = 'Click to view/approve extension';
 $string['confirmed'] = 'Confirmed';
 $string['day'] = 'Day';
 $string['days'] = 'Days';
+$string['detailsonlyregistry'] = 'Only Registry. ';
+$string['detailsregistryandcoursedirector'] = 'Registry and the Course Director / Course Administrator (if applicable). ';
 $string['approvernewextensionmessage'] = 'Dear {$a->approvername},
 
 The student {$a->studentname} has applied for an extension on the
@@ -142,6 +144,7 @@ $string['extensiongranted'] = 'Extension granted';
 $string['extensionsubmitted'] = 'Extension submitted';
 $string['extensionunits'] = 'Extension units';
 $string['extensionsmatching'] = 'Extensions matching: ';
+$string['extensionshareguidance'] = 'Please confirm whether you are content for the details of this request to be shared with the Course Director / Course Administrator (if applicable). ';
 $string['filter'] = 'Filter: ';
 $string['graderextensiondecisionmessage'] = 'Dear {$a->gradername},
 
@@ -166,6 +169,10 @@ The Department for Continuing Education
 $string['grantextension'] = 'Grant extension';
 $string['hour'] = 'Hour';
 $string['hours'] = 'Hours';
+$string['howunforeseen'] = 'How was this unforeseen?';
+$string['howforeseenguidance'] = 'How were these circumstances <strong>unforeseen</strong>? ';
+$string['impact'] = 'Impact';
+$string['impactguidance'] = 'How was the <strong>impact</strong> <em>material</em> to being unable to meet the deadline?';
 $string['includesextension'] = 'Includes an extension of ';
 $string['includes1extensionfor'] = 'Includes 1 extension for ';
 $string['includesextensionstotaling'] = 'Includes {$a} extensions totaling ';
@@ -185,6 +192,7 @@ $string['newduedate'] = 'New due date';
 $string['newextensionrequest'] = 'New extension request';
 $string['noextensionsapproved'] = 'No extensions approved.';
 $string['noextensionsfound'] = 'No extensions found.';
+$string['noshare'] = 'Sharing <strong style="color: red;">not</strong> permitted';
 $string['nonewextensions'] = 'No new extensions allowed.';
 $string['notenabled'] = 'Not enabled.';
 $string['nopermission'] = 'You do not have permission to view this extension.';
@@ -199,11 +207,14 @@ $string['pluginadministration'] = 'extension administration';
 $string['pluginname'] = 'extension';
 $string['privatenotes'] = 'Private notes';
 $string['privatenotesexisting'] = 'Existing private notes';
+$string['progress'] = 'Progress';
+$string['progressguidance'] = 'How much of your work is completed and how do you plan to meet the <strong>deadline requested</strong> as well as <strong>subsequent deadlines</strong>?';
 $string['reasonforrequest'] = 'Reason for request';
 $string['rejected'] = 'Rejected';
 $string['requestdate'] = 'Request date';
 $string['requestextension'] = 'Request time extension';
 $string['requestspending'] = '{$a} extensions pending';
+$string['share'] = 'Sharing permitted';
 $string['studentextensiondecisionmessage'] = 'Dear {$a->studentname},
 
 Your application for an extension has been {$a->status}:
@@ -227,12 +238,17 @@ The Department for Continuing Education
 {$a->siteurl}
 ';
 $string['studentnotified'] = 'Student notified';
+$string['studentpermitssharing'] = 'Student permits sharing';
 $string['submitrequest'] = 'Submit extension request';
 $string['supportingevidence'] = 'Supporting evidence';
 $string['supportingevidenceguidance'] = 'If you have evidence to support your extension request (e.g. medical certificate, employer\'s letter), please email it to <a href="mailto:registry@conted.ox.ac.uk?subject=Extension%20file:%20{$a->assignmentname}&amp;body=Documentary%20evidence%20for%20extension%20request%20from%20{$a->username}:%20{$a->coursename},%20{$a->assignmentname}.">Registry</a>.';
+$string['timing'] = 'Timing';
 $string['unconfirmed'] = 'Unconfirmed';
 $string['viewextensions'] = 'View extensions';
 $string['withextensionto'] = 'With extension to';
+$string['whencircumstances'] = 'When did the circumstances arise?';
+$string['whoinform'] = 'Who can be informed?';
+$string['whyextension'] = 'Why do you need an extension?';
 $string['yourextensions'] = 'Your extensions';
 
 $string['extension:request'] = 'Request extensions';

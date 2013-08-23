@@ -67,12 +67,42 @@ class mod_extension_form extends moodleform {
         $mform->addRule('lengthrequested', get_string('maximumchars', '', 3), 'maxlength', 3, 'client', 'x');
         if ($COURSE->registryworkflow) {
             /// Instruct users to contact Registry for long extensions
-            $mform->addElement('html', '<div class="fitem"><div class="fitemtitle">&nbsp;</div><div class="felement">'.get_string('extensionlengthguidance', 'extension').'</div></div>');
+            $mform->addElement('html', '<div class="fitem"><div class="fitemtitle">&nbsp;</div><div class="felement">'.get_string('extensionlengthguidance', 'extension').'</div></div><br>');
         }
+
+    /// Flag for who's permitted to see the extension details
+        $radioarray=array();
+        $radioarray[] =& $mform->createElement('radio', 'sharedetails', '', get_string('detailsonlyregistry', 'extension'), 'noshare', $attributes);
+        $radioarray[] =& $mform->createElement('radio', 'sharedetails', '', get_string('detailsregistryandcoursedirector', 'extension'), 'share', $attributes);
+        $mform->addGroup($radioarray, 'radioar', get_string('whoinform', 'extension'), array(' '), false);
+        $mform->addRule('radioar', null, 'required', null, 'client');
+        $mform->addElement('html', '<div class="fitem"><div class="fitemtitle">&nbsp;</div><div class="felement">'.get_string('extensionshareguidance', 'extension').'</div></div><br>');
 
     /// Reason for the extension
         $mform->addElement('textarea', 'reason', get_string('reasonforrequest', 'extension'), 'wrap="virtual" rows="10" cols="70"');
         $mform->addRule('reason', null, 'required', null, 'client');
+        $mform->addElement('html', '<div class="fitem"><div class="fitemtitle">&nbsp;</div><div class="felement">'.get_string('whyextension', 'extension').'</div></div><br>');
+
+    /// Foreseeable?
+        $mform->addElement('textarea', 'howunforeseen', get_string('howunforeseen', 'extension'), 'wrap="virtual" rows="10" cols="70"');
+        $mform->addRule('howunforeseen', null, 'required', null, 'client');
+        $mform->addElement('html', '<div class="fitem"><div class="fitemtitle">&nbsp;</div><div class="felement">'.get_string('howforeseenguidance', 'extension').'</div></div><br>');
+
+    /// Impact?
+        $mform->addElement('textarea', 'impact', get_string('impact', 'extension'), 'wrap="virtual" rows="10" cols="70"');
+        $mform->addRule('impact', null, 'required', null, 'client');
+        $mform->addElement('html', '<div class="fitem"><div class="fitemtitle">&nbsp;</div><div class="felement">'.get_string('impactguidance', 'extension').'</div></div><br>');
+
+    /// When the problem arose
+        $mform->addElement('text', 'circumstancedate', get_string('timing', 'extension'));
+        $mform->addRule('circumstancedate', null, 'required', null, 'client');
+        $mform->addElement('html', '<div class="fitem"><div class="fitemtitle">&nbsp;</div><div class="felement">'.get_string('whencircumstances', 'extension').'</div></div><br>');
+
+    /// Progress?
+        $mform->addElement('textarea', 'progress', get_string('progress', 'extension'), 'wrap="virtual" rows="10" cols="70"');
+        $mform->addRule('progress', null, 'required', null, 'client');
+        $mform->addElement('html', '<div class="fitem"><div class="fitemtitle">&nbsp;</div><div class="felement">'.get_string('progressguidance', 'extension').'</div></div><br>');
+
 
         if ($COURSE->registryworkflow) {
             /// Instruct users to send evidence files to Registry
@@ -80,9 +110,9 @@ class mod_extension_form extends moodleform {
             $info->coursename = htmlentities($COURSE->fullname);
             $info->assignmentname = htmlentities($assignment->name);
             $info->username = htmlentities($USER->firstname.' '.$USER->lastname);
-            $mform->addElement('html', '<div class="fitem"><div class="fitemtitle">&nbsp;</div><div class="felement">'.
+            $mform->addElement('html', '<div class="fitem"><div class="fitemtitle">&nbsp;</div><div class="felement"><br>'.
                                         get_string('supportingevidenceguidance', 'extension', $info).
-                                        '</div></div.');
+                                        '</div></div><br>');
         }
 
 //-------------------------------------------------------------------------------
