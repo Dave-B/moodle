@@ -94,7 +94,7 @@ class mod_extension_form extends moodleform {
         $mform->addElement('html', '<div class="fitem"><div class="fitemtitle">&nbsp;</div><div class="felement">'.get_string('impactguidance', 'extension').'</div></div><br>');
 
     /// When the problem arose
-        $mform->addElement('text', 'circumstancedate', get_string('timing', 'extension'));
+        $mform->addElement('textarea', 'circumstancedate', get_string('timing', 'extension'), 'wrap="virtual" rows="5" cols="70"');
         $mform->addRule('circumstancedate', null, 'required', null, 'client');
         $mform->addElement('html', '<div class="fitem"><div class="fitemtitle">&nbsp;</div><div class="felement">'.get_string('whencircumstances', 'extension').'</div></div><br>');
 
