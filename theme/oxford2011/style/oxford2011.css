@@ -168,6 +168,11 @@ td.eventskey {
   background-color: #d00;
 }
 
+img.iconlarge {
+  height: 16px;
+  width: 16px;
+}
+
 /**
  * Mod theme tweaks
  */
