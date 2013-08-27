@@ -871,16 +871,18 @@ class core_course_renderer extends plugin_renderer_base {
         $output .= html_writer::start_tag('div', array('class' => $indentclasses));
 
         // Start the div for the activity title, excluding the edit icons.
-        $output .= html_writer::start_tag('div', array('class' => 'activityinstance'));
+        if ($mod->modname != 'label') {
+            $output .= html_writer::start_tag('div', array('class' => 'activityinstance'));
 
-        // Display the link to the module (or do nothing if module has no url)
-        $output .= $this->course_section_cm_name($mod, $displayoptions);
+            // Display the link to the module (or do nothing if module has no url)
+            $output .= $this->course_section_cm_name($mod, $displayoptions);
 
-        // Module can put text after the link (e.g. forum unread)
-        $output .= $mod->get_after_link();
+            // Module can put text after the link (e.g. forum unread)
+            $output .= $mod->get_after_link();
 
-        // Closing the tag which contains everything but edit icons. Content part of the module should not be part of this.
-        $output .= html_writer::end_tag('div'); // .activityinstance
+            // Closing the tag which contains everything but edit icons. Content part of the module should not be part of this.
+            $output .= html_writer::end_tag('div'); // .activityinstance
+        }
 
         // If there is content but NO link (eg label), then display the
         // content here (BEFORE any icons). In this case cons must be
