@@ -49,9 +49,11 @@ class block_activity_modules extends block_list {
             }
         }
 
-        // Horrible hack
-        // Add Extensions to the Module list
-        $modfullnames['extension'] = get_string('extensions', 'extension');
+        // Somewhat horrible hack
+        // Add Extensions to the Module list (only on study.conted)
+        if ($CFG->wwwroot == 'http://study.conted.ox.ac.uk') {
+            $modfullnames['extension'] = get_string('extensions', 'extension');
+        }
 
         collatorlib::asort($modfullnames);
 
