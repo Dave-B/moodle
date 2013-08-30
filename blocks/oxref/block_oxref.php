@@ -35,16 +35,12 @@ class block_oxref extends block_base {
         }
 
         $this->content = new stdClass;
-        $this->content->text =
-              '<div style="font-size: 0.9em">'
-            . '<p>Studying this course entitles you to access the '
-            . 'Oxford Reference Online resources, including the Dictionary of National Biography, '
-            . 'the OED, and many more dictionaries and reference titles.</p>'
-            . '<p>Please be aware that for the Oxford Reference resources to work '
-            . '<b>you must access them through the link below</b>. '
-            . 'Bookmarking the links or navigating directly to them will not work.</p>'
-            . '<p><b><a href="/oxref.php" target="_blank">Oxford Reference Online</a></b></p>'
-            . '</div>';
+        $this->content->text = <<<EOT
+<div style="font-size: 0.9em">
+<p>Studying this course entitles you to access a selection of online resources from <span title="Oxford University Press">OUP</span>, including the <span title="Oxford English Dictionary">OED</span>, Grove Art Online, and many more reference titles and full-text OUP books.</p>
+<p><b><a href="/oxref.php" target="_blank">Oxford Reference Online</a></b></p>
+</div>
+EOT;
 
         //no footer, thanks
         $this->content->footer = '';
