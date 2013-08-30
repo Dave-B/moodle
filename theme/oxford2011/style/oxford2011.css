@@ -173,6 +173,10 @@ img.iconlarge {
   width: 16px;
 }
 
+span[title] {
+  border-bottom: 1px dotted silver;
+}
+
 /**
  * Mod theme tweaks
  */
