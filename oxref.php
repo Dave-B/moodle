@@ -49,21 +49,43 @@ echo $OUTPUT->heading($title);
 echo $OUTPUT->box_start('generalbox', 'intro');
 ?>
 
-<p>Oxford Reference Online is a huge and comprehensive resource that contains over 120 dictionaries and reference titles covering the complete subject spectrum: from General Reference and Language to Science and Medicine, and from Humanities and Social Sciences to Business and Professional.</p>
+<p>Whilst studying this course you have access to a selection of subscription-based online resources from Oxford University Press (OUP), at no additional cost. This comprehensive collection contains over 250 dictionaries and reference titles, and nearly 9,000 full-text books, covering a wide range of subjects.</p>
+<p>You will be logged in to each resource collection when you visit it via the relevant link on this page.</p>
+<p>Full access is provided to:</p>
+
 <ul>
 <?php
     foreach($refsites as $sitekey => $sitedetails) {
-        if ($sitekey == $redirect) {
-            echo '<li><strong><a href="'.$sitedetails[0].$dest.'">'.$sitedetails[1]."</a></strong></li>\n";
-        } else {
-            echo '<li><a href="'.$sitedetails[0].'">'.$sitedetails[1]."</a></li>\n";
+        if ($sitekey != 'oxref' && $sitekey != 'oxscholar') {
+            if ($sitekey == $redirect) {
+                echo '<li><strong><a href="'.$sitedetails[0].$dest.'">'.$sitedetails[1]."</a></strong></li>\n";
+            } else {
+                echo '<li><a href="'.$sitedetails[0].'">'.$sitedetails[1]."</a></li>\n";
+            }
         }
     }
 ?>
 </ul>
 
-<p>Whilst studying this course you have access to Oxford Reference Online at no additional cost.</p>
-<p>You will be logged in to each resource when you visit them via the relevant link on this page - if you close your browser you must use the link on this page again.</p>
+<p>Access is also provided to the majority of resources in the following collections:</p>
+
+<ul>
+<?php
+    foreach($refsites as $sitekey => $sitedetails) {
+        if ($sitekey == 'oxref' || $sitekey == 'oxscholar') {
+            if ($sitekey == $redirect) {
+                echo '<li><strong><a href="'.$sitedetails[0].$dest.'">'.$sitedetails[1]."</a></strong></li>\n";
+            } else {
+                echo '<li><a href="'.$sitedetails[0].'">'.$sitedetails[1]."</a></li>\n";
+            }
+        }
+    }
+?>
+</ul>
+
+<p>For more information about the OUP online resources available to you and tips for searching the collections, see the Oxford Reference Online <a href="http://onlinesupport.conted.ox.ac.uk/nml/oxref.php">support page</a>.</p>
+
+<p><strong>Please note</strong>: If you close your web browser you must either return to this page and use the links above or click on a link to a resource directly from your online course materials to ensure you are logged on and can access it.</p>
 
 <?php
 echo $OUTPUT->box_end();
