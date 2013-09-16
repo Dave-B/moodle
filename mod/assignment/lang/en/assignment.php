@@ -381,3 +381,4 @@ $string['viewsubmissions'] = 'View {$a} submitted assignments';
 $string['wordcount'] = 'Word count';
 $string['wordcountnote'] = 'Total number of words for the assignment, not individual files';
 $string['yoursubmission'] = 'Your submission';
+$string['unsupportedsubplugin'] = 'The assignment type of \'{$a}\' is not currently supported. You may wait until the assignment type is made available, or delete the assignment.';
