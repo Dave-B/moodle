@@ -140,12 +140,12 @@ if(sizeof($extensionlist) < 1) {
         // Check current users's capabilities to view extensions on each course found. 
         $context = get_context_instance(CONTEXT_COURSE, $extension->course);
 
-        if (has_capability('mod/extension:viewanyextension', $context)) {
+        if (has_capability('mod/extension:approveextension', $context)) {
             // Can view any extension for this course context
             $viewanyextension = true;
             // User can view this extension, so put it into an array grouped by course
             $extensionsbycourse[$extension->name][] = $extension;
-        } else if ($userid == $USER->id && has_capability('mod/extension:viewownextension', $context)) {
+        } else if ($userid == $USER->id && has_capability('mod/extension:request', $context)) {
             // Is current user, who can view own extensions
             // User can view this extension, so put it into an array grouped by course
             $extensionsbycourse[$extension->name][] = $extension;

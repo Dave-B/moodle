@@ -112,37 +112,21 @@ if ($mform->is_cancelled()){
         $userstoexclude = get_admins(); // We'll exclude admins from these emails.
 
         if ($COURSE->registryworkflow) {
-            $confirmers = get_extension_users_by_role($cm, 'mod/extension:confirmextension', $USER, $userstoexclude);
-            //echo "confirmers:<br/>";
-            //print_object($confirmers);
-            foreach ($confirmers as $key => $confirmer) {
-                // TODO: Find a better way of choosing from more than one user in the relevant role
-                if (!isset($firstconfirmer)) {
-                    $firstconfirmer = $confirmer;
-                    $messagedata->confirmername = $firstconfirmer->firstname.' '.$firstconfirmer->lastname;
-                    //print_object($confirmer);
-                }
+            $userstoalert = get_extension_users_by_role($cm, 'mod/extension:extensionalert', $USER, $userstoexclude);
+            //echo "userstoalert:<br/>";
+            //print_object($userstoalert);
+            foreach ($userstoalert as $key => $user) {
 
-                // Notify confirmers later...
+                // Alert via email that an extension was requested
+                $messagedata->username = $user->firstname.' '.$user->lastname;
+                $messagedata->extensionurl = $CFG->wwwroot.'/mod/extension/view.php?id='.$extensionid;
 
-                // Add confirmer to the exclude list, so later use (for approvers) will not include it.
-                // Users should not have both Registry and Course Director roles, else they will not get the notifications.
-                $userstoexclude[$key] = $confirmer;
+                $messagetext = get_string('newextensionnotification_workflow', 'extension', $messagedata);
+                email_to_user($user, $from, $subject, $messagetext, '', '', false);
             }
         }
 
         $approvers = get_extension_users_by_role($cm, 'mod/extension:approveextension', $USER, $userstoexclude);
-        // TODO: Find a better way of choosing from more than one user in the relevant role
-        foreach ($approvers as $approver) {
-            if (!isset($firstapprover)) {
-                $firstapprover = $approver;
-                $messagedata->approvername = $firstapprover->firstname.' '.$firstapprover->lastname;
-                //print_object($approver);
-            }
-        }
-        //echo "approvers:<br/>";
-        //print_object($approvers);
-
         // Notify Extension approvers (Course directors) that an extension was requested
         foreach ($approvers as $approver) {
             $messagedata->approvername = $approver->firstname.' '.$approver->lastname;
@@ -150,24 +134,11 @@ if ($mform->is_cancelled()){
             $messagedata->extensionlisturl = $CFG->wwwroot.'/mod/extension/index.php?id='.$cm->course.'&a='.$cm->id;
 
             if ($COURSE->registryworkflow) {
-                $messagetext = get_string('approvernewextensionmessage_workflow', 'extension', $messagedata);
+                $messagetext = get_string('approvenewextensionnotification_workflow', 'extension', $messagedata);
             } else {
                 $messagetext = get_string('approvernewextensionmessage', 'extension', $messagedata);
             }
             email_to_user($approver, $from, $subject, $messagetext, '', '', false);
-        }
-
-        if ($COURSE->registryworkflow) {
-            foreach ($confirmers as $key => $confirmer) {
-                // Notify confirmers later
-                // Notify Extension confirmers (Registry) that an extension was requested
-                $messagedata->confirmername = $confirmer->firstname.' '.$confirmer->lastname;
-                $messagedata->extensionurl = $CFG->wwwroot.'/mod/extension/view.php?id='.$extensionid;
-                $messagedata->extensionlisturl = $CFG->wwwroot.'/mod/extension/index.php?id='.$cm->course.'&a='.$cm->id;
-
-                $messagetext = get_string('confirmernewextensionmessage_workflow', 'extension', $messagedata);
-                email_to_user($confirmer, $from, $subject, $messagetext, '', '', false);
-            }
         }
 
         // Redirect page

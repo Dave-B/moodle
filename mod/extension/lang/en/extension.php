@@ -61,7 +61,7 @@ The Department for Continuing Education
 
 {$a->siteurl}
 ';
-$string['approvernewextensionmessage_workflow'] = 'Dear {$a->approvername},
+$string['newextensionnotification_workflow'] = 'Dear {$a->username},
 
 The student {$a->studentname} has applied for an extension on the
 following assignment:
@@ -69,22 +69,17 @@ following assignment:
       Course: {$a->coursename}
   Assignment: {$a->assignmentname}
 
-Please check the course website to approve/reject the extension:
-  {$a->extensionurl}
-
-All extensions for this assignment are listed here:
-  {$a->extensionlisturl}
-
-Once you have approved/rejected the extension, {$a->confirmername}
-will be asked to confirm the extension, which will send the student
+Registry will approve/reject the extension, which will send the student
 notice of the decision.
+
+If Registry intends to reject the extension request they will consult with you prior to notifying the student.
 
 Best regards,
 The Department for Continuing Education
 
 {$a->siteurl}
 ';
-$string['confirmernewextensionmessage_workflow'] = 'Dear {$a->confirmername},
+$string['approvenewextensionnotification_workflow'] = 'Dear {$a->approvername},
 
 The student {$a->studentname} has applied for an extension on the
 following assignment:
@@ -92,10 +87,9 @@ following assignment:
       Course: {$a->coursename}
   Assignment: {$a->assignmentname}
 
-{$a->approvername} has been asked to approve/reject the extension:
+Please check the course website to approve/reject and confirm the
+extension, which will send the student notice of the decision:
   {$a->extensionurl}
-
-Once they have done this, you will be asked to confirm the decision.
 
 All extensions for this assignment are listed here:
   {$a->extensionlisturl}
@@ -146,7 +140,7 @@ $string['extensionunits'] = 'Extension units';
 $string['extensionsmatching'] = 'Extensions matching: ';
 $string['extensionshareguidance'] = 'Please confirm whether you are content for the details of this request to be shared with the Course Director / Course Administrator (if applicable). ';
 $string['filter'] = 'Filter: ';
-$string['graderextensiondecisionmessage'] = 'Dear {$a->gradername},
+$string['extensiondecisionalertmessage'] = 'Dear {$a->username},
 
 A student\'s extension application has been confirmed as {$a->status}:
 
@@ -156,10 +150,6 @@ A student\'s extension application has been confirmed as {$a->status}:
         Status: {$a->status}
 
   New due date: {$a->effectivedate}
-      Comments: {$a->studentmessage}
-
-Details are available here:
-  {$a->extensionurl}
 
 Best regards,
 The Department for Continuing Education
@@ -199,12 +189,13 @@ $string['nopermission'] = 'You do not have permission to view this extension.';
 $string['noresults'] = 'No results';
 $string['not'] = 'not';
 $string['notifystudent'] = 'Notify student';
-$string['onlyregistry'] = '(Can only be set by Registry.)';
+$string['notifystudentguidance'] = 'Email student (will not affect approval/rejection visibility on the site)';
 $string['originalduedate'] = 'Original due date';
 $string['pending'] = 'Pending';
 $string['pendingextensions'] = 'Pending extensions';
 $string['pluginadministration'] = 'extension administration';
 $string['pluginname'] = 'extension';
+$string['presharefield'] = '(This extension pre-dates the details sharing, etc. fields.)';
 $string['privatenotes'] = 'Private notes';
 $string['privatenotesexisting'] = 'Existing private notes';
 $string['progress'] = 'Progress';
@@ -244,6 +235,7 @@ $string['supportingevidence'] = 'Supporting evidence';
 $string['supportingevidenceguidance'] = 'If you have evidence to support your extension request (e.g. medical certificate, employer\'s letter), please email it to <a href="mailto:registry@conted.ox.ac.uk?subject=Extension%20file:%20{$a->assignmentname}&amp;body=Documentary%20evidence%20for%20extension%20request%20from%20{$a->username}:%20{$a->coursename},%20{$a->assignmentname}.">Registry</a>.';
 $string['timing'] = 'Timing';
 $string['unconfirmed'] = 'Unconfirmed';
+$string['updateextension'] = 'Update extension';
 $string['viewextensions'] = 'View extensions';
 $string['withextensionto'] = 'With extension to';
 $string['whencircumstances'] = 'When did the circumstances arise?';
@@ -253,7 +245,5 @@ $string['yourextensions'] = 'Your extensions';
 
 $string['extension:request'] = 'Request extensions';
 $string['extension:approveextension'] = 'Approve extensions';
-$string['extension:confirmextension'] = 'Confirm extensions';
-$string['extension:viewanyextension'] = 'View extensions';
-$string['extension:viewownextension'] = 'View own extensions';
+$string['extension:extensionalert'] = 'Extension request alert';
 ?>

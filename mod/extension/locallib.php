@@ -147,7 +147,11 @@ class extension {
         $output .= '    <td class="c1">'.$studentLink.'</td></tr>';
 
         $output .= '<tr><td class="c0">'.get_string('studentpermitssharing','extension').':</td>';
-        $output .= '    <td class="c1">'.get_string($this->sharedetails,'extension').'</td></tr>';
+        if ($this->sharedetails) {
+            $output .= '    <td class="c1">'.get_string($this->sharedetails,'extension').'</td></tr>';
+        } else {
+            $output .= '    <td class="c1">'.get_string('presharefield','extension').'</td></tr>';
+        }
 
 
         $output .= '<tr><td class="c0">'.get_string('originalduedate','extension').':</td>';
@@ -218,8 +222,7 @@ class extension {
         global $CFG, $DB, $SITE, $COURSE, $USER, $extension_requeststatus;
 
         // Check permissions for approval form
-        if (has_capability('mod/extension:approveextension', $context)
-            || has_capability('mod/extension:confirmextension', $context) ) {
+        if (has_capability('mod/extension:approveextension', $context)) {
             include_once('mod_approval_form.php');
             $mform = new mod_extension_approval_form();
 
@@ -252,37 +255,15 @@ class extension {
                     $fromform->timeconfirmed = time();
                 } else {
                     // Workflow
-                    if (isset($fromform->approvalconfirmed) && $fromform->approvalconfirmed == 1) {
-                        $fromform->timeconfirmed = time();
+
+                    // Simplify workflow 2013-08-27 - automatically confirm extension on accept/reject.
+                    if ($fromform->status > 0) {
+                        $fromform->approvalconfirmed = 1;
+                        $fromform->timeconfirmed = $fromform->timemodified;
                     }
                     //print_object($fromform);
-                    //print_object($cm);
 
                     $messagedata = new object();
-
-                    $confirmers = get_extension_users_by_role($this->cm, 'mod/extension:confirmextension', $this->user, $userstoexclude);
-                    foreach ($confirmers as $confirmer) {
-                        if(!isset($firstconfirmer)) {
-                            // TODO: #3010 Find a better way of choosing from more than one user in the relevant role
-                            //   * Check old submission record for last staff modification?
-                            $firstconfirmer = $confirmer;
-                            $messagedata->confirmername = $firstconfirmer->firstname.' '.$firstconfirmer->lastname;
-                        }
-                    }
-                    //echo "confirmers:<br/>";
-                    //print_object($confirmers);
-
-                    $approvers = get_extension_users_by_role($this->cm, 'mod/extension:approveextension', $this->user, $userstoexclude+$confirmers);
-                    foreach ($approvers as $approver) {
-                        if(!isset($firstapprover)) {
-                            // TODO: #3010 Find a better way of choosing from more than one user in the relevant role
-                            //   * Check old submission record for last staff modification?
-                            $firstapprover = $approver;
-                            $messagedata->approvername = $firstapprover->firstname.' '.$firstapprover->lastname;
-                        }
-                    }
-                    //echo "approvers:<br/>";
-                    //print_object($approvers);
                 }
 
                 if($fromform->status == 2) {
@@ -305,14 +286,18 @@ class extension {
 
                     $messagedata->status = $extension_requeststatus[$fromform->status];
                     $messagedata->lengthrequested = $this->lengthrequested.' '.$this->strunits;
-                    $messagedata->lengthgranted = $fromform->lengthgranted.' '.$this->strunits;
+                    if (isset($fromform->lengthgranted)) {
+                        $messagedata->lengthgranted = $fromform->lengthgranted.' '.$this->strunits;
+                    } else {
+                        $messagedata->lengthgranted = ' - ';
+                    }
 
                     $edate = extension_get_effective_date_by_cm($this->cm, $this->user->id, $this->activity);
                     $messagedata->effectivedate = userdate($edate->timedue);
                     $messagedata->siteurl = $CFG->wwwroot.'/';
                     $messagedata->extensionurl = $CFG->wwwroot.'/mod/extension/view.php?id='.$this->id;
 
-                    if ($fromform->studentmessage) {
+                    if (isset($fromform->studentmessage)) {
                         $messagedata->studentmessage = trim($fromform->studentmessage);
                     } else if ($this->studentmessage) {
                         $messagedata->studentmessage = trim($this->studentmessage);
@@ -350,7 +335,7 @@ class extension {
                             }
 
                         } else {
-                            // Status confirmed - notify Student, grader, and approver
+                            // Status changed & confirmed
                             // Notify Student
                             $user = $DB->get_record('user', array('id' => $this->userid));
 
@@ -362,27 +347,15 @@ class extension {
                             $messagetext = get_string('studentextensiondecisionmessage', 'extension', $messagedata);
                             email_to_user($user, $from, $subject, $messagetext, '', '', false);
 
-/* Don't notify grader, per http://trac.conted.ox.ac.uk/course-qa/ticket/2826
-                            // Notify grader (Tutor)
-                            $exclude = $approvers + $confirmers + $userstoexclude;
-                            //print_object($exclude);
-                            $graders = get_extension_users_by_role($this->cm, 'mod/assignment:grade', $this->user, $exclude);
-                            //print_object($graders);
-                            foreach ($graders as $id => $grader) {
-                                // Email grader
-                                $messagedata->gradername = $grader->firstname.' '.$grader->lastname;
-                                $messagetext = get_string('graderextensiondecisionmessage', 'extension', $messagedata);
-                                email_to_user($grader, $from, $subject, $messagetext, '', '', false);
-                            }
-*/
-
-                            // Notify approver (Course Director)
-                            //print_object($approvers);
-                            foreach ($approvers as $id => $approver) {
-                                // Email approver
-                                $messagedata->gradername = $approver->firstname.' '.$approver->lastname;
-                                $messagetext = get_string('graderextensiondecisionmessage', 'extension', $messagedata);
-                                email_to_user($approver, $from, $subject, $messagetext, '', '', false);
+                            // Notify alert-receivers (e.g. Course Director)
+                            $alertreceivers = get_extension_users_by_role($this->cm, 'mod/extension:extensionalert', $this->user, $userstoexclude);
+                            //echo "alertreceivers:";
+                            //print_object($alertreceivers);
+                            foreach ($alertreceivers as $id => $receiver) {
+                                // Email receiver
+                                $messagedata->username = $receiver->firstname.' '.$receiver->lastname;
+                                $messagetext = get_string('extensiondecisionalertmessage', 'extension', $messagedata);
+                                email_to_user($receiver, $from, $subject, $messagetext, '', '', false);
                             }
                         }
                     }
@@ -398,11 +371,9 @@ class extension {
                 // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
                 // or on the first display of the form.
 
-                // Limit notification/approval to registry capabilities
-                if ($COURSE->registryworkflow && !has_capability('mod/extension:confirmextension', $context)) {
-                    if($notify = $mform->getNotifyElement()) {
-                        $notify->freeze();
-                    }
+                // Don't allow changing of "Notify student" (should always be ticked - ref #3136)
+                if($notify = $mform->getNotifyElement()) {
+                    $notify->freeze();
                 }
 
                 $mform->display();
@@ -541,10 +512,7 @@ class extension_group {
 
         $extensionstaff = false;
         if($COURSE->registryworkflow) {
-            if (has_capability('mod/extension:viewanyextension', $context)
-                || has_capability('mod/extension:approveextension', $context)
-                || has_capability('mod/extension:confirmextension', $context)
-               ) {
+            if (has_capability('mod/extension:approveextension', $context)) {
                 $extensionstaff = true;
             }
         }
@@ -811,10 +779,7 @@ class course_extension_collection {
                                     // No statuses to exclude, or extension has different status
 
                                     $extensionstaff = false;
-                                    if (has_capability('mod/extension:viewanyextension', $context)
-                                        || has_capability('mod/extension:approveextension', $context)
-                                        || has_capability('mod/extension:confirmextension', $context)
-                                       ) {
+                                    if (has_capability('mod/extension:approveextension', $context)) {
                                         $extensionstaff = true;
                                     }
 
@@ -942,9 +907,7 @@ class course_extension_collection {
             $act = $this->activitycmid ? get_string('activity').': '.$this->activityname.', ' : '';
 
             if($COURSE->registryworkflow && !
-               (has_capability('mod/extension:viewanyextension', $context) ||
-                has_capability('mod/extension:approveextension', $context) ||
-                has_capability('mod/extension:confirmextension', $context)||
+               (has_capability('mod/extension:approveextension', $context) ||
                 has_capability('mod/assignment:grade', $context))
               ) {
                 $conf = '';

@@ -15,7 +15,7 @@ class block_extension extends block_base {
 
     function init() {
         $this->title = get_string('extensions', 'block_extension');
-        $this->version = 2012032300;
+        $this->version = 2013091700;
     }
 
     // only one instance of this block is required
@@ -44,25 +44,19 @@ class block_extension extends block_base {
         /// Get all the appropriate data
         $context = get_context_instance(CONTEXT_COURSE, $COURSE->id);
 
-        if (has_capability('mod/extension:viewanyextension', $context)
-             || has_capability('mod/extension:approveextension', $context)
-             || has_capability('mod/extension:confirmextension', $context)
+        if (has_capability('mod/extension:approveextension', $context)
              || has_capability('mod/assignment:grade', $context)) {
 
-            // Can view any extensions, or is a tutor, so separate confirmed/unconfirmed as well
-            $extensions[3]['name'] = get_string('awaitingconfirmation', 'extension');
+            // Can approve extensions, so view all extensions in this course
             $whostext = get_string('allcourseextensions', 'extension');
 
             // All pending extensions should be shown as pending to staff
-            $extensions[0]['count'] = $DB->count_records('extension', array('course' => $COURSE->id, 'status' => 0, 'approvalconfirmed' => 0));
-            //$extensions[1]['count'] = count_records('extension', 'course', $COURSE->id, 'status', 1, 'approvalconfirmed', 1, 'userid', $USER->id); // Odd bug seems to report "4" when it should be "0" 2010-02-15
-            $extensions[1]['count'] = $DB->count_records_select('extension', "course = $COURSE->id AND status = 1 AND approvalconfirmed = 1");
-            $extensions[2]['count'] = $DB->count_records('extension', array('course' => $COURSE->id, 'status' => 2, 'approvalconfirmed' => 1));
-            // Extensions awaiting confirmation - these will be shown to the student as "Pending".
-            $extensions[3]['count'] = $DB->count_records_select('extension', "course = $COURSE->id AND status <> 0 AND approvalconfirmed = 0");
-            $totalextensions = $extensions[0]['count'] + $extensions[1]['count'] + $extensions[2]['count'] + $extensions[3]['count'];
+            $extensions[0]['count'] = $DB->count_records('extension', array('course' => $COURSE->id, 'status' => 0));
+            $extensions[1]['count'] = $DB->count_records('extension', array('course' => $COURSE->id, 'status' => 1));
+            $extensions[2]['count'] = $DB->count_records('extension', array('course' => $COURSE->id, 'status' => 2));
+            $totalextensions = $extensions[0]['count'] + $extensions[1]['count'] + $extensions[2]['count'];
 
-        } else if (has_capability('mod/extension:viewownextension', $context)) {
+        } else if (has_capability('mod/extension:request', $context)) {
             // Can view own extensions (student)
             $whostext = get_string('yourextensions', 'extension');
 
@@ -70,10 +64,10 @@ class block_extension extends block_base {
             $unconfirmedcount = $DB->count_records_select('extension', "course = $COURSE->id AND approvalconfirmed = 0 AND status != 0 AND userid = $USER->id");
             $extensions[0]['count'] = $pendingcount + $unconfirmedcount;
 
-            $extensions[1]['count'] = $DB->count_records_select('extension', "course = $COURSE->id AND status = 1 AND approvalconfirmed = 1 AND userid = $USER->id");
-            $extensions[2]['count'] = $DB->count_records_select('extension', "course = $COURSE->id AND status = 2 AND approvalconfirmed = 1 AND userid = $USER->id");
+            $extensions[1]['count'] = $DB->count_records_select('extension', "course = $COURSE->id AND status = 1 AND userid = $USER->id");
+            $extensions[2]['count'] = $DB->count_records_select('extension', "course = $COURSE->id AND status = 2 AND userid = $USER->id");
             $totalextensions = $extensions[0]['count'] + $extensions[1]['count'] + $extensions[2]['count'];
-
+$totalextensions = 50;
         }
 
         if ($totalextensions < 1) {
@@ -82,11 +76,7 @@ class block_extension extends block_base {
             $items = '';
             foreach($extensions as $key => $group) {
                 if($group['count'] > 0) {
-                    if($key == 3) {
-                        // Any unconfirmed requests
-                        // TODO: filter out pending requests
-                        $filter = '&amp;confirmed=0&amp;exclude=0';
-                    } else if( $key == 0) {
+                    if ( $key == 0) {
                         // All pending requests
                         $filter = '&amp;status='.$key;
                     } else{

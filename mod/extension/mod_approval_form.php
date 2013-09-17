@@ -26,12 +26,16 @@ class mod_extension_approval_form extends moodleform {
 
     /// State
         $mform->addElement('hidden', 'id', $cm->extension->id);
+        $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'actid', $cm->id);
+        $mform->setType('actid', PARAM_INT);
         $mform->addElement('hidden', 'courseid', $cm->course);
+        $mform->setType('courseid', PARAM_INT);
 
     /// Status
         if($cm->extension->approvalconfirmed == 1) {
             $mform->addElement('hidden', 'status', 0);
+            $mform->setType('status', PARAM_INT);
             $mform->addElement('html',
                 '<div class="fitem"><div class="fitemtitle">'.
                       get_string('status', 'moodle').
@@ -69,6 +73,7 @@ class mod_extension_approval_form extends moodleform {
             
             // Include existing notes
             $mform->addElement('hidden', 'existingprivatenotes', $cm->extension->privatenotes);
+            $mform->setType('existingprivatenotes', PARAM_RAW);
         }
         // Add a new note
         $mform->addElement('textarea', 'privatenotes', get_string('privatenotes', 'extension'), 'wrap="virtual" rows="10" cols="70"');
@@ -92,7 +97,7 @@ class mod_extension_approval_form extends moodleform {
                       '</div></div>';
             $mform->addElement('html', $notified);
         } else if ($COURSE->registryworkflow) {
-            $this->notifyElement = $mform->addElement('checkbox', 'approvalconfirmed', get_string('notifystudent', 'extension'), get_string('onlyregistry', 'extension'));
+            $this->notifyElement = $mform->addElement('checkbox', 'approvalconfirmed', get_string('notifystudent', 'extension'), get_string('notifystudentguidance', 'extension'));
         } else {
             $mform->addElement('checkbox', 'approvalconfirmed', get_string('notifystudent', 'extension'));
         }
@@ -102,7 +107,8 @@ class mod_extension_approval_form extends moodleform {
         $mform->setDefaults(array(
             'status'=>$cm->extension->status,
             'lengthgranted'=>$length,
-            'studentmessage'=>$cm->extension->studentmessage
+            'studentmessage'=>$cm->extension->studentmessage,
+            'approvalconfirmed'=>1
         ));
 
     /// Only allow student notification if status isn't pending

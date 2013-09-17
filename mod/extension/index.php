@@ -78,12 +78,12 @@ $strextensions = get_string('modulenameplural', 'extension');
 $strextension  = get_string('modulename', 'extension');
 
 /// Get all the appropriate data
-if (has_capability('mod/extension:viewanyextension', $context)) {
-    // Can view any extensions
+if (has_capability('mod/extension:approveextension', $context)) {
+    // Can approve extensions
     // View specified user, or leave as NULL to see all
     $userid = $u ? $u : NULL;
 
-} else if (has_capability('mod/extension:viewownextension', $context)) {
+} else if (has_capability('mod/extension:request', $context)) {
     // Can view own extensions
     $userid = $USER->id;
 } else {

@@ -49,9 +49,9 @@ $context = get_context_instance(CONTEXT_COURSE, $cm->course);
 
 $strextensions = get_string('modulenameplural', 'extension');
 
-$can_viewanyextension = has_capability('mod/extension:viewanyextension', $context);
+$can_approveextension = has_capability('mod/extension:approveextension', $context);
 $can_grade = has_capability('mod/assignment:grade', $context);
-$can_viewownextension = has_capability('mod/extension:viewownextension', $context);
+$can_requestextension = has_capability('mod/extension:request', $context);
 
 
 /// Print the page header
@@ -69,8 +69,8 @@ $PAGE->navbar->add(format_string($cm->extension->user->firstname.' '.$cm->extens
 // Output starts here
 echo $OUTPUT->header();
 
-if ( ! ($can_viewanyextension || $can_grade ||
-        ($can_viewownextension && $USER->id == $cm->extension->userid))
+if ( ! ($can_approveextension || $can_grade ||
+        ($can_requestextension && $USER->id == $cm->extension->userid))
     ) {
      // No permission to view this extension
      error(get_string('nopermission', 'extension'));
@@ -80,12 +80,18 @@ if ( ! ($can_viewanyextension || $can_grade ||
     // log access
     add_to_log($id, "extension", "view", "view.php?id=$id", '', $cm->id);
 
-    /// Print the main part of the page
-    echo $OUTPUT->box_start('center', '', '', 0, 'generalbox', 'dates');
+    echo $OUTPUT->box_start('generalbox');
+    echo $OUTPUT->heading(get_string('extension', 'extension'));
     echo $cm->extension->view();
     echo $OUTPUT->box_end();
 
-    echo $cm->extension->view_approval_form($context);
+
+    if ($can_approveextension) {
+        echo $OUTPUT->box_start('generalbox');
+        echo $OUTPUT->heading(get_string('updateextension', 'extension'));
+        echo $cm->extension->view_approval_form($context);
+        echo $OUTPUT->box_end();
+    }
 
 }
 

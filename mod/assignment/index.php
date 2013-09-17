@@ -51,10 +51,7 @@ $usesections = course_format_uses_sections($course->format);
 $timenow = time();
 
 $context = get_context_instance(CONTEXT_COURSE, $course->id);
-if (has_capability('mod/extension:viewanyextension', $PAGE->context)
-    || has_capability('mod/extension:approveextension', $PAGE->context)
-    || has_capability('mod/extension:confirmextension', $PAGE->context)
-   ) {
+if (has_capability('mod/extension:approveextension', $PAGE->context)) {
     $includenewduedate = false;
 } else {
     $includenewduedate = true;

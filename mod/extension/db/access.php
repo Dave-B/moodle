@@ -62,28 +62,6 @@ $capabilities = array(
         )
     ),
 
-    'mod/extension:viewanyextension' => array(
-        'riskbitmask' => RISK_PERSONAL,
-        'captype'      => 'read',
-        'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'guest'          => CAP_PREVENT,
-            'student'        => CAP_PREVENT,
-            'teacher'        => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager'        => CAP_ALLOW
-        )
-    ),
-
-    'mod/extension:viewownextension' => array(
-        'captype'      => 'read',
-        'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'guest'          => CAP_PREVENT,
-            'student'        => CAP_ALLOW
-        )
-    ),
-
     'mod/extension:approveextension' => array(
         'riskbitmask' => RISK_PERSONAL,
         'captype'      => 'write',
@@ -95,14 +73,13 @@ $capabilities = array(
         )
     ),
 
-    'mod/extension:confirmextension' => array(
+    'mod/extension:extensionalert' => array(
         'riskbitmask' => RISK_PERSONAL,
-        'captype'      => 'write',
+        'captype'      => 'read',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
             'guest'          => CAP_PREVENT,
-            'student'        => CAP_PREVENT,
-            'manager'        => CAP_PREVENT
+            'student'        => CAP_PREVENT
         )
     )
 
