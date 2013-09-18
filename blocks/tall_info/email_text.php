@@ -45,11 +45,10 @@ function toggle (id) {
 echo $OUTPUT->heading(get_string('modulenameplural', 'extension'), 2);
 $messages_extension = array(
     'approvernewextensionmessage' => 'When: New extension | Send to: Approver (without registry workflow = Tutor)',
-    'approvernewextensionmessage_workflow' => 'When: New extension | Send to: Approver (with registry workflow = Course Director)',
-    'confirmernewextensionmessage_workflow' => 'When: New extension | Send to: Confirmer (Registry)',
-    'extensionawaitingconfirmationmessage' => 'When: Extension awaiting confirmation | Send to: Confirmer (Registry)',
-    'studentextensiondecisionmessage' => 'When: Extension confirmed | Send to: Student'
-    //'graderextensiondecisionmessage' => 'Grader extension decision message'
+    'approvenewextensionnotification_workflow' => 'When: New extension | Send to: Approver (with registry workflow = Registry)',
+    'newextensionnotification_workflow' => 'When: New extension | Send to: Course Director',
+    'extensiondecisionalertmessage' => 'When: Extension approved/rejected | Send to: Course Director',
+    'studentextensiondecisionmessage' => 'When: Extension approved/rejected | Send to: Student'
 );
 echo messages_to_html($messages_extension, 'extension');
 
