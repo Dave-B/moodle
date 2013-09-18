@@ -49,11 +49,15 @@ class mod_extension_form extends moodleform {
         $type = optional_param('type', 0, PARAM_ALPHA);   // Activity type
 
         $mform->addElement('hidden', 'id', $cm->id);
+        $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'type', $type);
+        $mform->setType('type', PARAM_TEXT);
         $mform->addElement('hidden', 'activityid', $assignment->id);
+        $mform->setType('activityid', PARAM_INT);
 
     /// Name
         $mform->addElement('hidden', 'name', $cm->name);
+        $mform->setType('name', PARAM_TEXT);
 
     /// Adding the field for extension length
         // Max ext length
@@ -72,8 +76,8 @@ class mod_extension_form extends moodleform {
 
     /// Flag for who's permitted to see the extension details
         $radioarray=array();
-        $radioarray[] =& $mform->createElement('radio', 'sharedetails', '', get_string('detailsonlyregistry', 'extension'), 'noshare', $attributes);
-        $radioarray[] =& $mform->createElement('radio', 'sharedetails', '', get_string('detailsregistryandcoursedirector', 'extension'), 'share', $attributes);
+        $radioarray[] =& $mform->createElement('radio', 'sharedetails', '', get_string('detailsonlyregistry', 'extension'), 'noshare');
+        $radioarray[] =& $mform->createElement('radio', 'sharedetails', '', get_string('detailsregistryandcoursedirector', 'extension'), 'share');
         $mform->addGroup($radioarray, 'radioar', get_string('whoinform', 'extension'), array(' '), false);
         $mform->addRule('radioar', null, 'required', null, 'client');
         $mform->addElement('html', '<div class="fitem"><div class="fitemtitle">&nbsp;</div><div class="felement">'.get_string('extensionshareguidance', 'extension').'</div></div><br>');

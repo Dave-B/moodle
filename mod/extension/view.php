@@ -73,7 +73,7 @@ if ( ! ($can_approveextension || $can_grade ||
         ($can_requestextension && $USER->id == $cm->extension->userid))
     ) {
      // No permission to view this extension
-     error(get_string('nopermission', 'extension'));
+     print_error(get_string('nopermission', 'extension'));
 
 } else {
     // View this extension

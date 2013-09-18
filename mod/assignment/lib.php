@@ -141,7 +141,9 @@ class assignment_base {
             require_once(dirname(dirname(__FILE__)).'/extension/locallib.php');
 
             $context = get_context_instance(CONTEXT_COURSE, $this->cm->course);
-            if (has_capability('mod/extension:approveextension', $context)) {
+            if (has_capability('mod/extension:approveextension', $context) ||
+				has_capability('mod/extension:extensionalert', $context)
+			) {
                 // Can view any extensions
                 // View specified user, or leave as NULL to see all
                 $userid = $extensionsuser ? $extensionsuser : NULL;

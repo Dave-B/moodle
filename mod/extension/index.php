@@ -78,7 +78,10 @@ $strextensions = get_string('modulenameplural', 'extension');
 $strextension  = get_string('modulename', 'extension');
 
 /// Get all the appropriate data
-if (has_capability('mod/extension:approveextension', $context)) {
+if (has_capability('mod/extension:approveextension', $context) ||
+	has_capability('mod/extension:extensionalert', $context) ||
+	has_capability('mod/assignment:grade', $context)
+) {
     // Can approve extensions
     // View specified user, or leave as NULL to see all
     $userid = $u ? $u : NULL;
@@ -87,11 +90,12 @@ if (has_capability('mod/extension:approveextension', $context)) {
     // Can view own extensions
     $userid = $USER->id;
 } else {
-    $userid = null;
+     // No permission to view the extension list
+     print_error(get_string('nopermission', 'extension'));
 }
 
 $collection = new course_extension_collection($id, $a, $userid, $status, $confirmed);
-//print_object($collection);
+//print_object($collection->assignments);
 
 if (!$collection->assignments) {
     notice('There are no extensions matching.', "../../course/view.php?id=$course->id");

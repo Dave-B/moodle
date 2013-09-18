@@ -279,6 +279,7 @@ class extension {
 
                     // Prepare common message info
                     $from = $SITE->fullname.': '.get_string('modulenameplural', 'extension');
+                    $subject = $this->cm->name . ': '; // More info to be appended later
 
                     $messagedata->coursename = $COURSE->fullname;
                     $messagedata->assignmentname = $this->cm->activity->name;
@@ -311,9 +312,9 @@ class extension {
                         $user = $DB->get_record('user', array('id' => $this->userid));
 
                         if($fromform->status == 1) {
-                            $subject = get_string('extensionapproved', 'extension');
+                            $subject .= get_string('extensionapproved', 'extension');
                         } else {
-                            $subject = get_string('extensionrejected', 'extension');
+                            $subject .= get_string('extensionrejected', 'extension');
                         }
 
                         $messagetext = get_string('studentextensiondecisionmessage', 'extension', $messagedata);
@@ -323,7 +324,7 @@ class extension {
                         // Registry workflow
                         if (!isset($fromform->approvalconfirmed) || $fromform->approvalconfirmed < 1) {
                             // Status changed but not confirmed - notify confirmers (Registry)
-                            $subject = get_string('extensionawaitingconfirmation', 'extension');
+                            $subject .= get_string('extensionawaitingconfirmation', 'extension');
 
                             foreach ($confirmers as $confirmer) {
                                 $messagedata->approvername = $USER->firstname.' '.$USER->lastname;
@@ -340,9 +341,9 @@ class extension {
                             $user = $DB->get_record('user', array('id' => $this->userid));
 
                             if($fromform->status == 1) {
-                                $subject = get_string('extensionapproved', 'extension');
+                                $subject .= get_string('extensionapproved', 'extension');
                             } else {
-                                $subject = get_string('extensionrejected', 'extension');
+                                $subject .= get_string('extensionrejected', 'extension');
                             }
                             $messagetext = get_string('studentextensiondecisionmessage', 'extension', $messagedata);
                             email_to_user($user, $from, $subject, $messagetext, '', '', false);
@@ -692,7 +693,7 @@ class course_extension_collection {
                                get_string('studentnotified', 'extension'),
                               );
 
-        if($this->userid) {
+        if ($this->userid) {
             // Extension list is filtered by user - load one user name
             $select = 'SELECT u.id, u.firstname, u.lastname ';
             $sql = 'FROM '.$CFG->prefix.'user u '.
@@ -753,6 +754,15 @@ class course_extension_collection {
                     // Group by student
                     $studentsExtensions = array();
 
+                    $extensionstaff = false;
+                    if (has_capability('mod/extension:approveextension', $context)) {
+                        $extensionstaff = true;
+                    }
+                    $extensionrequester = false;
+                    if (has_capability('mod/extension:request', $context)) {
+                        $extensionrequester = true;
+                    }
+
                     foreach ($assignment->extensiongroup->extensions as $extensionuser) {
                         foreach ($extensionuser as $extension) {
                             $viewAwaitingConfAsPending = null;
@@ -778,11 +788,6 @@ class course_extension_collection {
                                 if ($excludeStatus === NULL || $extension->status != $excludeStatus) {
                                     // No statuses to exclude, or extension has different status
 
-                                    $extensionstaff = false;
-                                    if (has_capability('mod/extension:approveextension', $context)) {
-                                        $extensionstaff = true;
-                                    }
-
                                     if ($COURSE->registryworkflow && !$extensionstaff
                                         && !$extension->approvalconfirmed && $this->status == 0) {
                                         // When student has unconfirmed extension, allow viewing as status=0
@@ -806,49 +811,17 @@ class course_extension_collection {
                                         $requestDate = userdate($extension->timecreated, get_string('strftimedatetimeshort'));
 
                                         $viewQS = "?id=$extension->id";
-                                        if ($extension->approvalconfirmed) {
-                                            // Approval confirmed
-                                            if ($extensionstaff) {
-                                                // Staff view, so we can notify.
-                                                $title = get_string('clicktoviewapprove', 'extension');
-                                                $strstatus = "<a href=\"view.php$viewQS\" title=\"$title\">".
-                                                             get_string($assignment->extensiongroup->requeststatus[$extension->status], 'extension').'</a>';
-
-                                                if($COURSE->registryworkflow) {
-                                                    if($extension->approvalconfirmed) {
-                                                        $strstatus .= ' ('.get_string('confirmed', 'extension').')';
-                                                    } else if($extension->status != 0) {
-                                                        $strstatus .= ' ('.get_string('awaitingconfirmation', 'extension').')';
-                                                    }
-                                                }
-
-                                            } else {
-                                                // Student view
-                                                $title = get_string('clicktoview', 'extension');
-                                                $strstatus = "<a href=\"view.php$viewQS\" title=\"$title\">".
-                                                             get_string($assignment->extensiongroup->requeststatus[$extension->status], 'extension').'</a>';
-                                            }
-                                        } else if ($extensionstaff) {
-                                            // Approval not confirmed, but staff so show status.
+                                        $strstatus = get_string($assignment->extensiongroup->requeststatus[$extension->status], 'extension');
+                                        if ($extensionstaff) {
+                                            // Staff view, so link for editing.
                                             $title = get_string('clicktoviewapprove', 'extension');
-                                            $strstatus = "<a href=\"view.php$viewQS\" title=\"Click to view/approve\">".
-                                                         get_string($assignment->extensiongroup->requeststatus[$extension->status], 'extension')."</a>";
-                                            if($COURSE->registryworkflow) {
-                                                if($extension->approvalconfirmed) {
-                                                    $strstatus .= ' ('.get_string('confirmed', 'extension').')';
-                                                } else if($extension->status != 0) {
-                                                    $strstatus .= ' ('.get_string('awaitingconfirmation', 'extension').')';
-                                                }
-                                            } else {
-                                                $durationGranted = ' - ';
-                                            }
-
-                                        } else {
-                                            // Approval not confirmed, so just show "Pending" status.
+                                            $strstatus = "<a href=\"view.php$viewQS\" title=\"$title\">".$strstatus.'</a>';
+                                         } else if ($extensionrequester) {
+                                            // Staff view, so link for viewing.
                                             $title = get_string('clicktoview', 'extension');
-                                            $strstatus = "<a href=\"view.php$viewQS\" title=\"Click to view/approve\">".
-                                                         get_string($assignment->extensiongroup->requeststatus[0], 'extension')."</a>";
+                                            $strstatus = "<a href=\"view.php$viewQS\" title=\"$title\">".$strstatus.'</a>';
                                         }
+
                                         // Effective due date for student including all extensions
                                         $timestamp = $assignment->extensiongroup->get_extension_time($extension->userid, true);
                                         $effectivedate = userdate($timestamp, get_string('strftimedatetimeshort'));

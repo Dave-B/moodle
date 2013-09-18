@@ -87,8 +87,8 @@ following assignment:
       Course: {$a->coursename}
   Assignment: {$a->assignmentname}
 
-Please check the course website to approve/reject and confirm the
-extension, which will send the student notice of the decision:
+Please check the course website to approve/reject the extension,
+which will send the student notice of the decision:
   {$a->extensionurl}
 
 All extensions for this assignment are listed here:
@@ -142,7 +142,7 @@ $string['extensionshareguidance'] = 'Please confirm whether you are content for 
 $string['filter'] = 'Filter: ';
 $string['extensiondecisionalertmessage'] = 'Dear {$a->username},
 
-A student\'s extension application has been confirmed as {$a->status}:
+Registry has {$a->status} a student\'s extension application:
 
         Course: {$a->coursename}
     Assignment: {$a->assignmentname}
