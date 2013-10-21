@@ -42,9 +42,11 @@ function map_create ($htmlattribs, $mapoptions = null) {
     }
     $html .= '> </div>';
 
+    $mapoptions = $mapoptions ? ', '.$mapoptions : '';
+
     // Add map load JS
     // TODO: Maybe move map loading into external JS, with init data inline
-    $js = 'Y.on("domready", function () { M.local_map.map.maps["'.$htmlattribs['id'].'"] = M.local_map.map.addmap("'.$htmlattribs['id'].'");});';
+    $js = 'Y.on("domready", function () { M.local_map.map.maps["'.$htmlattribs['id'].'"] = M.local_map.map.addmap("'.$htmlattribs['id'].'"'.$mapoptions.');});';
     $PAGE->requires->js_init_code($js);
 
     return $html;
@@ -56,9 +58,14 @@ function map_create ($htmlattribs, $mapoptions = null) {
  * @return ...
  * @todo Finish documenting this function
  **/
-function map_add_geojson ($map, $geoJson) {
+function map_add_geojson ($mapid, $geoJson) {
+    global $PAGE;
     // Add map geojson
-    //$PAGE->requires->js_init_code('Y.on("domready", function () { M.local_map.map.maps["'.$htmlattribs['id'].'"] = M.local_map.map.addmap("'.$htmlattribs['id'].'");});');
+    // TODO: Maybe move map loading into external JS, with init data inline
+    $js = 'Y.on("domready", function () {
+        L.geoJson('.$geoJson.').addTo(M.local_map.map.maps["'.$mapid.'"]);
+    });';
+    $PAGE->requires->js_init_code($js);
     /*
     L.geoJson(data, {
         style: function (feature) {
