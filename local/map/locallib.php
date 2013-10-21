@@ -53,9 +53,9 @@ function map_create ($htmlattribs, $mapoptions = null) {
 }
 
 /**
- * Add geoJson data to a map
+ * Add geoJson data to a map specified by dom id
  *
- * @return ...
+ * @return void
  * @todo Finish documenting this function
  **/
 function map_add_geojson ($mapid, $geoJson) {
@@ -63,7 +63,10 @@ function map_add_geojson ($mapid, $geoJson) {
     // Add map geojson
     // TODO: Maybe move map loading into external JS, with init data inline
     $js = 'Y.on("domready", function () {
-        L.geoJson('.$geoJson.').addTo(M.local_map.map.maps["'.$mapid.'"]);
+        L.geoJson('.$geoJson.', {
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(feature.properties.name);
+        }}).addTo(M.local_map.map.maps["'.$mapid.'"]);
     });';
     $PAGE->requires->js_init_code($js);
     /*
