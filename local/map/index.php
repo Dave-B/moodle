@@ -43,49 +43,39 @@ echo $OUTPUT->header();
 // TODO: Create Database Tag using function
 // TODO: Add Layer control settings
 
-echo map_create(['id' =>'mymap', 'style' => 'width: 300px; height: 200px;']);
+echo map_create(['id' => 'geomap', 'style' => 'width: 300px; height: 200px;']);
+$geo = <<<EOT
+[{
+    "type": "Feature",
+    "properties": {"party": "Republican"},
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+            [-104.05, 48.99],
+            [-97.22,  48.98],
+            [-96.58,  45.94],
+            [-104.03, 45.94],
+            [-104.05, 48.99]
+        ]]
+    }
+}, {
+    "type": "Feature",
+    "properties": {"party": "Democrat"},
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+            [-109.05, 41.00],
+            [-102.06, 40.99],
+            [-102.03, 36.99],
+            [-109.04, 36.99],
+            [-109.05, 41.00]
+        ]]
+    }
+}]
+EOT;
+map_add_geojson('geomap', $geo);
 
-echo map_create(['id' =>'geomap', 'style' => 'width: 300px; height: 200px;']);
-
-/*,
-
-NS.test = function(targetid) {
-    map = NS.addmap('map_test_a');
-
-    // add a marker in the given location, attach some popup content to it and open the popup
-    marker = L.marker([51.5, -0.09]).addTo(map)
-        .bindPopup('A pretty CSS3 popup. <br> Easily customizable.');
-    Y.log(JSON.stringify(marker.toGeoJSON()));
-
-    // GeoJSON
-    var states = [{
-        "type": "Feature",
-        "properties": {"party": "Republican"},
-        "geometry": {
-            "type": "Polygon",
-            "coordinates": [[
-                [-104.05, 48.99],
-                [-97.22,  48.98],
-                [-96.58,  45.94],
-                [-104.03, 45.94],
-                [-104.05, 48.99]
-            ]]
-        }
-    }, {
-        "type": "Feature",
-        "properties": {"party": "Democrat"},
-        "geometry": {
-            "type": "Polygon",
-            "coordinates": [[
-                [-109.05, 41.00],
-                [-102.06, 40.99],
-                [-102.03, 36.99],
-                [-109.04, 36.99],
-                [-109.05, 41.00]
-            ]]
-        }
-    }];
-
+/*
     L.geoJson(states, {
         style: function(feature) {
             switch (feature.properties.party) {
@@ -96,6 +86,10 @@ NS.test = function(targetid) {
     }).addTo(map);
 };
 */
+
+
+$mapopts = '{center: [51.5, -0.09], zoom: 3}';
+echo map_create(['id' =>'mymap', 'style' => 'width: 300px; height: 200px;'], $mapopts);
 
 
 
