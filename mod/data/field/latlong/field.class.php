@@ -44,7 +44,7 @@ class data_field_latlong extends data_field_base {
     // Other map sources listed at http://kvaleberg.com/extensions/mapsources/index.php?params=51_30.4167_N_0_7.65_W_region:earth
 
     function display_add_field($recordid=0) {
-        global $CFG, $DB;
+        global $CFG, $DB, $PAGE;
 
         $lat = '';
         $long = '';
@@ -54,11 +54,27 @@ class data_field_latlong extends data_field_base {
                 $long = $content->content1;
             }
         }
-        $str = '<div title="'.s($this->field->description).'">';
+        $usemap = true;
+        if($usemap) {
+            // TODO: Autoload PHP module
+            require_once(dirname(__FILE__).'/../../../../local/map/locallib.php'); // Maps lib
+            $mapid = 'map_edit';
+            if (isset($content)) {
+                $mapopts = '{center: ['.$lat.', '.$long.'], zoom: 3}';
+                $str = map_create(['id' =>$mapid, 'style' => 'width: 300px; height: 200px;'], $mapopts);
+                $point = ["lat" => $lat, "long" => $long, "name" => "Name.", "description" => "Desc."];
+                map_add_point($mapid, $point);
+            } else {
+                $str = map_create(['id' =>$mapid, 'style' => 'width: 300px; height: 200px;']);
+            }
+            map_receive_markers($mapid);
+            $str .= '<p>Click to set location.</p>';
+        }
+        $str .= '<div title="'.s($this->field->description).'">';
         $str .= '<fieldset><legend><span class="accesshide">'.$this->field->name.'</span></legend>';
         $str .= '<table><tr><td align="right">';
-        $str .= '<label for="field_'.$this->field->id.'_0">' . get_string('latitude', 'data') . '</label></td><td><input type="text" name="field_'.$this->field->id.'_0" id="field_'.$this->field->id.'_0" value="'.s($lat).'" size="10" />°N</td></tr>';
-        $str .= '<tr><td align="right"><label for="field_'.$this->field->id.'_1">' . get_string('longitude', 'data') . '</label></td><td><input type="text" name="field_'.$this->field->id.'_1" id="field_'.$this->field->id.'_1" value="'.s($long).'" size="10" />°E</td></tr>';
+        $str .= '<label for="field_'.$this->field->id.'_0">' . get_string('latitude', 'data') . '</label></td><td><input type="text" name="field_'.$this->field->id.'_0" id="field_'.$this->field->id.'_0" value="'.s($lat).'" class="field_lat" size="10" />°N</td></tr>';
+        $str .= '<tr><td align="right"><label for="field_'.$this->field->id.'_1">' . get_string('longitude', 'data') . '</label></td><td><input type="text" name="field_'.$this->field->id.'_1" id="field_'.$this->field->id.'_1" value="'.s($long).'" class="field_long" size="10" />°E</td></tr>';
         $str .= '</table>';
         $str .= '</fieldset>';
         $str .= '</div>';
@@ -112,7 +128,7 @@ class data_field_latlong extends data_field_base {
     }
 
     function display_browse_field($recordid, $template) {
-        global $CFG, $DB;
+        global $CFG, $DB, $PAGE;
         if ($content = $DB->get_record('data_content', array('fieldid'=>$this->field->id, 'recordid'=>$recordid))) {
             $lat = $content->content;
             if (strlen($lat) < 1) {
@@ -149,7 +165,16 @@ class data_field_latlong extends data_field_base {
                 '@recordid@'=> $content->recordid,
             );
 
-            if(sizeof($servicesshown)==1 && $servicesshown[0]) {
+            $usemap = true;
+            if($usemap) {
+                // TODO: Autoload PHP module
+                require_once(dirname(__FILE__).'/../../../../local/map/locallib.php'); // Maps lib
+                $mapid = 'map_'.$content->recordid;
+                $mapopts = '{center: ['.$lat.', '.$long.'], zoom: 3}';
+                $str = map_create(['id' =>$mapid, 'style' => 'width: 300px; height: 200px;'], $mapopts);
+                $point = ["lat" => $lat, "long" => $long, "name" => "Name.", "description" => "Desc."];
+                map_add_point($mapid, $point);
+            } elseif (sizeof($servicesshown)==1 && $servicesshown[0]) {
                 $str = " <a href='"
                           . str_replace(array_keys($urlreplacements), array_values($urlreplacements), $this->linkoutservices[$servicesshown[0]])
                           ."' title='$servicesshown[0]'>$compasslat $compasslong</a>";

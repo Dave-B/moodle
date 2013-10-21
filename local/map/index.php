@@ -48,6 +48,15 @@ echo $OUTPUT->heading("Center and zoom", 2);
 $mapopts = '{center: [51.5, -0.09], zoom: 3}';
 echo map_create(['id' =>'mymap', 'style' => 'width: 300px; height: 200px;'], $mapopts);
 
+
+echo $OUTPUT->heading("Single point", 2);
+$mapopts = '{center: [51.5, -0.09], zoom: 3}';
+echo map_create(['id' =>'mymap-point', 'style' => 'width: 300px; height: 200px;'], $mapopts);
+$point = ["lat" => 51.5, "long" => -0.09, "name" => "Name.", "description" => "Desc."];
+map_add_point('mymap-point', $point);
+
+
+
 echo $OUTPUT->heading("GeoJson points", 2);
 $mapopts = '{center: [52.346463, -1.591447], zoom: 15}';
 echo map_create(['id' => 'geomap', 'style' => 'width: 300px; height: 200px;'], $mapopts);
