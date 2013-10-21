@@ -43,7 +43,33 @@ echo $OUTPUT->header();
 // TODO: Create Database Tag using function
 // TODO: Add Layer control settings
 
-echo map_create(['id' => 'geomap', 'style' => 'width: 300px; height: 200px;']);
+
+echo $OUTPUT->heading("Center and zoom", 2);
+$mapopts = '{center: [51.5, -0.09], zoom: 3}';
+echo map_create(['id' =>'mymap', 'style' => 'width: 300px; height: 200px;'], $mapopts);
+
+echo $OUTPUT->heading("GeoJson points", 2);
+$mapopts = '{center: [52.346463, -1.591447], zoom: 15}';
+echo map_create(['id' => 'geomap', 'style' => 'width: 300px; height: 200px;'], $mapopts);
+$geo = <<<EOT
+[{"type":"Feature Collection","features":[
+{"type":"Feature","id":"1","geometry":{"type":"Point","coordinates":[-1.588354,52.346163]},"properties":{"name":"Bishop’s Gate","info":"Elizabeth arrived on horseback on the evening of the 9 July 1575 at the Bishop’s Gate, where she was first admitted to the castle."}},
+{"type":"Feature","id":"2","geometry":{"type":"Point","coordinates":[-1.590379,52.346254]},"properties":{"name":"Tiltyard Gate","info":"Here, at the Tiltyard Gate, Elizabeth was offered the keys to the castle. Beyond the gate, she moved on to the tiltyard, where jousts between mounted knights would have taken place later in the visit, watched by spectators in the towers at either end."}},
+{"type":"Feature","id":"3","geometry":{"type":"Point","coordinates":[-1.591447,52.346415]},"properties":{"name":"The Mere","info":"Out on the Mere (an artificially flooded lake surrounding the castle), what appeared to be a ‘moving island’ came into view, carrying the Lady of the Lake, attended by two scantily clad nymphs."}},
+{"type":"Feature","id":"4","geometry":{"type":"Point","coordinates":[-1.590674,52.346546]},"properties":{"name":"The tiltyard","info":"Waiting on the tiltyard, Elizabeth heard a speech from the Lady of the Lake: ‘Pass on Madame, you neede no longer stand, the Lake, the Lodge, the Lord, are yours for to commande’. Elizabeth’s response was short and to the point. She replied ‘We thought indeed the lake had been ours, and do you call it yours now? Well, we will herein commune [speak] more with you more hereafter’. The Lady and the nymphs, now revealed to be played by young men, dispersed in understandable panic."}},
+{"type":"Feature","id":"5","geometry":{"type":"Point","coordinates":[-1.591114,52.346975]},"properties":{"name":"Bridge","info":"Next, Elizabeth rode across a bridge, railed in on both sides. Fixed in the railings were a range of gifts and provisions, indicative of the hospitality that she would receive during her visit. An actor ‘clad like a Poet’ came out and gave a speech expounding on the theme, whereupon the queen was admitted to the castle, to the sound of ‘sweet music’."}},
+{"type":"Feature","id":"6","geometry":{"type":"Point","coordinates":[-1.592707,52.347745]},"properties":{"name":"Inner court","info":"Arriving at the inner court, Elizabeth alighted from her horse, to the sound of drums, fifes and trumpets."}},
+{"type":"Feature","id":"7","geometry":{"type":"Point","coordinates":[-1.592471,52.347453]},"properties":{"name":"Leicester’s Building","info":"Finally, the queen climbed the stairs to her lodgings, in ‘Leicester’s Building’, a suite of private rooms specially constructed for her visit. Besides the queen’s bedchamber, the rooms included a dancing chamber and rooms to house the queen’s extensive travelling wardrobe. But the visit wasn’t just devoted to pleasure. Every day, some 20 horses arrived and departed the queen’s lodgings, carrying paperwork to and from her secretariat."}},
+{"type":"Feature","id":"8","geometry":{"type":"Point","coordinates":[-1.592761,52.348391]},"properties":{"name":"Gardens","info":"An elaborate temporary garden was designed and installed for Elizabeth’s visit, and was described in great detail in Robert Laneham’s contemporary account of the entertainments. These gardens have now been recreated by English Heritage and can be seen by visitors to the castle."}},
+{"type":"Feature","id":"9","geometry":{"type":"Point","coordinates":[-1.592573,52.348004]},"properties":{"name":"Great Chamber","info":"The hall of the medieval castle was transformed by Leicester into a Great Chamber, where he housed his collection of around 50 portraits, many commissioned specially for Elizabeth’s visit in 1575, including the twin portraits by Zuccharo."}},
+{"type":"Feature","id":"10","geometry":{"type":"Point","coordinates":[-1.593276,52.347745]},"properties":{"name":"Great Hall","info":"The impressive great hall of the castle, dominated by huge deep-set windows and hung with tapestries was left unaltered by Leicester."}},
+{"type":"Feature","id":"11","geometry":{"type":"Point","coordinates":[-1.592807,52.346919]},"properties":{"name":"Mere pageants","info":"During the queen’s visit, a series of water pageants took place, including elaborate firework displays."}}]}]
+EOT;
+map_add_geojson('geomap', $geo);
+
+
+echo $OUTPUT->heading("GeoJson areas", 2);
+echo map_create(['id' => 'geomap-areas', 'style' => 'width: 300px; height: 200px;']);
 $geo = <<<EOT
 [{
     "type": "Feature",
@@ -73,23 +99,8 @@ $geo = <<<EOT
     }
 }]
 EOT;
-map_add_geojson('geomap', $geo);
+map_add_geojson('geomap-areas', $geo);
 
-/*
-    L.geoJson(states, {
-        style: function(feature) {
-            switch (feature.properties.party) {
-                case 'Republican': return {color: "#ff0000"};
-                case 'Democrat':   return {color: "#0000ff"};
-            }
-        }
-    }).addTo(map);
-};
-*/
-
-
-$mapopts = '{center: [51.5, -0.09], zoom: 3}';
-echo map_create(['id' =>'mymap', 'style' => 'width: 300px; height: 200px;'], $mapopts);
 
 
 
