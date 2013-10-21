@@ -5,7 +5,7 @@ Use cases:
  2. Display a map set at a particular location and zoom, with data plotted:
    a. One marker
    b. Multiple markers
-   c. Maker(s) with popup data
+   c. Marker(s) with popup data
  3. Display a map, with facility to add markers.
  4. Add multiple maps to a page.
 
