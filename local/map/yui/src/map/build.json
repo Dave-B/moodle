@@ -1,0 +1,10 @@
+{
+  "name": "moodle-local_map-map",
+  "builds": {
+    "moodle-local_map-map": {
+      "jsfiles": [
+        "map.js"
+      ]
+    }
+  }
+}
