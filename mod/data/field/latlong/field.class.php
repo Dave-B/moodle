@@ -169,11 +169,15 @@ class data_field_latlong extends data_field_base {
             if($usemap) {
                 // TODO: Autoload PHP module
                 require_once(dirname(__FILE__).'/../../../../local/map/locallib.php'); // Maps lib
-                $mapid = 'map_'.$content->recordid;
-                $mapopts = '{center: ['.$lat.', '.$long.'], zoom: 3}';
-                $str = map_create(['id' =>$mapid, 'style' => 'width: 300px; height: 200px;'], $mapopts);
-                $point = ["lat" => $lat, "long" => $long, "name" => "Name.", "description" => "Desc."];
-                map_add_point($mapid, $point);
+                if ($template == 'singletemplate') {
+                    $mapid = 'map_'.$content->recordid;
+                    $mapopts = '{center: ['.$lat.', '.$long.'], zoom: 3}';
+                    $str = map_create(['id' =>$mapid, 'style' => 'width: 300px; height: 200px;'], $mapopts);
+                    $point = ["lat" => $lat, "long" => $long, "name" => "Name.", "description" => "Desc."];
+                    map_add_point($mapid, $point);
+                } else {
+                    $str = "$long, $lat";
+                }
             } elseif (sizeof($servicesshown)==1 && $servicesshown[0]) {
                 $str = " <a href='"
                           . str_replace(array_keys($urlreplacements), array_values($urlreplacements), $this->linkoutservices[$servicesshown[0]])

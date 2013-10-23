@@ -42,11 +42,17 @@ function map_create ($htmlattribs, $mapoptions = null) {
     }
     $html .= '> </div>';
 
-    $mapoptions = $mapoptions ? ', '.$mapoptions : '';
+    if ($mapoptions == null) {
+        $mapoptions = '';
+        $mapchain = '.fitWorld()';
+    } else {
+        $mapoptions = ', '.$mapoptions;
+        $mapchain = '';
+    }
 
     // Add map load JS
     // TODO: Maybe move map loading into external JS, with init data inline
-    $js = 'Y.on("domready", function () { M.local_map.map.maps["'.$htmlattribs['id'].'"] = M.local_map.map.addmap("'.$htmlattribs['id'].'"'.$mapoptions.');});';
+    $js = 'Y.on("domready", function () { M.local_map.map.maps["'.$htmlattribs['id'].'"] = M.local_map.map.addmap("'.$htmlattribs['id'].'"'.$mapoptions.')'.$mapchain.';});';
     $PAGE->requires->js_init_code($js);
 
     return $html;
@@ -62,6 +68,7 @@ function map_add_point ($mapid, $point) {
     global $PAGE;
     // Add map point
     // TODO: Maybe move map loading into external JS, with init data inline
+    //  Ref: $PAGE->requires->js_init_call()
     $js = 'Y.on("domready", function () {
         L.marker(['.$point["lat"].', '.$point["long"].']).addTo(M.local_map.map.maps["'.$mapid.'"]).bindPopup("'.$point["name"].'");
     });';
@@ -78,6 +85,7 @@ function map_add_geojson ($mapid, $geoJson) {
     global $PAGE;
     // Add map geojson
     // TODO: Maybe move map loading into external JS, with init data inline
+    //  Ref: $PAGE->requires->js_init_call()
     $js = 'Y.on("domready", function () {
         L.geoJson('.$geoJson.', {
         onEachFeature: function (feature, layer) {
@@ -97,6 +105,7 @@ function map_receive_markers ($mapid) {
     global $PAGE;
     // Add map geojson
     // TODO: Maybe move map loading into external JS, with init data inline
+    //  Ref: $PAGE->requires->js_init_call()
     $js = 'var editmarker = null;Y.on("domready", function () {
         M.local_map.map.maps["'.$mapid.'"].on("click", function(e) {
             if (editmarker) {
@@ -109,3 +118,33 @@ function map_receive_markers ($mapid) {
     });';
     $PAGE->requires->js_init_code($js);
 }
+
+/* = Database templates =
+
+== List header ==
+<div id="datamap" style="width: 640px; height: 320px;">Loading map...</div>
+
+== List repeated entry ==
+<textarea class="geojson" style="display: none;">{"type":"Feature", "id":"[[Title]]", "geometry":{ "type":"Point", "coordinates":[[[Location]]]}, "properties":{ "name":"[[Title]]", "info":"[[Description]]"}},</textarea>
+
+== javascript ==
+
+Y.on("domready", function () {
+    if (Y.one("#datamap")) {
+        M.local_map.map.maps["datamap"] = M.local_map.map.addmap("datamap", {center: [58.14288114185, -7.2773426771164], zoom: 1});
+        var json_text = '{"type":"Feature Collection","features":[';
+        Y.all("textarea.geojson").each(function (taskNode) {
+            json_text += taskNode.get('innerHTML');
+        });
+        geo = JSON.parse(json_text.substr(0, json_text.length -1) + ']}');
+        console.log(geo);
+
+        L.geoJson(geo, {
+        onEachFeature: function (feature, layer) {
+            var popuptext = '<h3>'+feature.properties.name+'</h3><div>'+feature.properties.info+'</div>';
+            layer.bindPopup(popuptext);
+        }}).addTo(M.local_map.map.maps["datamap"]);
+    }
+});
+
+*/

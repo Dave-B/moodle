@@ -12,4 +12,12 @@ Use cases:
 
 Components
  * Leaflet map library (http://leafletjs.com/) as a YUI module.
- * Ajax data loading
+ * JSON written via $PAGE->requires
+ * Ajax data loading?
+
+
+----
+
+Database integration
+ * Map template (maybe could generalise to a "collation" template for JS processing - maps, stats, etc.)
+  * Cannot use existing "List template" to generate JSON, as <script> in header is automatically closed by visual editor.
