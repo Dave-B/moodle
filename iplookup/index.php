@@ -78,7 +78,19 @@ $PAGE->set_title(get_string('iplookup', 'admin').': '.$title);
 $PAGE->set_heading($title);
 echo $OUTPUT->header();
 
-if (empty($CFG->googlemapkey3)) {
+$usemap = true;
+if($usemap) {
+    // TODO: Autoload PHP module
+    require_once(dirname(__FILE__).'/../local/map/locallib.php'); // Maps lib
+    $mapid = 'map_ip';
+    //$mapopts = '{center: ['.$info['latitude'].', '.$info['longitude'].'], zoom: 1}';
+    $str = map_create(['id' =>$mapid, 'style' => 'width: 320px; height: 240px;']);
+    $point = ["lat" => $info['latitude'], "long" => $info['longitude'], "name" => "Name.", "description" => "Desc."];
+    map_add_point($mapid, $point);
+
+    echo $str;
+    echo '<div id="note">'.$info['note'].'</div>';
+} elseif (empty($CFG->googlemapkey3)) {
     $imgwidth  = 620;
     $imgheight = 310;
     $dotwidth  = 18;
