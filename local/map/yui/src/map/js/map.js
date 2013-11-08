@@ -35,6 +35,3 @@ NS.addmap = function(targetid, opts) {
 
     return map;
 },
-NS.addGeoJsonMarkers = function(map, geoJson) {
-    console.log("hi");
-};
