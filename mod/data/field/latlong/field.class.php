@@ -176,7 +176,7 @@ class data_field_latlong extends data_field_base {
                     $point = ["lat" => $lat, "long" => $long, "name" => "Name.", "description" => "Desc."];
                     map_add_point($mapid, $point);
                 } else {
-                    $str = "$long, $lat";
+                    $str = "$lat,$long";
                 }
             } elseif (sizeof($servicesshown)==1 && $servicesshown[0]) {
                 $str = " <a href='"
