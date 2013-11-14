@@ -35,3 +35,23 @@ NS.addmap = function(targetid, opts) {
 
     return map;
 },
+NS.reversegeocode = function(lat, lon, callback_apply) {
+    Y.io('http://nominatim.openstreetmap.org/reverse?format=json&lat='+lat+'&lon='+lon, {
+        on : {
+            success : function (tx, r) {
+                var parsedResponse;
+                try {
+                    parsedResponse = Y.JSON.parse(r.responseText);
+					callback_apply(parsedResponse);
+                }
+                catch (e) {
+                    Y.log(error, 'reversegeocode: JSON Parse failed', 'leaflet-for-yui'); // TODO Check/correct this use of error logging
+                    return;
+                }
+            },
+            failure : function () {
+                Y.log(error, 'reversegeocode: Lookup failed', 'leaflet-for-yui');
+            }
+        }
+    });
+};

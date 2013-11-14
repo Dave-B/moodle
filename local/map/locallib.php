@@ -122,6 +122,16 @@ function map_receive_marker ($mapid, $existingmarker) {
             editmarker = L.marker(e.latlng).addTo(M.local_map.map.maps["'.$mapid.'"]);
             Y.one(".field_lat").set("value", e.latlng.lat);
             Y.one(".field_long").set("value", e.latlng.lng);
+            M.local_map.map.reversegeocode(e.latlng.lat, e.latlng.lng, function(geo) {
+				loc = geo.address.country
+				if (geo.address.county) {
+					loc = geo.address.county + ", " + loc;
+				}
+				if (geo.address.city) {
+					loc = geo.address.city + ", " + loc;
+				}
+				Y.one("#field_1").set("value", loc);
+			});
         });
     });';
     $PAGE->requires->js_init_code($js);

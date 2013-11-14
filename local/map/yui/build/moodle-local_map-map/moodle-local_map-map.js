@@ -34,8 +34,23 @@ NS.addmap = function(targetid, opts) {
 
     return map;
 },
-NS.addGeoJsonMarkers = function(map, geoJson) {
-    console.log("hi");
+NS.reversegeocode = function(lat, lon, callback_apply) {
+    Y.io('http://nominatim.openstreetmap.org/reverse?format=json&lat='+lat+'&lon='+lon, {
+        on : {
+            success : function (tx, r) {
+                var parsedResponse;
+                try {
+                    parsedResponse = Y.JSON.parse(r.responseText);
+					callback_apply(parsedResponse);
+                }
+                catch (e) {
+                    return;
+                }
+            },
+            failure : function () {
+            }
+        }
+    });
 };
 
 
