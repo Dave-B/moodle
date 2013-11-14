@@ -52,6 +52,7 @@ class data_field_latlong extends data_field_base {
             if ($content = $DB->get_record('data_content', array('fieldid'=>$this->field->id, 'recordid'=>$recordid))) {
                 $lat  = $content->content;
                 $long = $content->content1;
+				#print_object($content);
             }
         }
         $usemap = true;
@@ -59,16 +60,18 @@ class data_field_latlong extends data_field_base {
             // TODO: Autoload PHP module
             require_once(dirname(__FILE__).'/../../../../local/map/locallib.php'); // Maps lib
             $mapid = 'map_edit';
+            $markername = 'record';
             if (isset($content)) {
+				// Existing record to load
                 $mapopts = '{center: ['.$lat.', '.$long.'], zoom: 3}';
-                $str = map_create(['id' =>$mapid, 'style' => 'width: 300px; height: 200px;'], $mapopts);
-                $point = ["lat" => $lat, "long" => $long, "name" => "Name.", "description" => "Desc."];
-                map_add_point($mapid, $point);
+                $str = map_create(['id' =>$mapid, 'style' => $defaultmapstyle], $mapopts);
+                $point = ["lat" => $lat, "long" => $long]; # TODO: Remove/replace hardcoded name & desc.
+                map_add_point($mapid, $point, $markername);
             } else {
-                $str = map_create(['id' =>$mapid, 'style' => 'width: 300px; height: 200px;']);
+                $str = map_create(['id' =>$mapid, 'style' => $defaultmapstyle], $defaultmapopts);
             }
-            map_receive_markers($mapid);
-            $str .= '<p>Click to set location.</p>';
+            map_receive_marker($mapid, $markername);
+            $str .= '<p>Click on the map to set the location. Zoom in and out with the buttons, and pan by dragging, to be more precise.</p>';
         }
         $str .= '<div title="'.s($this->field->description).'">';
         $str .= '<fieldset><legend><span class="accesshide">'.$this->field->name.'</span></legend>';
@@ -172,9 +175,9 @@ class data_field_latlong extends data_field_base {
                 if ($template == 'singletemplate') {
                     $mapid = 'map_'.$content->recordid;
                     $mapopts = '{center: ['.$lat.', '.$long.'], zoom: 3}';
-                    $str = map_create(['id' =>$mapid, 'style' => 'width: 300px; height: 200px;'], $mapopts);
+                    $str = map_create(['id' =>$mapid, 'style' => $defaultmapstyle], $mapopts);
                     $point = ["lat" => $lat, "long" => $long, "name" => "Name.", "description" => "Desc."];
-                    map_add_point($mapid, $point);
+                    map_add_point($mapid, $point, 'record');
                 } else {
                     $str = "$lat,$long";
                 }
