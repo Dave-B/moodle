@@ -27,6 +27,9 @@ defined('MOODLE_INTERNAL') || die();
 // Add YUI lib to page
 $PAGE->requires->yui_module('moodle-local_map-map', 'M.local_map.map.init');
 
+$defaultmapopts = '{center: [46.073, 8.437], zoom: 1}';
+$defaultmapstyle = 'width: 520px; height: 350px;';
+
 /**
  * Add a map to the page
  *
@@ -64,15 +67,16 @@ function map_create ($htmlattribs, $mapoptions = null) {
  * @return void
  * @todo Finish documenting this function
  **/
-function map_add_point ($mapid, $point) {
+function map_add_point ($mapid, $point, $name) {
     global $PAGE;
     // Add map point
     // TODO: Maybe move map loading into external JS, with init data inline
     //  Ref: $PAGE->requires->js_init_call()
-    $js = 'Y.on("domready", function () {
-        L.marker(['.$point["lat"].', '.$point["long"].']).addTo(M.local_map.map.maps["'.$mapid.'"]).bindPopup("'.$point["name"].'");
+    $js = 'var '.$name.'; Y.on("domready", function () {
+        '.$name.' = L.marker(['.$point["lat"].', '.$point["long"].']).addTo(M.local_map.map.maps["'.$mapid.'"]);
     });';
     $PAGE->requires->js_init_code($js);
+    return;
 }
 
 /**
@@ -96,21 +100,25 @@ function map_add_geojson ($mapid, $geoJson) {
 }
 
 /**
- * Make a map receive markers, put latlong into fields
+ * Make a map receive a marker via a user clicking on the map, put latlong into fields
  *
  * @return void
  * @todo Finish documenting this function
  **/
-function map_receive_markers ($mapid) {
+function map_receive_marker ($mapid, $existingmarker) {
     global $PAGE;
     // Add map geojson
     // TODO: Maybe move map loading into external JS, with init data inline
     //  Ref: $PAGE->requires->js_init_call()
-    $js = 'var editmarker = null;Y.on("domready", function () {
-        M.local_map.map.maps["'.$mapid.'"].on("click", function(e) {
-            if (editmarker) {
+    $removeexisting = $existingmarker ? 'if(typeof '.$existingmarker.' !== "undefined"){M.local_map.map.maps["'.$mapid.'"].removeLayer('.$existingmarker.');}' : '';
+    $js = 'var editmarker = null;
+        Y.on("domready", function () {
+		M.local_map.map.maps["'.$mapid.'"].on("click", function(e) {
+			if (editmarker) {
                 M.local_map.map.maps["'.$mapid.'"].removeLayer(editmarker);
-            }
+            } else {'.
+			$removeexisting.
+			'}
             editmarker = L.marker(e.latlng).addTo(M.local_map.map.maps["'.$mapid.'"]);
             Y.one(".field_lat").set("value", e.latlng.lat);
             Y.one(".field_long").set("value", e.latlng.lng);
@@ -118,75 +126,3 @@ function map_receive_markers ($mapid) {
     });';
     $PAGE->requires->js_init_code($js);
 }
-
-/* = Database templates =
-
-== List header ==
-<div id="datamap" style="width: 640px; height: 320px;">Loading map...</div>
-<table id="mod-data-map-template"><thead><tr>
-<th>Delete</th>
-<th>Title</th>
-<th>Location</th>
-<th>Description</th>
-<th>Controls</th>
-</tr></thead><tbody>
-
-
-== List repeated entry ==
-<tr class="data-entry">
-<td class="template-field cell c0 firstcol">##delcheck##</td>
-<td class="template-token cell c1">[[Title]]</td>
-<td class="template-token cell c2">[[Location]]</td>
-<td class="template-token cell c3 lastcol">[[Description]]</td>
-<td class="controls template-field cell c4 lastcol">##edit##  ##more##  ##delete##  ##approve##  ##disapprove##  ##export##</td>
-</tr>
-
-== List footer ==
-</tbody></table>
-
-
-== Single template ==
-<div class="defaulttemplate">
-<h3>[[Title]]</h3>
-<table class="mod-data-default-template">
-<tbody>
-<tr class="data-entry">
-<td class="template-token cell c0 firstcol"[[Location]]</td>
-<td class="template-token cell c1">[[Description]]</td>
-<td class="controls template-field cell c2 lastcol">##edit##  ##more##  ##delete##  ##approve##  ##disapprove##  ##export##</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-
-
-== javascript ==
-
-Y.on("domready", function () {
-    if (Y.one("#datamap")) {
-        // Init map
-        M.local_map.map.maps["datamap"] = M.local_map.map.addmap("datamap", {center: [58.14288114185, -7.2773426771164], zoom: 1});
-        // Add entries
-        Y.all("#mod-data-map-template .data-entry").each(function (taskNode) {
-            var title = taskNode.getElementsByTagName('td').item(1).get('innerHTML');
-            var coords = taskNode.getElementsByTagName('td').item(2).get('innerHTML').split(',');
-            var desc = taskNode.getElementsByTagName('td').item(3).get('innerHTML');
-            var popuptext = '<h3>'+title+'</h3><div>'+desc+'</div>';
-            var boxtext = '<div class ="box generalbox">'+popuptext+'</div>';
-            L.marker([coords[0], coords[1]], {title:title}).addTo(M.local_map.map.maps["datamap"]).on('click', function(e) {
-                Y.one("#datapanel").set('innerHTML', boxtext);
-            });
-        });
-        // Hide table and buttons
-        Y.one("#datapanel").insert('<div id="datapanelvis"><input id="showdata" type="button" value="Show data table" /><input id="hidedata" type="button" value="Hide data table" />', 'after');
-        var dataelements = Y.all('#mod-data-map-template, #hidedata, #checkall, #checknone, input.form-submit');
-        var notdataelements = Y.one('#showdata');
-        Y.one('#hidedata').on('click', function() {dataelements.hide();notdataelements.show()});
-        Y.one('#showdata').on('click', function() {dataelements.show();notdataelements.hide()});
-        dataelements.hide();notdataelements.show()
-    }
-});
-
-
-*/
