@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 // Add YUI lib to page
-$PAGE->requires->yui_module('moodle-local_map-map', 'M.local_map.map.init');
+$PAGE->requires->yui_module('moodle-local_map-map', 'M.local_map.init');
 
 $defaultmapopts = '{center: [46.073, 8.437], zoom: 1}';
 $defaultmapstyle = 'width: 520px; height: 350px;';
@@ -55,7 +55,7 @@ function map_create ($htmlattribs, $mapoptions = null) {
 
     // Add map load JS
     // TODO: Maybe move map loading into external JS, with init data inline
-    $js = 'Y.on("domready", function () { M.local_map.map.maps["'.$htmlattribs['id'].'"] = M.local_map.map.addmap("'.$htmlattribs['id'].'"'.$mapoptions.')'.$mapchain.';});';
+    $js = 'Y.on("domready", function () { M.local_map.maps["'.$htmlattribs['id'].'"] = M.local_map.addmap("'.$htmlattribs['id'].'"'.$mapoptions.')'.$mapchain.';});';
     $PAGE->requires->js_init_code($js);
 
     return $html;
@@ -73,7 +73,7 @@ function map_add_point ($mapid, $point, $name) {
     // TODO: Maybe move map loading into external JS, with init data inline
     //  Ref: $PAGE->requires->js_init_call()
     $js = 'var '.$name.'; Y.on("domready", function () {
-        '.$name.' = L.marker(['.$point["lat"].', '.$point["long"].']).addTo(M.local_map.map.maps["'.$mapid.'"]);
+        '.$name.' = L.marker(['.$point["lat"].', '.$point["long"].']).addTo(M.local_map.maps["'.$mapid.'"]);
     });';
     $PAGE->requires->js_init_code($js);
     return;
@@ -94,7 +94,7 @@ function map_add_geojson ($mapid, $geoJson) {
         L.geoJson('.$geoJson.', {
         onEachFeature: function (feature, layer) {
             layer.bindPopup(feature.properties.name);
-        }}).addTo(M.local_map.map.maps["'.$mapid.'"]);
+        }}).addTo(M.local_map.maps["'.$mapid.'"]);
     });';
     $PAGE->requires->js_init_code($js);
 }
@@ -110,19 +110,19 @@ function map_receive_marker ($mapid, $existingmarker) {
     // Add map geojson
     // TODO: Maybe move map loading into external JS, with init data inline
     //  Ref: $PAGE->requires->js_init_call()
-    $removeexisting = $existingmarker ? 'if(typeof '.$existingmarker.' !== "undefined"){M.local_map.map.maps["'.$mapid.'"].removeLayer('.$existingmarker.');}' : '';
+    $removeexisting = $existingmarker ? 'if(typeof '.$existingmarker.' !== "undefined"){M.local_map.maps["'.$mapid.'"].removeLayer('.$existingmarker.');}' : '';
     $js = 'var editmarker = null;
         Y.on("domready", function () {
-		M.local_map.map.maps["'.$mapid.'"].on("click", function(e) {
+		M.local_map.maps["'.$mapid.'"].on("click", function(e) {
 			if (editmarker) {
-                M.local_map.map.maps["'.$mapid.'"].removeLayer(editmarker);
+                M.local_map.maps["'.$mapid.'"].removeLayer(editmarker);
             } else {'.
 			$removeexisting.
 			'}
-            editmarker = L.marker(e.latlng).addTo(M.local_map.map.maps["'.$mapid.'"]);
+            editmarker = L.marker(e.latlng).addTo(M.local_map.maps["'.$mapid.'"]);
             Y.one(".field_lat").set("value", e.latlng.lat);
             Y.one(".field_long").set("value", e.latlng.lng);
-            M.local_map.map.reversegeocode(e.latlng.lat, e.latlng.lng, function(geo) {
+            M.local_map.reversegeocode(e.latlng.lat, e.latlng.lng, function(geo) {
 				loc = geo.address.country
 				if (geo.address.county) {
 					loc = geo.address.county + ", " + loc;

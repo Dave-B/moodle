@@ -1,10 +1,9 @@
 YUI.add('moodle-local_map-map', function (Y, NAME) {
 
-//moodle-local_map-map
+// Module moodle-local_map
 
 M.local_map = M.local_map || {};
-var NS = M.local_map.map = {};
-//var L = M.local_map.leaflet.L;
+var NS = M.local_map = {};
 
 NS.init = function() {
     Y.Get.css('http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css', function (err) {
@@ -17,7 +16,7 @@ NS.init = function() {
                 }
                 NS.L = L;
                 NS.maps = {};
-                // On page, use `map = M.local_map.map.addmap(id, opts);`
+                // On page, use `map = M.local_map.addmap(id, opts);`
             });
         }
     });
