@@ -1,8 +1,7 @@
-//moodle-local_map-map
+// Module moodle-local_map
 
 M.local_map = M.local_map || {};
-var NS = M.local_map.map = {};
-//var L = M.local_map.leaflet.L;
+var NS = M.local_map = {};
 
 NS.init = function() {
     Y.Get.css('http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css', function (err) {
@@ -15,10 +14,10 @@ NS.init = function() {
                     Y.log(error, 'error', 'leaflet-for-yui');
                     return;
                 }
-                Y.log('moodle-local-map-leaflet: Leaflet initialised');
+                Y.log('moodle-local-map: Leaflet initialised');
                 NS.L = L;
                 NS.maps = {};
-                // On page, use `map = M.local_map.map.addmap(id, opts);`
+                // On page, use `map = M.local_map.addmap(id, opts);`
             });
         }
     });
