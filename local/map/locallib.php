@@ -27,112 +27,122 @@ defined('MOODLE_INTERNAL') || die();
 // Add YUI lib to page
 $PAGE->requires->yui_module('moodle-local_map-map', 'M.local_map.init');
 
-$defaultmapopts = '{center: [46.073, 8.437], zoom: 1}';
-$defaultmapstyle = 'width: 520px; height: 350px;';
+class local_map_map {
+	private $center;
+	private $zoom;
+	private $width;
+	private $height;
 
-/**
- * Add a map to the page
- *
- * @return string HTML map container div
- * @todo Finish documenting this function
- **/
-function map_create ($htmlattribs, $mapoptions = null) {
-    global $PAGE;
-    // Write map container HTML
-    $html = '<div';
-    foreach ($htmlattribs as $key => $val) {
-        $html .= ' '.$key.'="'.$val.'"';
-    }
-    $html .= '> </div>';
+	/**
+	 * Construct map object with basic map layout settings
+	 *
+	 * @param array opts Map size, zoom, and center settings
+	 * @return void
+	 **/
+	public function __construct($opts = null) {
+		$this->center = isset($opts['center']) ? $opts['center']: '[46.073, 8.437]';
+		$this->zoom = isset($opts['zoom']) ? $opts['zoom']: 1;
+		$this->width = isset($opts['width']) ? $opts['width']: '520px';
+		$this->height = isset($opts['height']) ? $opts['height']: '350px';
+	}
 
-    if ($mapoptions == null) {
-        $mapoptions = '';
-        $mapchain = '.fitWorld()';
-    } else {
-        $mapoptions = ', '.$mapoptions;
-        $mapchain = '';
-    }
+	/**
+	 * Instantiate the map on the page
+	 *
+	 * @param array opts Map size, zoom, and center settings
+	 * @return string HTML map container div
+	 * @todo Probably ought to be a renderer (http://docs.moodle.org/dev/Output_renderers)
+	 **/
+	public function load($id) {
+		global $PAGE;
+		// Write map container HTML
+		$html = '<div id="'.$id.'"';
+		$html .= 'style="width: '.$this->width.'; height: '.$this->height.';"';
+		$html .= '> </div>';
 
-    // Add map load JS
-    // TODO: Maybe move map loading into external JS, with init data inline
-    $js = 'Y.on("domready", function () { M.local_map.maps["'.$htmlattribs['id'].'"] = M.local_map.addmap("'.$htmlattribs['id'].'"'.$mapoptions.')'.$mapchain.';});';
-    $PAGE->requires->js_init_code($js);
+		// Add map load JS
+		// TODO: Maybe move map loading into external JS, with init data inline
+		$opts= '{center: '.$this->center.', zoom: '.$this->zoom.'}';
+		$js = 'M.local_map.maps["'.$id.'"] = M.local_map.addmap("'.$id.'", '.$opts.');';
+		$PAGE->requires->js_init_code($js, true);
+		#$PAGE->requires->js_init_code($js, true, ['moodle-local_map-map']);
 
-    return $html;
-}
+		return $html;
+	}
 
-/**
- * Add single point (with popup) to a map specified by dom id
- *
- * @return void
- * @todo Finish documenting this function
- **/
-function map_add_point ($mapid, $point, $name) {
-    global $PAGE;
-    // Add map point
-    // TODO: Maybe move map loading into external JS, with init data inline
-    //  Ref: $PAGE->requires->js_init_call()
-    $js = 'var '.$name.'; Y.on("domready", function () {
-        '.$name.' = L.marker(['.$point["lat"].', '.$point["long"].']).addTo(M.local_map.maps["'.$mapid.'"]);
-    });';
-    $PAGE->requires->js_init_code($js);
-    return;
-}
+	/**
+	 * Add single point (with popup) to a map specified by dom id
+	 *
+	 * @return void
+	 * @todo Finish documenting this function
+	 **/
+	public function add_point($mapid, $point, $name) {
+		global $PAGE;
+		// Add map point
+		// TODO: Maybe move map loading into external JS, with init data inline
+		//  Ref: $PAGE->requires->js_init_call()
+		$js = 'var '.$name.'; Y.on("domready", function () {
+			'.$name.' = L.marker(['.$point["lat"].', '.$point["long"].']).addTo(M.local_map.maps["'.$mapid.'"]);
+		});';
+		$PAGE->requires->js_init_code($js);
+		return;
+	}
 
-/**
- * Add geoJson data to a map specified by dom id
- *
- * @return void
- * @todo Finish documenting this function
- **/
-function map_add_geojson ($mapid, $geoJson) {
-    global $PAGE;
-    // Add map geojson
-    // TODO: Maybe move map loading into external JS, with init data inline
-    //  Ref: $PAGE->requires->js_init_call()
-    $js = 'Y.on("domready", function () {
-        L.geoJson('.$geoJson.', {
-        onEachFeature: function (feature, layer) {
-            layer.bindPopup(feature.properties.name);
-        }}).addTo(M.local_map.maps["'.$mapid.'"]);
-    });';
-    $PAGE->requires->js_init_code($js);
-}
+	/**
+	 * Add geoJson data to a map specified by dom id
+	 *
+	 * @return void
+	 * @todo Finish documenting this function
+	 **/
+	public function add_geojson($mapid, $geoJson) {
+		global $PAGE;
+		// Add map geojson
+		// TODO: Maybe move map loading into external JS, with init data inline
+		//  Ref: $PAGE->requires->js_init_call()
+		$js = 'Y.on("domready", function () {
+			L.geoJson('.$geoJson.', {
+			onEachFeature: function (feature, layer) {
+				layer.bindPopup(feature.properties.name);
+			}}).addTo(M.local_map.maps["'.$mapid.'"]);
+		});';
+		$PAGE->requires->js_init_code($js);
+	}
 
-/**
- * Make a map receive a marker via a user clicking on the map, put latlong into fields
- *
- * @return void
- * @todo Finish documenting this function
- **/
-function map_receive_marker ($mapid, $existingmarker) {
-    global $PAGE;
-    // Add map geojson
-    // TODO: Maybe move map loading into external JS, with init data inline
-    //  Ref: $PAGE->requires->js_init_call()
-    $removeexisting = $existingmarker ? 'if(typeof '.$existingmarker.' !== "undefined"){M.local_map.maps["'.$mapid.'"].removeLayer('.$existingmarker.');}' : '';
-    $js = 'var editmarker = null;
-        Y.on("domready", function () {
-		M.local_map.maps["'.$mapid.'"].on("click", function(e) {
-			if (editmarker) {
-                M.local_map.maps["'.$mapid.'"].removeLayer(editmarker);
-            } else {'.
-			$removeexisting.
-			'}
-            editmarker = L.marker(e.latlng).addTo(M.local_map.maps["'.$mapid.'"]);
-            Y.one(".field_lat").set("value", e.latlng.lat);
-            Y.one(".field_long").set("value", e.latlng.lng);
-            M.local_map.reversegeocode(e.latlng.lat, e.latlng.lng, function(geo) {
-				loc = geo.address.country
-				if (geo.address.county) {
-					loc = geo.address.county + ", " + loc;
-				}
-				if (geo.address.city) {
-					loc = geo.address.city + ", " + loc;
-				}
-				Y.one("#field_1").set("value", loc);
+	/**
+	 * Make a map receive a marker via a user clicking on the map, put latlong into fields
+	 *
+	 * @return void
+	 * @todo Finish documenting this function
+	 **/
+	public function receive_marker($mapid, $existingmarker) {
+		global $PAGE;
+		// Add map geojson
+		// TODO: Maybe move map loading into external JS, with init data inline
+		//  Ref: $PAGE->requires->js_init_call()
+		$removeexisting = $existingmarker ? 'if(typeof '.$existingmarker.' !== "undefined"){M.local_map.maps["'.$mapid.'"].removeLayer('.$existingmarker.');}' : '';
+		$js = 'var editmarker = null;
+			Y.on("domready", function () {
+			M.local_map.maps["'.$mapid.'"].on("click", function(e) {
+				if (editmarker) {
+					M.local_map.maps["'.$mapid.'"].removeLayer(editmarker);
+				} else {'.
+				$removeexisting.
+				'}
+				editmarker = L.marker(e.latlng).addTo(M.local_map.maps["'.$mapid.'"]);
+				Y.one(".field_lat").set("value", e.latlng.lat);
+				Y.one(".field_long").set("value", e.latlng.lng);
+				M.local_map.reversegeocode(e.latlng.lat, e.latlng.lng, function(geo) {
+					loc = geo.address.country
+					if (geo.address.county) {
+						loc = geo.address.county + ", " + loc;
+					}
+					if (geo.address.city) {
+						loc = geo.address.city + ", " + loc;
+					}
+					Y.one("#field_1").set("value", loc);
+				});
 			});
-        });
-    });';
-    $PAGE->requires->js_init_code($js);
+		});';
+		$PAGE->requires->js_init_code($js);
+	}
 }
