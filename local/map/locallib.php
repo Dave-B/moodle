@@ -24,8 +24,6 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-// Add YUI lib to page
-$PAGE->requires->yui_module('moodle-local_map-map', 'M.local_map.init');
 
 class local_map_map {
 	private $center;
@@ -40,10 +38,15 @@ class local_map_map {
 	 * @return void
 	 **/
 	public function __construct($opts = null) {
+		global $PAGE;
+
 		$this->center = isset($opts['center']) ? $opts['center']: '[46.073, 8.437]';
 		$this->zoom = isset($opts['zoom']) ? $opts['zoom']: 1;
 		$this->width = isset($opts['width']) ? $opts['width']: '520px';
 		$this->height = isset($opts['height']) ? $opts['height']: '350px';
+
+		// Add YUI lib to page
+		$PAGE->requires->yui_module('moodle-local_map-map', 'M.local_map.init');
 	}
 
 	/**
@@ -65,7 +68,6 @@ class local_map_map {
 		$opts= '{center: '.$this->center.', zoom: '.$this->zoom.'}';
 		$js = 'M.local_map.maps["'.$id.'"] = M.local_map.addmap("'.$id.'", '.$opts.');';
 		$PAGE->requires->js_init_code($js, true);
-		#$PAGE->requires->js_init_code($js, true, ['moodle-local_map-map']);
 
 		return $html;
 	}
