@@ -1,0 +1,38 @@
+.region-content .tabtree {
+  margin-bottom: 0;
+}
+.hide {
+  display: none;
+}
+
+#datamapwrapper {
+  margin: 0 auto;
+  max-width: 950px;
+}
+
+#datamap {
+  float: none; width: 100%; height: 350px;
+}
+#datamapinfopanel {
+  float: none; width: 100%;
+  border: 1px solid silver;
+  padding: 0 9px;
+  overflow: auto;
+}
+
+a#mapentryremove {
+  float: right;
+  border: 1px solid silver;
+  padding: 0 4px;
+  color: silver;
+  font-family: sans-serif;
+}
+
+@media all and (min-width: 1024px) {
+  #datamap {
+    float: left; width: 520px;
+  }
+  #datamapinfopanel {
+    float: left; width: 390px; height: 348px;
+  }
+}
