@@ -120,8 +120,9 @@ class data_field_textarea extends data_field_base {
             $formats[$fid] = $strformats[$fid];
         }
         $editor->use_editor($field, $options, $fpoptions);
+        $class = $this->get_class_name();
         $str .= '<input type="hidden" name="'.$field.'_itemid" value="'.$draftitemid.'" />';
-        $str .= '<div><textarea id="'.$field.'" name="'.$field.'" rows="'.$this->field->param3.'" cols="'.$this->field->param2.'" spellcheck="true">'.s($text).'</textarea></div>';
+        $str .= '<div><textarea id="'.$field.'" name="'.$field.'" rows="'.$this->field->param3.'" cols="'.$this->field->param2.'" spellcheck="true" class="'.$class.'">'.s($text).'</textarea></div>';
         $str .= '<div><label class="accesshide" for="' . $field . '_content1">' . get_string('format') . '</label>';
         $str .= '<select id="' . $field . '_content1" name="'.$field.'_content1">';
         foreach ($formats as $key=>$desc) {

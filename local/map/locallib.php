@@ -60,7 +60,7 @@ class local_map_map {
 		global $PAGE;
 		// Write map container HTML
 		$html = '<div id="'.$id.'"';
-		$html .= 'style="width: '.$this->width.'; height: '.$this->height.';"';
+		$html .= ' style="width: '.$this->width.'; height: '.$this->height.';"';
 		$html .= '> </div>';
 
 		// Add map load JS
@@ -131,8 +131,8 @@ class local_map_map {
 				$removeexisting.
 				'}
 				editmarker = L.marker(e.latlng).addTo(M.local_map.maps["'.$mapid.'"]);
-				Y.one(".field_lat").set("value", e.latlng.lat);
-				Y.one(".field_long").set("value", e.latlng.lng);
+				Y.one("input.field_lat").set("value", e.latlng.lat);
+				Y.one("input.field_long").set("value", e.latlng.lng);
 				M.local_map.reversegeocode(e.latlng.lat, e.latlng.lng, function(geo) {
 					loc = geo.address.country
 					if (geo.address.county) {
@@ -141,7 +141,7 @@ class local_map_map {
 					if (geo.address.city) {
 						loc = geo.address.city + ", " + loc;
 					}
-					Y.one("#field_1").set("value", loc);
+					Y.one("input.field_Area").set("value", loc);
 				});
 			});
 		});';

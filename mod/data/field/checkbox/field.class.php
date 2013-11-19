@@ -40,6 +40,7 @@ class data_field_checkbox extends data_field_base {
 
         $str = '<div title="'.s($this->field->description).'">';
         $str .= '<fieldset><legend><span class="accesshide">'.$this->field->name.'</span></legend>';
+        $class = $this->get_class_name();
 
         $i = 0;
         foreach (explode("\n", $this->field->param1) as $checkbox) {
@@ -47,9 +48,9 @@ class data_field_checkbox extends data_field_base {
             if ($checkbox === '') {
                 continue; // skip empty lines
             }
-            $str .= '<input type="hidden" name="field_' . $this->field->id . '[]" value="" />';
+            $str .= '<input type="hidden" name="field_' . $this->field->id . '[]" value="" class="'.$class.'" />';
             $str .= '<input type="checkbox" id="field_'.$this->field->id.'_'.$i.'" name="field_' . $this->field->id . '[]" ';
-            $str .= 'value="' . s($checkbox) . '" ';
+            $str .= 'value="' . s($checkbox) . '" class="'.$class.'" ';
 
             if (array_search($checkbox, $content) !== false) {
                 $str .= 'checked />';
