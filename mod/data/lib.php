@@ -191,6 +191,14 @@ class data_field_base {     // Base class for Database Field Types (see field/*/
         return true;
     }
 
+    /**
+     * Returns the name of the field, formatted as a CSS class
+     * @return string
+     */
+    public function get_class_name() {
+        return 'field_'.clean_param($this->field->name, PARAM_ALPHANUMEXT);
+    }
+
 
     /**
      * Update a field in the database
@@ -242,9 +250,10 @@ class data_field_base {     // Base class for Database Field Types (see field/*/
             $content='';
         }
 
+        $class = $this->get_class_name();
         $str = '<div title="'.s($this->field->description).'">';
         $str .= '<label class="accesshide" for="field_'.$this->field->id.'">'.$this->field->description.'</label>';
-        $str .= '<input class="basefieldinput" type="text" name="field_'.$this->field->id.'" id="field_'.$this->field->id.'" value="'.s($content).'" />';
+        $str .= '<input class="basefieldinput '.$class.'" type="text" name="field_'.$this->field->id.'" id="field_'.$this->field->id.'" value="'.s($content).'" />';
         $str .= '</div>';
 
         return $str;

@@ -38,6 +38,7 @@ class data_field_url extends data_field_base {
         $fp = new file_picker($args);
         $options = $fp->options;
 
+        $class = $this->get_class_name();
         $fieldid = 'field_url_'.$options->client_id;
 
         $straddlink = get_string('choosealink', 'repository');
@@ -54,14 +55,14 @@ class data_field_url extends data_field_base {
             $str .= '<table><tr><td align="right">';
             $str .= get_string('url','data').':</td><td>';
             $str .= '<label class="accesshide" for="' . $fieldid . '">'. $this->field->name .'</label>';
-            $str .= '<input type="text" name="field_'.$this->field->id.'_0" id="'.$fieldid.'" value="'.$url.'" size="60" />';
+            $str .= '<input type="text" name="field_'.$this->field->id.'_0" id="'.$fieldid.'" value="'.$url.'" size="60" class="'.$class.'" />';
             $str .= '<button id="filepicker-button-'.$options->client_id.'" style="display:none">'.$straddlink.'</button></td></tr>';
             $str .= '<tr><td align="right">'.get_string('text','data').':</td><td><input type="text" name="field_'.$this->field->id.'_1" id="field_'.$this->field->id.'_1" value="'.s($text).'" size="60" /></td></tr>';
             $str .= '</table>';
         } else {
             // Just the URL field
             $str .= '<label class="accesshide" for="' . $fieldid . '">'. $this->field->name .'</label>';
-            $str .= '<input type="text" name="field_'.$this->field->id.'_0" id="'.$fieldid.'" value="'.s($url).'" size="60" />';
+            $str .= '<input type="text" name="field_'.$this->field->id.'_0" id="'.$fieldid.'" value="'.s($url).'" size="60" class="'.$class.'" />';
             if (count($options->repositories) > 0) {
                 $str .= '<button id="filepicker-button-'.$options->client_id.'" class="visibleifjs">'.$straddlink.'</button>';
             }
