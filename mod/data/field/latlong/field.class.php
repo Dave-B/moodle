@@ -57,25 +57,23 @@ class data_field_latlong extends data_field_base {
         }
         $usemap = true;
         if($usemap) {
-            // TODO: Autoload PHP module
+            // TODO: Autoload PHP module?
             require_once(dirname(__FILE__).'/../../../../local/map/locallib.php'); // Maps lib
             $mapid = 'map_edit';
-            $markername = 'record';
+            $markerid = 'record';
             if (isset($content)) {
                 // Existing record to load
-                $mapopts = [
-                    'center' => '['.$lat.', '.$long.']',
-                    'zoom' => 3,
-                ];
-                $map = new local_map_map($mapopts);
-                $str = $map->load($mapid);
-                $point = ["lat" => $lat, "long" => $long];
-                $map->add_point($mapid, $point, $markername);
+				$markers = new local_map_layer('marker', [
+					new local_map_marker($markerid, $lat, $long)
+				]);
+
+                $view = new local_map_view($lat, $long, 5);
+                $map = new local_map_map($mapid, [$markers], $view);
             } else {
-                $map = new local_map_map();
-                $str = $map->load($mapid);
+                $map = new local_map_map($mapid);
             }
-            $map->receive_marker($mapid, $markername);
+            $map->receive_marker($markerid, 'input.field_lat', 'input.field_long', $markerid);
+            $str = $map->render();
             $str .= '<p>Click on the map to set the location. Zoom in and out with the buttons, and pan by dragging, to be more precise.</p>';
         }
         $str .= '<div title="'.s($this->field->description).'">';
@@ -179,14 +177,15 @@ class data_field_latlong extends data_field_base {
                 require_once(dirname(__FILE__).'/../../../../local/map/locallib.php'); // Maps lib
                 if ($template == 'singletemplate') {
                     $mapid = 'map_'.$content->recordid;
-                    $mapopts = [
-                        'center' => '['.$lat.', '.$long.']',
-                        'zoom' => 3,
-                    ];
-                    $map = new local_map_map($mapopts);
-                    $str = $map->load($mapid);
-                    $point = ["lat" => $lat, "long" => $long, "name" => "Name.", "description" => "Desc."];
-                    $map->add_point($mapid, $point, 'record');
+
+					$markers = new local_map_layer('marker', [
+						new local_map_marker($mapid.'marker', $lat, $long)
+					]);
+
+                    $view = new local_map_view($lat, $long, 5);
+
+                    $map = new local_map_map($mapid, [$markers], $view);
+                    $str = $map->render();
                 } else {
                     $str = "$lat,$long";
                 }
