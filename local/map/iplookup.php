@@ -24,8 +24,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../config.php');
-require_once('lib.php');
+require('../../config.php');
+require_once('../../iplookup/lib.php');
 
 require_login();
 
@@ -78,7 +78,20 @@ $PAGE->set_title(get_string('iplookup', 'admin').': '.$title);
 $PAGE->set_heading($title);
 echo $OUTPUT->header();
 
-if (empty($CFG->googlemapkey3)) {
+$usemap = true;
+if($usemap) {
+    // TODO: Autoload PHP module
+    require_once('locallib.php'); // Maps lib
+
+    $markers = new local_map_layer('marker', [
+        new local_map_marker('ip', $info['latitude'], $info['longitude'], $title)
+    ]);
+
+    $map = new local_map_map('ipmap', [$markers]);
+    echo $map->render();
+
+    echo '<div id="note">'.$info['note'].'</div>';
+} elseif (empty($CFG->googlemapkey3)) {
     $imgwidth  = 620;
     $imgheight = 310;
     $dotwidth  = 18;
