@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Map specific functions
+ * Map instantiation class.
  *
  * @package    local_map
  * @copyright  2013 David Balch, University of Oxford <david.balch@conted.ox.ac.uk>
@@ -24,127 +24,287 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+class local_map_tile_provider {
+    private $name;
+    private $title;
+    private $url;
+    private $attribution;
+    private $apikey = null;
+
+    public function __construct($name, $title, $url, $attribution, $apikey = null) {
+        $this->name = $name;
+        $this->title = $title;
+        $this->url = $url;
+        $this->attribution = $attribution;
+        $this->apikey = $apikey;
+    }
+}
+
+// OSM: http://wiki.openstreetmap.org/wiki/Tiles
+$alltileproviders['osm'] = new local_map_tile_provider(
+    'osm', 'Road map',
+    'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+    '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors');
+
+// Mapquest: http://developer.mapquest.com/web/products/open/map
+$alltileproviders['mapquest-arial'] = new local_map_tile_provider(
+    'mapquest-arial', 'Satellite',
+    'http://otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png',
+    'Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agencys');
 
 class local_map_map {
-	private $center;
-	private $zoom;
-	private $width;
-	private $height;
+    private $domid;
+    private $tileproviders;
+    private $view;
+    private $markerlayers;
+    private $geojsonlayers;
+    private $receivemarker;
 
-	/**
-	 * Construct map object with basic map layout settings
-	 *
-	 * @param array opts Map size, zoom, and center settings
-	 * @return void
-	 **/
-	public function __construct($opts = null) {
-		global $PAGE;
+    /**
+     * Construct map object
+     *
+     * @param string domid of/for the map container.
+     * @param array layers optional layer objects to add to the map. Layer types: 'marker' (pins and popups), 'geojson'.
+     * @param array view optional setting for map: width, height, center, zoom.
+     * @param array tileproviders names of tileproviders to use.
+     * @return void
+     **/
+    public function __construct($domid, $layers = null, $view = null, $tileproviders = ['osm']) {
+        global $PAGE;
 
-		$this->center = isset($opts['center']) ? $opts['center']: '[46.073, 8.437]';
-		$this->zoom = isset($opts['zoom']) ? $opts['zoom']: 1;
-		$this->width = isset($opts['width']) ? $opts['width']: '520px';
-		$this->height = isset($opts['height']) ? $opts['height']: '350px';
+        $this->domid = $domid;
+        if ($view) {
+            $this->view = $view;
+        } else {
+            $this->view = new local_map_view();
+        }
 
-		// Add YUI lib to page
-		$PAGE->requires->yui_module('moodle-local_map-map', 'M.local_map.init');
-	}
+        foreach ($tileproviders as $provider) {
+            $this->add_tilelayer($provider);
+        }
 
-	/**
-	 * Instantiate the map on the page
-	 *
-	 * @param array opts Map size, zoom, and center settings
-	 * @return string HTML map container div
-	 * @todo Probably ought to be a renderer (http://docs.moodle.org/dev/Output_renderers)
-	 **/
-	public function load($id) {
-		global $PAGE;
-		// Write map container HTML
-		$html = '<div id="'.$id.'"';
-		$html .= ' style="width: '.$this->width.'; height: '.$this->height.';"';
-		$html .= '> </div>';
+        if ($layers) {
+            // Add layers to map
+            foreach ($layers as $layer) {
+                $add_layer = 'add_layer_'.$layer->type;
+                $this->$add_layer($layer->data);
+            }
+        }
+    }
 
-		// Add map load JS
-		// TODO: Maybe move map loading into external JS, with init data inline
-		$opts= '{center: '.$this->center.', zoom: '.$this->zoom.'}';
-		$js = 'M.local_map.maps["'.$id.'"] = M.local_map.addmap("'.$id.'", '.$opts.');';
-		$PAGE->requires->js_init_code($js, true);
+    /**
+     * Add geojson layer to map object
+     *
+     * @param string geojson data
+     * @return void
+     **/
+    public function add_layer_geojson($data) {
+        $this->geojsonlayers[] = $data;
+    }
 
-		return $html;
-	}
+    /**
+     * Add geojson layer to map object
+     *
+     * @param array marker data
+     * @return void
+     **/
+    public function add_layer_marker($data) {
+        $this->markerlayers[] = $data;
+    }
 
-	/**
-	 * Add single point (with popup) to a map specified by dom id
-	 *
-	 * @return void
-	 * @todo Finish documenting this function
-	 **/
-	public function add_point($mapid, $point, $name) {
-		global $PAGE;
-		// Add map point
-		// TODO: Maybe move map loading into external JS, with init data inline
-		//  Ref: $PAGE->requires->js_init_call()
-		$js = 'var '.$name.'; Y.on("domready", function () {
-			'.$name.' = L.marker(['.$point["lat"].', '.$point["long"].']).addTo(M.local_map.maps["'.$mapid.'"]);
-		});';
-		$PAGE->requires->js_init_code($js);
-		return;
-	}
+    /**
+     * Add tileproviders to map object
+     *
+     * @param array view optional settings for map: width, height, center, zoom.
+     **/
+    public function add_tilelayer($provider) {
+        //echo $provider;
+        global $alltileproviders;
+        $this->tileproviders[$provider] = $alltileproviders[$provider];
+    }
 
-	/**
-	 * Add geoJson data to a map specified by dom id
-	 *
-	 * @return void
-	 * @todo Finish documenting this function
-	 **/
-	public function add_geojson($mapid, $geoJson) {
-		global $PAGE;
-		// Add map geojson
-		// TODO: Maybe move map loading into external JS, with init data inline
-		//  Ref: $PAGE->requires->js_init_call()
-		$js = 'Y.on("domready", function () {
-			L.geoJson('.$geoJson.', {
-			onEachFeature: function (feature, layer) {
-				layer.bindPopup(feature.properties.name);
-			}}).addTo(M.local_map.maps["'.$mapid.'"]);
-		});';
-		$PAGE->requires->js_init_code($js);
-	}
+    /**
+     * Enable a map to receive a marker via a user clicking on the map.
+     * Put the lat long values into CSS selector spcified fields
+     *
+     * @param string markerid Id for new marker
+     * @param string latdest CSS selector of desitnation element for latitude value
+     * @param string lngdest CSS selector of desitnation element for longitude value
+     * @param string existingmarker Id of an existing marker to remove
+     * @param array reversegeocode CSS selector of desitnation element for reverse geocode, array of address components to return
+     * @return void
+     * @todo Finish documenting this function
+     **/
+    public function receive_marker($markerid, $latdest = 'input.field_lat', $lngdest = 'input.field_long', $existingid = null, $reversegeocode = null) {
+		$rm = new stdClass();
+		$rm->markerid = $markerid;
+		$rm->latdest = $latdest;
+		$rm->lngdest = $lngdest;
+		$rm->existingid = $existingid;
+		$rm->reversegeocode = $reversegeocode;
 
-	/**
-	 * Make a map receive a marker via a user clicking on the map, put latlong into fields
-	 *
-	 * @return void
-	 * @todo Finish documenting this function
-	 **/
-	public function receive_marker($mapid, $existingmarker) {
-		global $PAGE;
-		// Add map geojson
-		// TODO: Maybe move map loading into external JS, with init data inline
-		//  Ref: $PAGE->requires->js_init_call()
-		$removeexisting = $existingmarker ? 'if(typeof '.$existingmarker.' !== "undefined"){M.local_map.maps["'.$mapid.'"].removeLayer('.$existingmarker.');}' : '';
-		$js = 'var editmarker = null;
-			Y.on("domready", function () {
-			M.local_map.maps["'.$mapid.'"].on("click", function(e) {
-				if (editmarker) {
-					M.local_map.maps["'.$mapid.'"].removeLayer(editmarker);
-				} else {'.
-				$removeexisting.
-				'}
-				editmarker = L.marker(e.latlng).addTo(M.local_map.maps["'.$mapid.'"]);
-				Y.one("input.field_lat").set("value", e.latlng.lat);
-				Y.one("input.field_long").set("value", e.latlng.lng);
-				M.local_map.reversegeocode(e.latlng.lat, e.latlng.lng, function(geo) {
-					loc = geo.address.country
-					if (geo.address.county) {
-						loc = geo.address.county + ", " + loc;
+		$this->receivemarker = $rm;
+    }
+
+    /**
+     * Render map
+     * @return string HTML fragment
+     **/
+    public function render() {
+        global $PAGE;
+		//print_object($this);
+
+        $extramodules = '';
+        if ($this->receivemarker) {
+			$extramodules = ", 'event', 'node', 'io'";
+		}
+        $js_map_init_start = "YUI({delayUntil: 'domready'}).use('moodle-local_map-map'".$extramodules.", function(Y) {M.local_map.init(function() {";
+        $js_map_init_end = '});});';
+        $js_map_view = '{center: ['.$this->view->lat.','.$this->view->lng.'], zoom: '.$this->view->zoom.'}';
+        $js_map = 'M.local_map.maps["'.$this->domid.'"] = M.local_map.addmap("'.$this->domid.'", '.$js_map_view.');';
+
+        $js_geojsonlayers = '';
+        if ($this->geojsonlayers) {
+            foreach ($this->geojsonlayers as $geojson) {
+                $js_geojsonlayers .= 'L.geoJson('.$geojson.', {
+onEachFeature: function (feature, layer) {
+    layer.bindPopup(feature.properties.description);
+}}).addTo(M.local_map.maps["'.$this->domid.'"]);';
+                // TODO: tooltip titles ~ layer.title = feature.properties.name
+            }
+        }
+
+        $js_markerlayers = '';
+        if ($this->markerlayers) {
+            foreach ($this->markerlayers as $markers) {
+                // TODO: Put layers in groups
+                //$js_add_markerlayers .= 'L.marker([50.5, 30.5]).addTo(M.local_map.maps["'.$this->domid.'"]);';
+                foreach ($markers as $marker) {
+                    $attribs = $marker->title ? 'title: "'.$marker->title.'",' : '';
+                    $attribs = $attribs != '' ? ', {'.$attribs.'}' : '';
+                    if ($marker->content && $marker->contentmode == 'popup') {
+						$content = $marker->content ? '.bindPopup(\''.$marker->content.'\')' : '';
+					} else {
+						$content = '';
 					}
-					if (geo.address.city) {
-						loc = geo.address.city + ", " + loc;
-					}
-					Y.one("input.field_Area").set("value", loc);
-				});
-			});
-		});';
-		$PAGE->requires->js_init_code($js);
-	}
+                    $js_markerlayers .= $marker->id.' = L.marker(['.$marker->lat.','.$marker->lng.']'.$attribs.').addTo(M.local_map.maps["'.$this->domid.'"])'.$content.';';
+                }
+            }
+        }
+
+        $js_receivemarker = '';
+        if ($this->receivemarker) {
+			if (isset($this->receivemarker->existingid)) {
+				$usermarker = $this->receivemarker->existingid;
+			} else {
+				$usermarker = 'editmarker';
+			}
+			$js_receivemarker = 'M.local_map.maps["'.$this->domid.'"].on("click", function(e) {
+				if (typeof '.$usermarker.' !== "undefined") {
+					M.local_map.maps["'.$this->domid.'"].removeLayer('.$usermarker.');
+				};
+                '.$usermarker.' = L.marker(e.latlng).addTo(M.local_map.maps["'.$this->domid.'"]);
+                Y.one("'.$this->receivemarker->latdest.'").set("value", e.latlng.lat);
+                Y.one("'.$this->receivemarker->lngdest.'").set("value", e.latlng.lng);';
+
+			if (true || isset($this->receivemarker->reversegeocode)) {
+				$js_receivemarker .= 'M.local_map.reversegeocode(e.latlng.lat, e.latlng.lng, function(geo) {
+                    loc = geo.address.country
+                    if (geo.address.county) {
+                        loc = geo.address.county + ", " + loc;
+                    }
+                    if (geo.address.city) {
+                        loc = geo.address.city + ", " + loc;
+                    }
+                    Y.one("input.field_Area").set("value", loc);
+                });';
+			}
+			$js_receivemarker .= '});';
+		}
+
+		// Output JS
+        // TODO: Prepare settings for inclusion in M.cfg (or similar), to be picked up in M.local_map.init(), instead of using js_init_code().
+        $js = $js_map_init_start . $js_map . $js_geojsonlayers . $js_markerlayers . $js_receivemarker . $js_map_init_end;
+        $PAGE->requires->js_init_code($js);
+
+        // Write map container HTML
+        $html = '<div id="'.$this->domid.'"';
+        $html .= ' style="width: '.$this->view->width.'; height: '.$this->view->height.';"';
+        $html .= '> </div>';
+
+        return $html;
+    }
+}
+
+class local_map_layer {
+	public $type;
+	public $data;
+
+    /**
+     * Construct layer object
+     *
+     * @param string type of layer, i.e. marker, geojson
+     * @param array|string markers, or geojson string
+     * @return void
+     **/
+    public function __construct($type, $data) {
+        $this->type = $type;
+        $this->data = $data;
+    }
+}
+
+class local_map_marker {
+    public $id;
+    public $lat;
+    public $lng;
+    public $title;
+    public $content;
+    public $contentmode;
+
+    /**
+     * Construct marker object
+     *
+     * @param string id Marker id, enabling manipulation via javascript
+     * @param float lat Marker latitude
+     * @param float lng Marker longitude
+     * @param string title Tooltip text
+     * @param string content to be shown, e.g. in a popup
+     * @param string contentmode to show content in, e.g. in a popup, or a separate div element. 
+     * @return void
+     **/
+    public function __construct($id, $lat, $lng, $title = null, $content = null, $contentmode = 'popup') {
+        $this->id = $id;
+        $this->lat = $lat;
+        $this->lng = $lng;
+		$this->title = $title;
+		$this->content = $content;
+		$this->contentmode = $contentmode;
+    }
+}
+
+class local_map_view {
+    public $lat;
+    public $lng;
+    public $zoom;
+    public $width;
+    public $height;
+
+    /**
+     * Construct view object, to define the map size on page, and area shown.
+     *
+     * @param float lat Map center latitude
+     * @param float lng Map center longitude
+     * @param int zoom map zoom value
+     * @param string width HTML map container width
+     * @param string heightHTML map container height
+     * @return void
+     **/
+    public function __construct($lat = null, $lng = null, $zoom = null, $width = null, $height = null) {
+        // TODO: Get default values from settings in database.
+        $this->lat = $lat ? $lat : 46.073;
+        $this->lng = $lng ? $lng : 8.437;
+        $this->zoom = $zoom ? $zoom : 1;
+        $this->width = $width ? $width : '520px';
+        $this->height = $height ? $height : '350px';
+    }
 }
