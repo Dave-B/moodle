@@ -1,23 +1,23 @@
 Map module for Moodle.
 
-Use cases:
- 1. Display a map set at a particular location and zoom
- 2. Display a map set at a particular location and zoom, with data plotted:
-   a. One marker
-   b. Multiple markers
-   c. Marker(s) with popup data
- 3. Display a map, with facility to add markers.
- 4. Add multiple maps to a page.
+A YUI module to load and init the Leflet map JS and CSS, and a PHP module to easily access it in Moodle. Features:
+ * Adds Leaflet as child object of "M"
+ * Create map(s) with default/specified view
+ * Set tile provider
+ * Add markers & popups
+ * Add geoJSON
+ * Add markers
+ * Reverse geocode via nominatim.openstreetmap.org
 
+ * Database activity hack & preset for maps on latlong field
 
-Components
- * Leaflet map library (http://leafletjs.com/) as a YUI module.
- * JSON written via $PAGE->requires
- * Ajax data loading?
+TODO:
+ * Put JS data in M.cfg (or similar), and move all JS functionality from locallib.php to map.js
+ * Map module settings
+ * Map option for database latlong field
+ * Map module in core, not local
+ * Move render() to render API
+ * Restric zoom levels for limited tile providers
+ * Add more tile providers
 
-
-----
-
-Database integration
- * Map template (maybe could generalise to a "collation" template for JS processing - maps, stats, etc.)
-  * Cannot use existing "List template" to generate JSON, as <script> in header is automatically closed by visual editor.
+ * Database activity modifications for maps on latlong field
