@@ -76,9 +76,11 @@ $map2 = new local_map_map('mymap2', [$markers], $view);
 
 echo $map2->render();
 
-if (false) {
+echo '<h2>Map with road and satellite tilesets</h2>';
+
+if (true) {
 // Alternate tile providers
-$map3 = new local_map_map('mymap2', ['mapquest-arial']);
+$map3 = new local_map_map('mymap3', null, null, ['osm', 'mapquest_arial']);
 echo $map3->render();
 }
 
