@@ -40,6 +40,9 @@ echo $OUTPUT->header();
 
 echo '<h1>Map module examples</h1>';
 
+echo 'Use maps: '.get_config('local_map', 'usemaps');
+
+if (get_config('local_map', 'usemaps')) {
 echo '<h2>Basic map with marker</h2>';
 
 $markers = new local_map_layer('marker', [
@@ -86,6 +89,8 @@ echo $map3->render();
 
 echo '<hr>';
 
-
+} else {
+    echo '<p>Maps not enabled. Enable in <a href="http://m2/admin/settings.php?section=mapsettings">settings</a>.</p>';
+}
 
 echo $OUTPUT->footer();

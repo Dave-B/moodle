@@ -78,8 +78,7 @@ $PAGE->set_title(get_string('iplookup', 'admin').': '.$title);
 $PAGE->set_heading($title);
 echo $OUTPUT->header();
 
-$usemap = true;
-if($usemap) {
+if(get_config('local_map', 'usemaps')) {
     // TODO: Autoload PHP module
     require_once('locallib.php'); // Maps lib
 
@@ -101,8 +100,8 @@ if($usemap) {
     $dy = round((($info['latitude'] + 90) * ($imgheight / 180)));
 
     echo '<div id="map" style="width:'.($imgwidth+$dotwidth).'px; height:'.$imgheight.'px;">';
-    echo '<img src="earth.jpeg" style="width:'.$imgwidth.'px; height:'.$imgheight.'px" alt="" />';
-    echo '<img src="marker.gif" style="width:'.$dotwidth.'px; height:'.$dotheight.'px; margin-left:'.$dx.'px; margin-bottom:'.$dy.'px;" alt="" />';
+    echo '<img src="../../iplookup/earth.jpeg" style="width:'.$imgwidth.'px; height:'.$imgheight.'px" alt="" />';
+    echo '<img src="../../iplookup/marker.gif" style="width:'.$dotwidth.'px; height:'.$dotheight.'px; margin-left:'.$dx.'px; margin-bottom:'.$dy.'px;" alt="" />';
     echo '</div>';
     echo '<div id="note">'.$info['note'].'</div>';
 
