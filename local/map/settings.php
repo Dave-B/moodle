@@ -15,12 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
- * English strings for map
- *
- * You can have a rather longer description of the file as well,
- * if you like, and it can span multiple lines.
+ * The map module configuration variables
  *
  * @package    local_map
  * @copyright  2013 David Balch, University of Oxford <david.balch@conted.ox.ac.uk>
@@ -29,16 +25,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-//$string['modulename'] = 'map';
-//$string['modulenameplural'] = 'maps';
-//$string['modulename_help'] = 'Use the map module for... | The map module allows...';
-//$string['mapfieldset'] = 'Custom example fieldset';
-//$string['mapname'] = 'map name';
-//$string['mapname_help'] = 'This is the content of the help tooltip associated with the mapname field. Markdown syntax is supported.';
-$string['map'] = 'Map';
-$string['mapsettings'] = 'Map settings';
-$string['maptest'] = 'Map test';
-//$string['pluginadministration'] = 'map administration';
-$string['pluginname'] = 'Map';
-$string['usemaps'] = 'Use maps';
-$string['configusemaps'] = 'Enable or disable javascript maps';
+$settings = new admin_settingpage('mapsettings', new lang_string('mapsettings', 'local_map'));
+if ($ADMIN->fulltree) {
+    $settings->add(new admin_setting_configcheckbox('local_map/usemaps', get_string('usemaps', 'local_map'),
+                       get_string('configusemaps', 'local_map'), 0));
+}
+
+$ADMIN->add('location', $settings);
+unset($settings);
