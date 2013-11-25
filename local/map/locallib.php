@@ -25,11 +25,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 class local_map_tile_provider {
-    private $name;
-    private $title;
-    private $url;
-    private $attribution;
-    private $apikey = null;
+    public $name;
+    public $title;
+    public $url;
+    public $attribution;
+    public $apikey = null;
 
     public function __construct($name, $title, $url, $attribution, $apikey = null) {
         $this->name = $name;
@@ -47,8 +47,8 @@ $alltileproviders['osm'] = new local_map_tile_provider(
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors');
 
 // Mapquest: http://developer.mapquest.com/web/products/open/map
-$alltileproviders['mapquest-arial'] = new local_map_tile_provider(
-    'mapquest-arial', 'Satellite',
+$alltileproviders['mapquest_arial'] = new local_map_tile_provider(
+    'mapquest_arial', 'Satellite',
     'http://otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png',
     'Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agencys');
 
@@ -161,7 +161,12 @@ class local_map_map {
         $js_map_init_start = "YUI({delayUntil: 'domready'}).use('moodle-local_map-map'".$extramodules.", function(Y) {M.local_map.init(function() {";
         $js_map_init_end = '});});';
         $js_map_view = '{center: ['.$this->view->lat.','.$this->view->lng.'], zoom: '.$this->view->zoom.'}';
-        $js_map = 'M.local_map.maps["'.$this->domid.'"] = M.local_map.addmap("'.$this->domid.'", '.$js_map_view.');';
+        //$js_map = 'M.local_map.maps["'.$this->domid.'"] = M.local_map.addmap("'.$this->domid.'", '.$js_map_view.');';
+        $js_map = 'M.local_map.maps["'.$this->domid.'"] = L.map("'.$this->domid.'", '.$js_map_view.');';
+        $js_tiles = '';
+        foreach ($this->tileproviders as $provider) {
+            $js_tiles .= $provider->name." = L.tileLayer('".$provider->url."', {attribution: '".$provider->attribution."'}).addTo(M.local_map.maps['".$this->domid."']);";
+        }
 
         $js_geojsonlayers = '';
         if ($this->geojsonlayers) {
@@ -222,9 +227,18 @@ onEachFeature: function (feature, layer) {
 			$js_receivemarker .= '});';
 		}
 
+        $js_controls = '';
+        if (count($this->tileproviders) > 1) {
+            $js_controls = 'var basemaps = {';
+            foreach ($this->tileproviders as $provider) {
+                $js_controls .= '"'.$provider->title.'": '.$provider->name.',';
+            }
+            $js_controls .= '};L.control.layers(basemaps).addTo(M.local_map.maps["'.$this->domid.'"]);';
+        }
+
 		// Output JS
         // TODO: Prepare settings for inclusion in M.cfg (or similar), to be picked up in M.local_map.init(), instead of using js_init_code().
-        $js = $js_map_init_start . $js_map . $js_geojsonlayers . $js_markerlayers . $js_receivemarker . $js_map_init_end;
+        $js = $js_map_init_start . $js_map . $js_tiles . $js_geojsonlayers . $js_markerlayers . $js_receivemarker . $js_controls . $js_map_init_end;
         $PAGE->requires->js_init_code($js);
 
         // Write map container HTML

@@ -26,19 +26,6 @@ NS.init = function(callback) {
         }
     });
 },
-NS.addmap = function(targetid, opts) {
-    L = NS.L;
-    // Create a map in the "map" div, set the view to a given place and zoom
-    opts = opts || {center: [0, 0], zoom: 0};
-    var map = L.map(targetid, opts);
-
-    // Add an OpenStreetMap tile layer
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    return map;
-},
 NS.reversegeocode = function(lat, lon, callback_apply) {
     Y.io('http://nominatim.openstreetmap.org/reverse?format=json&lat='+lat+'&lon='+lon, {
         on : {
