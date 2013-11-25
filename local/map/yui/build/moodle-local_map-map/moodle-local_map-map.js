@@ -55,4 +55,4 @@ NS.reversegeocode = function(lat, lon, callback_apply) {
 };
 
 
-}, '@VERSION@', {"requires": ["get"]});
+}, '@VERSION@', {"requires": ["get", "io", "json-parse"]});

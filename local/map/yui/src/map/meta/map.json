@@ -1,7 +1,8 @@
+
 {
   "moodle-local_map-map": {
     "requires": [
-        "get"
+        "get", "io", "json-parse"
     ]
   }
 }
