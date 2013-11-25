@@ -269,7 +269,7 @@ class local_map_marker {
      * @param float lng Marker longitude
      * @param string title Tooltip text
      * @param string content to be shown, e.g. in a popup
-     * @param string contentmode to show content in, e.g. in a popup, or a separate div element. 
+     * @param string contentmode to show content in, e.g. in a popup, or a separate div element.
      * @return void
      **/
     public function __construct($id, $lat, $lng, $title = null, $content = null, $contentmode = 'popup') {
