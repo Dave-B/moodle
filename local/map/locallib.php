@@ -63,7 +63,7 @@ class local_map_map {
     /**
      * Construct map object
      *
-     * @param string domid of/for the map container.
+     * @param string domid for the map container.
      * @param array layers optional layer objects to add to the map. Layer types: 'marker' (pins and popups), 'geojson'.
      * @param array view optional setting for map: width, height, center, zoom.
      * @param array tileproviders names of tileproviders to use.
@@ -118,7 +118,6 @@ class local_map_map {
      * @param array view optional settings for map: width, height, center, zoom.
      **/
     public function add_tilelayer($provider) {
-        //echo $provider;
         global $alltileproviders;
         $this->tileproviders[$provider] = $alltileproviders[$provider];
     }
