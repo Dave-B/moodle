@@ -8,6 +8,19 @@
         <td class="c1"><input class="fielddescription" type="text" name="description" id="description" value="<?php p ($this->field->description);?>" /></td>
     </tr>
     <tr>
+        <?php
+        $usemap_status = '';
+        if($this->field->param3==1) {
+            $usemap_status .= ' checked="checked"';
+        }
+        if (!get_config('local_map', 'usemaps')) {
+            $usemap_status .= ' disabled="disabled"';
+        }
+        ?>
+        <td class="c0"><label for="param3"><?php echo get_string('fieldusemap', 'datafield_latlong'); ?></label></td>
+        <td class="c1"><input class="fieldusemap" type="checkbox" name="param3" id="param3" value="1"<?php echo $usemap_status; ?> /></td>
+    </tr>
+    <tr>
         <td class="c0"><label for="param1"><?php echo get_string('latlonglinkservicesdisplayed', 'data'); ?></label></td>
         <td class="c1">
           <select class="linkservicesdisplayed" name="param1[]" id="param1" multiple="multiple" size="<?php p(sizeof($this->linkoutservices)); ?>">

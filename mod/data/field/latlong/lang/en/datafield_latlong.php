@@ -25,3 +25,4 @@
  */
 
 $string['pluginname'] = 'Latlong';
+$string['fieldusemap'] = 'Use map';

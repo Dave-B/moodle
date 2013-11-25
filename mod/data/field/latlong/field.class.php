@@ -33,6 +33,7 @@ class data_field_latlong extends data_field_base {
     // Parameter data used:
     // "param1" is a comma-separated list of the linkout service names that are enabled for this instance
     // "param2" indicates the label that will be used in generating Google Earth KML files: -1 for item #, -2 for lat/long, positive number for the (text) field to use.
+    // "param3" indicates whether to display a map on-page.
 
     var $linkoutservices = array(
           "Google Maps" => "http://maps.google.com/maps?q=@lat@,+@long@&iwloc=A&hl=en",
@@ -44,7 +45,7 @@ class data_field_latlong extends data_field_base {
     // Other map sources listed at http://kvaleberg.com/extensions/mapsources/index.php?params=51_30.4167_N_0_7.65_W_region:earth
 
     function display_add_field($recordid=0) {
-        global $CFG, $DB, $PAGE;
+        global $CFG, $DB, $PAGE, $alltileproviders;
 
         $lat = '';
         $long = '';
@@ -52,20 +53,20 @@ class data_field_latlong extends data_field_base {
             if ($content = $DB->get_record('data_content', array('fieldid'=>$this->field->id, 'recordid'=>$recordid))) {
                 $lat  = $content->content;
                 $long = $content->content1;
-                #print_object($content);
             }
         }
-        $usemap = true;
-        if($usemap) {
+
+        if(get_config('local_map', 'usemaps') && $this->field->param3) {
+            // $param3 is the map display option for this individual activity
             // TODO: Autoload PHP module?
             require_once(dirname(__FILE__).'/../../../../local/map/locallib.php'); // Maps lib
             $mapid = 'map_edit';
             $markerid = 'record';
             if (isset($content)) {
                 // Existing record to load
-				$markers = new local_map_layer('marker', [
-					new local_map_marker($markerid, $lat, $long)
-				]);
+                $markers = new local_map_layer('marker', [
+                    new local_map_marker($markerid, $lat, $long)
+                ]);
 
                 $view = new local_map_view($lat, $long, 5);
                 $map = new local_map_map($mapid, [$markers], $view);
@@ -75,6 +76,8 @@ class data_field_latlong extends data_field_base {
             $map->receive_marker($markerid, 'input.field_lat', 'input.field_long', $markerid);
             $str = $map->render();
             $str .= '<p>Click on the map to set the location. Zoom in and out with the buttons, and pan by dragging, to be more precise.</p>';
+        } else {
+            $str = '';
         }
         $str .= '<div title="'.s($this->field->description).'">';
         $str .= '<fieldset><legend><span class="accesshide">'.$this->field->name.'</span></legend>';
@@ -134,7 +137,7 @@ class data_field_latlong extends data_field_base {
     }
 
     function display_browse_field($recordid, $template) {
-        global $CFG, $DB, $PAGE;
+        global $CFG, $DB, $PAGE, $alltileproviders;
         if ($content = $DB->get_record('data_content', array('fieldid'=>$this->field->id, 'recordid'=>$recordid))) {
             $lat = $content->content;
             if (strlen($lat) < 1) {
@@ -171,19 +174,17 @@ class data_field_latlong extends data_field_base {
                 '@recordid@'=> $content->recordid,
             );
 
-            $usemap = true;
-            if($usemap) {
+            if(get_config('local_map', 'usemaps') && $this->field->param3) {
+                // $param3 is the map display option for this individual activity
                 // TODO: Autoload PHP module
                 require_once(dirname(__FILE__).'/../../../../local/map/locallib.php'); // Maps lib
+
                 if ($template == 'singletemplate') {
                     $mapid = 'map_'.$content->recordid;
-
-					$markers = new local_map_layer('marker', [
-						new local_map_marker($mapid.'marker', $lat, $long)
-					]);
-
+                    $markers = new local_map_layer('marker', [
+                        new local_map_marker($mapid.'marker', $lat, $long)
+                    ]);
                     $view = new local_map_view($lat, $long, 5);
-
                     $map = new local_map_map($mapid, [$markers], $view);
                     $str = $map->render();
                 } else {
