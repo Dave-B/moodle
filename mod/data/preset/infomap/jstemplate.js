@@ -1,6 +1,6 @@
 YUI({
   delayUntil: 'domready'
-}).use('moodle-local_map-map', 'event', function(Y) {
+}).use('event', 'node', 'moodle-local_map-map', function(Y) {
   if (Y.one("#datamap")) {
     M.local_map.init(function() {
       M.local_map.maps["datamap"] = M.local_map.addmap("datamap", {center: [46.073, 8.437], zoom: 1});

@@ -16,12 +16,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'datapreset_map', language 'en'
+ * Strings for component 'datapreset_infomap', language 'en'
  *
- * @package   datapreset_map
+ * @package   datapreset_infomap
  * @copyright  2013 David Balch, University of Oxford <david.balch@conted.ox.ac.uk>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['modulename'] = 'Map';
-$string['pluginname'] = 'Map';
+$string['modulename'] = 'Infomap';
+$string['pluginname'] = 'Infomap';
