@@ -29,13 +29,17 @@ class local_map_tile_provider {
     public $title;
     public $url;
     public $attribution;
-    public $apikey = null;
+    public $zoom_min;
+    public $zoom_max;
+    public $apikey;
 
-    public function __construct($name, $title, $url, $attribution, $apikey = null) {
+    public function __construct($name, $title, $url, $attribution, $zoom_min = null, $zoom_max = null, $apikey = null) {
         $this->name = $name;
         $this->title = $title;
         $this->url = $url;
         $this->attribution = $attribution;
+        $this->zoom_min = $zoom_min;
+        $this->zoom_max = $zoom_max;
         $this->apikey = $apikey;
     }
 }
@@ -44,13 +48,20 @@ class local_map_tile_provider {
 $alltileproviders['osm'] = new local_map_tile_provider(
     'osm', 'Road map',
     'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-    '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors');
+    '&copy; <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors');
 
-// Mapquest: http://developer.mapquest.com/web/products/open/map
+// Mapquest OSM: http://developer.mapquest.com/web/products/open/map
+$alltileproviders['mapquest_osm'] = new local_map_tile_provider(
+    'mapquest_osm', 'Mapquest road map',
+    'http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png',
+    '&copy; <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors');
+
+// Mapquest satellite: http://developer.mapquest.com/web/products/open/map
 $alltileproviders['mapquest_arial'] = new local_map_tile_provider(
     'mapquest_arial', 'Satellite',
     'http://otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png',
-    'Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agencys');
+    'Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agencys',
+    0, 11);
 
 class local_map_map {
     private $domid;
@@ -164,7 +175,14 @@ class local_map_map {
         $js_map = 'M.local_map.maps["'.$this->domid.'"] = L.map("'.$this->domid.'", '.$js_map_view.');';
         $js_tiles = '';
         foreach ($this->tileproviders as $provider) {
-            $js_tiles .= $provider->name." = L.tileLayer('".$provider->url."', {attribution: '".$provider->attribution."'}).addTo(M.local_map.maps['".$this->domid."']);";
+            $tileopts = 'attribution: "'.$provider->attribution.'"';
+            if ($provider->zoom_min) {
+                $tileopts .= ', minZoom: "'.$provider->zoom_min.'"';
+            }
+            if ($provider->zoom_max) {
+                $tileopts .= ', maxZoom: "'.$provider->zoom_max.'"';
+            }
+            $js_tiles .= $provider->name." = L.tileLayer('".$provider->url."', {".$tileopts."}).addTo(M.local_map.maps['".$this->domid."']);";
         }
 
         $js_geojsonlayers = '';
