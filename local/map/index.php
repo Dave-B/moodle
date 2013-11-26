@@ -40,23 +40,19 @@ echo $OUTPUT->header();
 
 echo '<h1>Map module examples</h1>';
 
-echo 'Use maps: '.get_config('local_map', 'usemaps');
-
 if (get_config('local_map', 'usemaps')) {
-echo '<h2>Basic map with marker</h2>';
+    echo '<h2>Basic map with marker</h2>';
 
-$markers = new local_map_layer('marker', [
-    new local_map_marker('greenwich', 51.48, 0, 'Greenwich', '<p>Greenwich is notable for its maritime history and for giving its name to the Greenwich Meridian (0° longitude) and Greenwich Mean Time.<br/> -- <a href="http://en.wikipedia.org/wiki/Greenwich">Wikipedia</a></p>')
-]);
+    $markers = new local_map_layer('marker', [
+        new local_map_marker('greenwich', 51.48, 0, 'Greenwich', '<p>Greenwich is notable for its maritime history and for giving its name to the Greenwich Meridian (0° longitude) and Greenwich Mean Time.<br/> -- <a href="http://en.wikipedia.org/wiki/Greenwich">Wikipedia</a></p>')
+    ]);
 
-$map = new local_map_map('mymap', [$markers]);
-echo $map->render();
+    $map = new local_map_map('mymap', [$markers]);
+    echo $map->render();
 
-echo '<hr>';
+    echo '<h2>Map with specified view and size, and geoJSON markers</h2>';
 
-echo '<h2>Map with specified view and size, and geoJSON markers</h2>';
-
-$geo = <<<EOT
+    $geo = <<<EOT
 [{"type":"Feature Collection","features":[
 {"type":"Feature","id":"1","geometry":{"type":"Point","coordinates":[-1.588354,52.346163]},"properties":{"name":"Bishop’s Gate","description":"Elizabeth arrived on horseback on the evening of the 9 July 1575 at the Bishop’s Gate, where she was first admitted to the castle."}},
 {"type":"Feature","id":"2","geometry":{"type":"Point","coordinates":[-1.590379,52.346254]},"properties":{"name":"Tiltyard Gate","description":"Here, at the Tiltyard Gate, Elizabeth was offered the keys to the castle. Beyond the gate, she moved on to the tiltyard, where jousts between mounted knights would have taken place later in the visit, watched by spectators in the towers at either end."}},
@@ -70,24 +66,21 @@ $geo = <<<EOT
 {"type":"Feature","id":"10","geometry":{"type":"Point","coordinates":[-1.593276,52.347745]},"properties":{"name":"Great Hall","description":"The impressive great hall of the castle, dominated by huge deep-set windows and hung with tapestries was left unaltered by Leicester."}},
 {"type":"Feature","id":"11","geometry":{"type":"Point","coordinates":[-1.592807,52.346919]},"properties":{"name":"Mere pageants","description":"During the queen’s visit, a series of water pageants took place, including elaborate firework displays."}}]}]
 EOT;
-$markers = new stdClass();
-$markers->type = 'geojson';
-$markers->data = $geo;
+    $markers = new stdClass();
+    $markers->type = 'geojson';
+    $markers->data = $geo;
 
-$view = new local_map_view(52.346919, -1.592807, 15, '100%', '350px');
-$map2 = new local_map_map('mymap2', [$markers], $view);
+    $view = new local_map_view(52.346919, -1.592807, 15, '100%', '350px');
+    $map2 = new local_map_map('mymap2', [$markers], $view);
 
-echo $map2->render();
+    echo $map2->render();
 
-echo '<h2>Map with road and satellite tilesets</h2>';
+    echo '<h2>Map with multiple tilesets</h2>';
 
-if (true) {
-// Alternate tile providers
-$map3 = new local_map_map('mymap3', null, null, ['osm', 'mapquest_arial']);
-echo $map3->render();
-}
+    // Alternate tile providers
+    $map3 = new local_map_map('mymap3', null, null, ['osm', 'mapquest_osm', 'mapquest_arial']);
+    echo $map3->render();
 
-echo '<hr>';
 
 } else {
     echo '<p>Maps not enabled. Enable in <a href="http://m2/admin/settings.php?section=mapsettings">settings</a>.</p>';
