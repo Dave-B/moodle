@@ -26,3 +26,5 @@ TODO:
  * Add Unit Tests
  * Add Acceptance Tests
  * Map module in core, not local
+
+ * Database activity: Disable pagination
