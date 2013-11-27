@@ -26,7 +26,7 @@ $d       = required_param('d', PARAM_INT);   // database id
 $fieldid = required_param('fieldid', PARAM_INT);   // field id
 $rid     = optional_param('rid', 0, PARAM_INT);    //record id
 
-$url = new moodle_url('/mod/data/field/latlong/kml.php', array('d'=>$d, 'fieldid'=>$fieldid));
+$url = new moodle_url('/mod/data/field/latlongmap/kml.php', array('d'=>$d, 'fieldid'=>$fieldid));
 if ($rid !== 0) {
     $url->param('rid', $rid);
 }
@@ -48,7 +48,7 @@ if ($rid) {
     if (! $field = $DB->get_record('data_fields', array('id'=>$fieldid))) {
         print_error('invalidfieldid', 'data');
     }
-    if (! $field->type == 'latlong') { // Make sure we're looking at a latlong data type!
+    if (! $field->type == 'latlongmap') { // Make sure we're looking at a latlong data type!
         print_error('invalidfieldtype', 'data');
     }
     if (! $content = $DB->get_record('data_content', array('fieldid'=>$fieldid, 'recordid'=>$rid))) {
@@ -67,7 +67,7 @@ if ($rid) {
     if (! $field = $DB->get_record('data_fields', array('id'=>$fieldid))) {
         print_error('invalidfieldid', 'data');
     }
-    if (! $field->type == 'latlong') { // Make sure we're looking at a latlong data type!
+    if (! $field->type == 'latlongmap') { // Make sure we're looking at a latlong data type!
         print_error('invalidfieldtype', 'data');
     }
     $record = NULL;

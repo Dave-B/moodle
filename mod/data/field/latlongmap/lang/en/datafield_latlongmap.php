@@ -16,13 +16,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'datafield_latlong', language 'en', branch 'master'
+ * Strings for component 'datafield_latlongmap', language 'en', branch 'master'
  *
  * @package    datafield
- * @subpackage latlong
+ * @subpackage latlongmap
  * @copyright  2011 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Latlong';
+$string['pluginname'] = 'Latlong (map plugin version)';
 $string['fieldusemap'] = 'Use map';

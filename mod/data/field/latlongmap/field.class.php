@@ -22,8 +22,8 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-class data_field_latlong extends data_field_base {
-    var $type = 'latlong';
+class data_field_latlongmap extends data_field_base {
+    var $type = 'latlongmap';
 
     // This is an array of URL schemes for linking out to services, using the float values of lat and long.
     // In each scheme, the special markers @lat@ and @long@ will be replaced by the float values.
@@ -37,7 +37,7 @@ class data_field_latlong extends data_field_base {
 
     var $linkoutservices = array(
           "Google Maps" => "http://maps.google.com/maps?q=@lat@,+@long@&iwloc=A&hl=en",
-          "Google Earth" => "@wwwroot@/mod/data/field/latlong/kml.php?d=@dataid@&fieldid=@fieldid@&rid=@recordid@",
+          "Google Earth" => "@wwwroot@/mod/data/field/latlongmap/kml.php?d=@dataid@&fieldid=@fieldid@&rid=@recordid@",
           "Geabios" => "http://www.geabios.com/html/services/maps/PublicMap.htm?lat=@lat@&lon=@long@&fov=0.3&title=Moodle%20data%20item",
           "OpenStreetMap" => "http://www.openstreetmap.org/index.html?lat=@lat@&lon=@long@&zoom=11",
           "Multimap" => "http://www.multimap.com/map/browse.cgi?scale=200000&lon=@long@&lat=@lat@&icon=x"
