@@ -95,7 +95,8 @@ class local_map_map {
 
         if (gettype($layers) == 'object' && get_class($layers) == 'local_map_marker') {
             // Add single marker
-            $this->add_layer(new local_map_layer('marker', $layers->title, $layers->title, [$layers]));
+            $name = 'n'.clean_param($layers->title, PARAM_ALPHANUM);
+            $this->add_layer(new local_map_layer('marker', $name, $layers->title, [$layers]));
         } else if (gettype($layers) == 'array') {
             // Add layers to map
             foreach ($layers as $layer) {
@@ -258,12 +259,14 @@ onEachFeature: function (feature, layer) {
                     $layerlist .= '"'.$layer->title.'": '.$layer->name.',';
                 }
             }
-            if ($active_controls = '') {
-                $active_controls = 'null, overlaymaps';
-            } else {
-                $active_controls = 'basemaps, overlaymaps';
+            if ($layerlist != '') {
+                if ($active_controls = '') {
+                    $active_controls = 'null, overlaymaps';
+                } else {
+                    $active_controls = 'basemaps, overlaymaps';
+                }
+                $js_controls .= 'var overlaymaps = {'.$layerlist.'};';
             }
-            $js_controls .= 'var overlaymaps = {'.$layerlist.'};';
         }
         if ($active_controls) {
             $js_controls .= 'L.control.layers('.$active_controls.').addTo(M.local_map.maps["'.$this->domid.'"]);';
