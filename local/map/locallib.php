@@ -67,8 +67,7 @@ class local_map_map {
     private $domid;
     private $tileproviders;
     private $view;
-    private $markerlayers;
-    private $geojsonlayers;
+    private $layers;
     private $receivemarker;
 
     /**
@@ -94,33 +93,25 @@ class local_map_map {
             $this->add_tilelayer($provider);
         }
 
-        if ($layers) {
+        if (gettype($layers) == 'object' && get_class($layers) == 'local_map_marker') {
+            // Add single marker
+            $this->add_layer(new local_map_layer('marker', $layers->title, $layers->title, [$layers]));
+        } else if (gettype($layers) == 'array') {
             // Add layers to map
             foreach ($layers as $layer) {
-                $add_layer = 'add_layer_'.$layer->type;
-                $this->$add_layer($layer->data);
+                $this->add_layer($layer);
             }
         }
     }
 
     /**
-     * Add geojson layer to map object
+     * Add layer to map object
      *
-     * @param string geojson data
+     * @param object layer - local_map_layer
      * @return void
      **/
-    public function add_layer_geojson($data) {
-        $this->geojsonlayers[] = $data;
-    }
-
-    /**
-     * Add geojson layer to map object
-     *
-     * @param array marker data
-     * @return void
-     **/
-    public function add_layer_marker($data) {
-        $this->markerlayers[] = $data;
+    public function add_layer($layer) {
+        $this->layers[] = $layer;
     }
 
     /**
@@ -146,14 +137,14 @@ class local_map_map {
      * @todo Finish documenting this function
      **/
     public function receive_marker($markerid, $latdest = 'input.field_lat', $lngdest = 'input.field_long', $existingid = null, $reversegeocode = null) {
-		$rm = new stdClass();
-		$rm->markerid = $markerid;
-		$rm->latdest = $latdest;
-		$rm->lngdest = $lngdest;
-		$rm->existingid = $existingid;
-		$rm->reversegeocode = $reversegeocode;
+        $rm = new stdClass();
+        $rm->markerid = $markerid;
+        $rm->latdest = $latdest;
+        $rm->lngdest = $lngdest;
+        $rm->existingid = $existingid;
+        $rm->reversegeocode = $reversegeocode;
 
-		$this->receivemarker = $rm;
+        $this->receivemarker = $rm;
     }
 
     /**
@@ -162,12 +153,12 @@ class local_map_map {
      **/
     public function render() {
         global $PAGE;
-		//print_object($this);
+        //print_object($this);
 
         $extramodules = '';
         if ($this->receivemarker) {
-			$extramodules = ", 'event', 'node', 'io'";
-		}
+            $extramodules = ", 'event', 'node', 'io'";
+        }
         $js_map_init_start = "YUI({delayUntil: 'domready'}).use('moodle-local_map-map'".$extramodules.", function(Y) {M.local_map.init(function() {";
         $js_map_init_end = '});});';
         $js_map_view = '{center: ['.$this->view->lat.','.$this->view->lng.'], zoom: '.$this->view->zoom.'}';
@@ -185,52 +176,56 @@ class local_map_map {
             $js_tiles .= $provider->name." = L.tileLayer('".$provider->url."', {".$tileopts."}).addTo(M.local_map.maps['".$this->domid."']);";
         }
 
+        $js_markerlayers = '';
         $js_geojsonlayers = '';
-        if ($this->geojsonlayers) {
-            foreach ($this->geojsonlayers as $geojson) {
-                $js_geojsonlayers .= 'L.geoJson('.$geojson.', {
+        if ($this->layers) {
+            foreach ($this->layers as $layer) {
+                //print_object($layer);
+                if ($layer->type == 'marker') {
+                    // Markers
+                    // TODO: Put layers in groups
+                    $js_layer_group = 'var '.$layer->name.' = L.layerGroup([';
+                    foreach ($layer->data as $marker) {
+                        $attribs = $marker->title ? 'title: "'.$marker->title.'",' : '';
+                        $attribs = $attribs != '' ? ', {'.$attribs.'}' : '';
+                        if ($marker->content && $marker->contentmode == 'popup') {
+                            $content = $marker->content ? '.bindPopup(\''.$marker->content.'\')' : '';
+                        } else {
+                            $content = '';
+                        }
+                        $js_markerlayers .= $marker->id.' = L.marker(['.$marker->lat.','.$marker->lng.']'.$attribs.').addTo(M.local_map.maps["'.$this->domid.'"])'.$content.';';
+                        $js_layer_group .= $marker->id.', ';
+                    }
+                    $js_layer_group .= ']);';
+                    $js_markerlayers .= $js_layer_group;
+                } else if ($layer->type == 'geojson') {
+                    // geoJSON
+                    $js_geojsonlayers .= $layer->name.' = L.geoJson('.$layer->data.', {
 onEachFeature: function (feature, layer) {
     layer.bindPopup(feature.properties.description);
 }}).addTo(M.local_map.maps["'.$this->domid.'"]);';
-                // TODO: tooltip titles ~ layer.title = feature.properties.name
-            }
-        }
-
-        $js_markerlayers = '';
-        if ($this->markerlayers) {
-            foreach ($this->markerlayers as $markers) {
-                // TODO: Put layers in groups
-                //$js_add_markerlayers .= 'L.marker([50.5, 30.5]).addTo(M.local_map.maps["'.$this->domid.'"]);';
-                foreach ($markers as $marker) {
-                    $attribs = $marker->title ? 'title: "'.$marker->title.'",' : '';
-                    $attribs = $attribs != '' ? ', {'.$attribs.'}' : '';
-                    if ($marker->content && $marker->contentmode == 'popup') {
-						$content = $marker->content ? '.bindPopup(\''.$marker->content.'\')' : '';
-					} else {
-						$content = '';
-					}
-                    $js_markerlayers .= $marker->id.' = L.marker(['.$marker->lat.','.$marker->lng.']'.$attribs.').addTo(M.local_map.maps["'.$this->domid.'"])'.$content.';';
+                    // TODO: tooltip titles ~ layer.title = feature.properties.name
                 }
             }
         }
 
         $js_receivemarker = '';
         if ($this->receivemarker) {
-			if (isset($this->receivemarker->existingid)) {
-				$usermarker = $this->receivemarker->existingid;
-			} else {
-				$usermarker = 'editmarker';
-			}
-			$js_receivemarker = 'M.local_map.maps["'.$this->domid.'"].on("click", function(e) {
-				if (typeof '.$usermarker.' !== "undefined") {
-					M.local_map.maps["'.$this->domid.'"].removeLayer('.$usermarker.');
-				};
+            if (isset($this->receivemarker->existingid)) {
+                $usermarker = $this->receivemarker->existingid;
+            } else {
+                $usermarker = 'editmarker';
+            }
+            $js_receivemarker = 'M.local_map.maps["'.$this->domid.'"].on("click", function(e) {
+                if (typeof '.$usermarker.' !== "undefined") {
+                    M.local_map.maps["'.$this->domid.'"].removeLayer('.$usermarker.');
+                };
                 '.$usermarker.' = L.marker(e.latlng).addTo(M.local_map.maps["'.$this->domid.'"]);
                 Y.one("'.$this->receivemarker->latdest.'").set("value", e.latlng.lat);
                 Y.one("'.$this->receivemarker->lngdest.'").set("value", e.latlng.lng);';
 
-			if (true || isset($this->receivemarker->reversegeocode)) {
-				$js_receivemarker .= 'M.local_map.reversegeocode(e.latlng.lat, e.latlng.lng, function(geo) {
+            if (true || isset($this->receivemarker->reversegeocode)) {
+                $js_receivemarker .= 'M.local_map.reversegeocode(e.latlng.lat, e.latlng.lng, function(geo) {
                     loc = geo.address.country
                     if (geo.address.county) {
                         loc = geo.address.county + ", " + loc;
@@ -240,20 +235,41 @@ onEachFeature: function (feature, layer) {
                     }
                     Y.one("input.field_Area").set("value", loc);
                 });';
-			}
-			$js_receivemarker .= '});';
-		}
+            }
+            $js_receivemarker .= '});';
+        }
 
+        $active_controls = '';
         $js_controls = '';
         if (count($this->tileproviders) > 1) {
+            // Multiple map styles
+            $active_controls = 'basemaps';
             $js_controls = 'var basemaps = {';
             foreach ($this->tileproviders as $provider) {
                 $js_controls .= '"'.$provider->title.'": '.$provider->name.',';
             }
-            $js_controls .= '};L.control.layers(basemaps).addTo(M.local_map.maps["'.$this->domid.'"]);';
+            $js_controls .= '};';
+        }
+        if (count($this->layers) > 1) {
+            // Multiple marker layers
+            $layerlist = '';
+            foreach ($this->layers as $layer) {
+                if ($layer->showcontrols) {
+                    $layerlist .= '"'.$layer->title.'": '.$layer->name.',';
+                }
+            }
+            if ($active_controls = '') {
+                $active_controls = 'null, overlaymaps';
+            } else {
+                $active_controls = 'basemaps, overlaymaps';
+            }
+            $js_controls .= 'var overlaymaps = {'.$layerlist.'};';
+        }
+        if ($active_controls) {
+            $js_controls .= 'L.control.layers('.$active_controls.').addTo(M.local_map.maps["'.$this->domid.'"]);';
         }
 
-		// Output JS
+        // Output JS
         // TODO: Prepare settings for inclusion in M.cfg (or similar), to be picked up in M.local_map.init(), instead of using js_init_code().
         $js = $js_map_init_start . $js_map . $js_tiles . $js_geojsonlayers . $js_markerlayers . $js_receivemarker . $js_controls . $js_map_init_end;
         $PAGE->requires->js_init_code($js);
@@ -268,19 +284,28 @@ onEachFeature: function (feature, layer) {
 }
 
 class local_map_layer {
-	public $type;
-	public $data;
+    public $type;
+    public $name;
+    public $title;
+    public $data;
+    public $showcontrols;
 
     /**
      * Construct layer object
      *
      * @param string type of layer, i.e. marker, geojson
-     * @param array|string markers, or geojson string
+     * @param string name of layer, used in JS
+     * @param string title of layer for display
+     * @param array|string data markers, or geojson string
+     * @param boolean showcontrols Show UI for layer visibility
      * @return void
      **/
-    public function __construct($type, $data) {
+    public function __construct($type, $name, $title, $data, $showcontrols = true) {
         $this->type = $type;
+        $this->name = $name;
+        $this->title = $title;
         $this->data = $data;
+        $this->showcontrols = $showcontrols;
     }
 }
 
@@ -307,9 +332,9 @@ class local_map_marker {
         $this->id = $id;
         $this->lat = $lat;
         $this->lng = $lng;
-		$this->title = $title;
-		$this->content = $content;
-		$this->contentmode = $contentmode;
+        $this->title = $title;
+        $this->content = $content;
+        $this->contentmode = $contentmode;
     }
 }
 
