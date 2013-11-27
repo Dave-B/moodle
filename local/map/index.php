@@ -39,6 +39,7 @@ $PAGE->set_heading(get_string('maptest', 'local_map'));
 echo $OUTPUT->header();
 
 echo '<h1>Map module examples</h1>';
+echo '<p>Copy of <a href="iplookup.php">iplookup using local_map</a>.</p>';
 
 if (get_config('local_map', 'usemaps')) {
     // Define markers/layers for later
