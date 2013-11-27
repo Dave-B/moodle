@@ -64,12 +64,9 @@ class data_field_latlong extends data_field_base {
             $markerid = 'record';
             if (isset($content)) {
                 // Existing record to load
-                $markers = new local_map_layer('marker', [
-                    new local_map_marker($markerid, $lat, $long)
-                ]);
-
+                $marker = new local_map_marker($markerid, $lat, $long);
                 $view = new local_map_view($lat, $long, 5);
-                $map = new local_map_map($mapid, [$markers], $view);
+                $map = new local_map_map($mapid, $marker, $view);
             } else {
                 $map = new local_map_map($mapid);
             }
@@ -181,11 +178,9 @@ class data_field_latlong extends data_field_base {
 
                 if ($template == 'singletemplate') {
                     $mapid = 'map_'.$content->recordid;
-                    $markers = new local_map_layer('marker', [
-                        new local_map_marker($mapid.'marker', $lat, $long)
-                    ]);
+                    $marker = new local_map_marker($mapid.'marker', $lat, $long);
                     $view = new local_map_view($lat, $long, 5);
-                    $map = new local_map_map($mapid, [$markers], $view);
+                    $map = new local_map_map($mapid, $marker, $view);
                     $str = $map->render();
                 } else {
                     $str = "$lat,$long";
