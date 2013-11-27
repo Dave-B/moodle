@@ -82,11 +82,7 @@ if(get_config('local_map', 'usemaps')) {
     // TODO: Autoload PHP module
     require_once('locallib.php'); // Maps lib
 
-    $markers = new local_map_layer('marker', [
-        new local_map_marker('ip', $info['latitude'], $info['longitude'], $title)
-    ]);
-
-    $map = new local_map_map('ipmap', [$markers]);
+    $map = new local_map_map('ipmap', new local_map_marker('ip', $info['latitude'], $info['longitude'], $title));
     echo $map->render();
 
     echo '<div id="note">'.$info['note'].'</div>';
