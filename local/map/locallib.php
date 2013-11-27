@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -29,34 +28,34 @@ class local_map_tile_provider {
     public $title;
     public $url;
     public $attribution;
-    public $zoom_min;
-    public $zoom_max;
+    public $zoommin;
+    public $zoommax;
     public $apikey;
 
-    public function __construct($name, $title, $url, $attribution, $zoom_min = null, $zoom_max = null, $apikey = null) {
+    public function __construct($name, $title, $url, $attribution, $zoommin = null, $zoommax = null, $apikey = null) {
         $this->name = $name;
         $this->title = $title;
         $this->url = $url;
         $this->attribution = $attribution;
-        $this->zoom_min = $zoom_min;
-        $this->zoom_max = $zoom_max;
+        $this->zoommin = $zoommin;
+        $this->zoommax = $zoommax;
         $this->apikey = $apikey;
     }
 }
 
-// OSM: http://wiki.openstreetmap.org/wiki/Tiles
+// OSM: http://wiki.openstreetmap.org/wiki/Tiles.
 $alltileproviders['osm'] = new local_map_tile_provider(
     'osm', 'Road map',
     'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
     '&copy; <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors');
 
-// Mapquest OSM: http://developer.mapquest.com/web/products/open/map
+// Mapquest OSM: http://developer.mapquest.com/web/products/open/map.
 $alltileproviders['mapquest_osm'] = new local_map_tile_provider(
     'mapquest_osm', 'Mapquest road map',
     'http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png',
     '&copy; <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors');
 
-// Mapquest satellite: http://developer.mapquest.com/web/products/open/map
+// Mapquest satellite: http://developer.mapquest.com/web/products/open/map.
 $alltileproviders['mapquest_arial'] = new local_map_tile_provider(
     'mapquest_arial', 'Satellite',
     'http://otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png',
@@ -94,11 +93,11 @@ class local_map_map {
         }
 
         if (gettype($layers) == 'object' && get_class($layers) == 'local_map_marker') {
-            // Add single marker
+            // Add single marker.
             $name = 'n'.clean_param($layers->title, PARAM_ALPHANUM);
             $this->add_layer(new local_map_layer('marker', $name, $layers->title, [$layers]));
         } else if (gettype($layers) == 'array') {
-            // Add layers to map
+            // Add layers to map.
             foreach ($layers as $layer) {
                 $this->add_layer($layer);
             }
@@ -106,7 +105,7 @@ class local_map_map {
     }
 
     /**
-     * Add layer to map object
+     * Add layer to map object.
      *
      * @param object layer - local_map_layer
      * @return void
@@ -116,7 +115,7 @@ class local_map_map {
     }
 
     /**
-     * Add tileproviders to map object
+     * Add tileproviders to map object.
      *
      * @param array view optional settings for map: width, height, center, zoom.
      **/
@@ -127,7 +126,8 @@ class local_map_map {
 
     /**
      * Enable a map to receive a marker via a user clicking on the map.
-     * Put the lat long values into CSS selector spcified fields
+     * Puts the lat long values into CSS selector spcified fields.
+     * Puts the geolocation value into CSS selector spcified field.
      *
      * @param string markerid Id for new marker
      * @param string latdest CSS selector of desitnation element for latitude value
@@ -137,7 +137,9 @@ class local_map_map {
      * @return void
      * @todo Finish documenting this function
      **/
-    public function receive_marker($markerid, $latdest = 'input.field_lat', $lngdest = 'input.field_long', $existingid = null, $reversegeocode = null) {
+    public function receive_marker($markerid,
+                                   $latdest = 'input.field_lat', $lngdest = 'input.field_long',
+                                   $existingid = null, $reversegeocode = null) {
         $rm = new stdClass();
         $rm->markerid = $markerid;
         $rm->latdest = $latdest;
@@ -149,43 +151,42 @@ class local_map_map {
     }
 
     /**
-     * Render map
+     * Render map - Adds javascript via $PAGE->requires->js_init_code(),
+     * and returns HTML for the caller to add to the page output.
      * @return string HTML fragment
      **/
     public function render() {
         global $PAGE;
-        //print_object($this);
 
         $extramodules = '';
         if ($this->receivemarker) {
             $extramodules = ", 'event', 'node', 'io'";
         }
-        $js_map_init_start = "YUI({delayUntil: 'domready'}).use('moodle-local_map-map'".$extramodules.", function(Y) {M.local_map.init(function() {";
-        $js_map_init_end = '});});';
-        $js_map_view = '{center: ['.$this->view->lat.','.$this->view->lng.'], zoom: '.$this->view->zoom.'}';
-        //$js_map = 'M.local_map.maps["'.$this->domid.'"] = M.local_map.addmap("'.$this->domid.'", '.$js_map_view.');';
-        $js_map = 'M.local_map.maps["'.$this->domid.'"] = L.map("'.$this->domid.'", '.$js_map_view.');';
-        $js_tiles = '';
+        $jsmapinitstart = "YUI({delayUntil: 'domready'}).use('moodle-local_map-map'".
+                          $extramodules.", function(Y) {M.local_map.init(function() {";
+        $jsmapinitend = '});});';
+        $jsmapview = '{center: ['.$this->view->lat.','.$this->view->lng.'], zoom: '.$this->view->zoom.'}';
+        $jsmap = 'M.local_map.maps["'.$this->domid.'"] = L.map("'.$this->domid.'", '.$jsmapview.');';
+        $jstiles = '';
         foreach ($this->tileproviders as $provider) {
             $tileopts = 'attribution: "'.$provider->attribution.'"';
-            if ($provider->zoom_min) {
-                $tileopts .= ', minZoom: "'.$provider->zoom_min.'"';
+            if ($provider->zoommin) {
+                $tileopts .= ', minZoom: "'.$provider->zoommin.'"';
             }
-            if ($provider->zoom_max) {
-                $tileopts .= ', maxZoom: "'.$provider->zoom_max.'"';
+            if ($provider->zoommax) {
+                $tileopts .= ', maxZoom: "'.$provider->zoommax.'"';
             }
-            $js_tiles .= $provider->name." = L.tileLayer('".$provider->url."', {".$tileopts."}).addTo(M.local_map.maps['".$this->domid."']);";
+            $jstiles .= $provider->name." = L.tileLayer('".$provider->url."', {".$tileopts."})";
+            $jstiles .= ".addTo(M.local_map.maps['".$this->domid."']);";
         }
 
-        $js_markerlayers = '';
-        $js_geojsonlayers = '';
+        $jsmarkerlayers = '';
+        $jsgeojsonlayers = '';
         if ($this->layers) {
             foreach ($this->layers as $layer) {
-                //print_object($layer);
                 if ($layer->type == 'marker') {
-                    // Markers
-                    // TODO: Put layers in groups
-                    $js_layer_group = 'var '.$layer->name.' = L.layerGroup([';
+                    // Add markers (in layer groups).
+                    $jslayergroup = 'var '.$layer->name.' = L.layerGroup([';
                     foreach ($layer->data as $marker) {
                         $attribs = $marker->title ? 'title: "'.$marker->title.'",' : '';
                         $attribs = $attribs != '' ? ', {'.$attribs.'}' : '';
@@ -194,30 +195,31 @@ class local_map_map {
                         } else {
                             $content = '';
                         }
-                        $js_markerlayers .= $marker->id.' = L.marker(['.$marker->lat.','.$marker->lng.']'.$attribs.').addTo(M.local_map.maps["'.$this->domid.'"])'.$content.';';
-                        $js_layer_group .= $marker->id.', ';
+                        $jsmarkerlayers .= $marker->id.' = L.marker(['.$marker->lat.','.$marker->lng.']'.$attribs.')';
+                        $jsmarkerlayers .= '.addTo(M.local_map.maps["'.$this->domid.'"])'.$content.';';
+                        $jslayergroup .= $marker->id.', ';
                     }
-                    $js_layer_group .= ']);';
-                    $js_markerlayers .= $js_layer_group;
+                    $jslayergroup .= ']);';
+                    $jsmarkerlayers .= $jslayergroup;
                 } else if ($layer->type == 'geojson') {
-                    // geoJSON
-                    $js_geojsonlayers .= $layer->name.' = L.geoJson('.$layer->data.', {
+                    // Add geoJSON layer.
+                    // TODO: More flexible handling to expose geoJSON properties on the map.
+                    $jsgeojsonlayers .= $layer->name.' = L.geoJson('.$layer->data.', {
 onEachFeature: function (feature, layer) {
     layer.bindPopup(feature.properties.description);
 }}).addTo(M.local_map.maps["'.$this->domid.'"]);';
-                    // TODO: tooltip titles ~ layer.title = feature.properties.name
                 }
             }
         }
 
-        $js_receivemarker = '';
+        $jsreceivemarker = '';
         if ($this->receivemarker) {
             if (isset($this->receivemarker->existingid)) {
                 $usermarker = $this->receivemarker->existingid;
             } else {
                 $usermarker = 'editmarker';
             }
-            $js_receivemarker = 'M.local_map.maps["'.$this->domid.'"].on("click", function(e) {
+            $jsreceivemarker = 'M.local_map.maps["'.$this->domid.'"].on("click", function(e) {
                 if (typeof '.$usermarker.' !== "undefined") {
                     M.local_map.maps["'.$this->domid.'"].removeLayer('.$usermarker.');
                 };
@@ -226,7 +228,7 @@ onEachFeature: function (feature, layer) {
                 Y.one("'.$this->receivemarker->lngdest.'").set("value", e.latlng.lng);';
 
             if (true || isset($this->receivemarker->reversegeocode)) {
-                $js_receivemarker .= 'M.local_map.reversegeocode(e.latlng.lat, e.latlng.lng, function(geo) {
+                $jsreceivemarker .= 'M.local_map.reversegeocode(e.latlng.lat, e.latlng.lng, function(geo) {
                     loc = geo.address.country
                     if (geo.address.county) {
                         loc = geo.address.county + ", " + loc;
@@ -237,22 +239,22 @@ onEachFeature: function (feature, layer) {
                     Y.one("input.field_Area").set("value", loc);
                 });';
             }
-            $js_receivemarker .= '});';
+            $jsreceivemarker .= '});';
         }
 
-        $active_controls = '';
-        $js_controls = '';
+        $activecontrols = '';
+        $jscontrols = '';
         if (count($this->tileproviders) > 1) {
-            // Multiple map styles
-            $active_controls = 'basemaps';
-            $js_controls = 'var basemaps = {';
+            // Multiple map styles.
+            $activecontrols = 'basemaps';
+            $jscontrols = 'var basemaps = {';
             foreach ($this->tileproviders as $provider) {
-                $js_controls .= '"'.$provider->title.'": '.$provider->name.',';
+                $jscontrols .= '"'.$provider->title.'": '.$provider->name.',';
             }
-            $js_controls .= '};';
+            $jscontrols .= '};';
         }
         if (count($this->layers) > 1) {
-            // Multiple marker layers
+            // Multiple marker layers.
             $layerlist = '';
             foreach ($this->layers as $layer) {
                 if ($layer->showcontrols) {
@@ -260,24 +262,27 @@ onEachFeature: function (feature, layer) {
                 }
             }
             if ($layerlist != '') {
-                if ($active_controls = '') {
-                    $active_controls = 'null, overlaymaps';
+                if ($activecontrols = '') {
+                    $activecontrols = 'null, overlaymaps';
                 } else {
-                    $active_controls = 'basemaps, overlaymaps';
+                    $activecontrols = 'basemaps, overlaymaps';
                 }
-                $js_controls .= 'var overlaymaps = {'.$layerlist.'};';
+                $jscontrols .= 'var overlaymaps = {'.$layerlist.'};';
             }
         }
-        if ($active_controls) {
-            $js_controls .= 'L.control.layers('.$active_controls.').addTo(M.local_map.maps["'.$this->domid.'"]);';
+        if ($activecontrols) {
+            $jscontrols .= 'L.control.layers('.$activecontrols.').addTo(M.local_map.maps["'.$this->domid.'"]);';
         }
 
-        // Output JS
-        // TODO: Prepare settings for inclusion in M.cfg (or similar), to be picked up in M.local_map.init(), instead of using js_init_code().
-        $js = $js_map_init_start . $js_map . $js_tiles . $js_geojsonlayers . $js_markerlayers . $js_receivemarker . $js_controls . $js_map_init_end;
+        // Output JS.
+        // TODO: Prepare settings for inclusion in M.cfg (or similar),
+        // to be picked up in M.local_map.init(), instead of using js_init_code().
+        $js = $jsmapinitstart . $jsmap . $jstiles .
+              $jsgeojsonlayers . $jsmarkerlayers .
+              $jsreceivemarker . $jscontrols . $jsmapinitend;
         $PAGE->requires->js_init_code($js);
 
-        // Write map container HTML
+        // Write map container HTML.
         $html = '<div id="'.$this->domid.'"';
         $html .= ' style="width: '.$this->view->width.'; height: '.$this->view->height.';"';
         $html .= '> </div>';

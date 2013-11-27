@@ -79,8 +79,8 @@ $PAGE->set_heading($title);
 echo $OUTPUT->header();
 
 if(get_config('local_map', 'usemaps')) {
-    // TODO: Autoload PHP module
-    require_once('locallib.php'); // Maps lib
+    // TODO: Autoload PHP module.
+    require_once('locallib.php');
 
     $map = new local_map_map('ipmap', new local_map_marker('ip', $info['latitude'], $info['longitude'], $title));
     echo $map->render();

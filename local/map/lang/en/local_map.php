@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -29,16 +28,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-//$string['modulename'] = 'map';
-//$string['modulenameplural'] = 'maps';
-//$string['modulename_help'] = 'Use the map module for... | The map module allows...';
-//$string['mapfieldset'] = 'Custom example fieldset';
-//$string['mapname'] = 'map name';
-//$string['mapname_help'] = 'This is the content of the help tooltip associated with the mapname field. Markdown syntax is supported.';
 $string['map'] = 'Map';
 $string['mapsettings'] = 'Map settings';
 $string['maptest'] = 'Map test';
-//$string['pluginadministration'] = 'map administration';
 $string['pluginname'] = 'Map';
 $string['usemaps'] = 'Use maps';
 $string['configusemaps'] = 'Enable or disable javascript maps';

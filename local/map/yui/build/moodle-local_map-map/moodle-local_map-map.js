@@ -36,7 +36,7 @@ NS.addmap = function(targetid, opts) {
     return map;
 },
 NS.reversegeocode = function(lat, lon, callback_apply) {
-    Y.io('http://nominatim.openstreetmap.org/reverse?format=json&lat='+lat+'&lon='+lon, {
+    Y.io('http://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lon, {
         on : {
             success : function (tx, r) {
                 var parsedResponse;

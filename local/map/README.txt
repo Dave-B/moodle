@@ -82,7 +82,8 @@ EOT;
     $map = new local_map_map('map_controls', null, null, ['osm', 'mapquest_osm', 'mapquest_arial']);
     echo $map->render();
 
-Adding tile providers and markers/geojson can also be done after the map object is created with new local_map_map() - see [site_root]/local/map/locallib.php for functions.
+Adding tile providers and markers/geojson can also be done after the map object is created with,
+new local_map_map() - see [site_root]/local/map/locallib.php for functions.
 
 
 == TODO ==
