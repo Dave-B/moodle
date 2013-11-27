@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -29,8 +28,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2;
-//$plugin->version   = 2013100300;
+$plugin->version   = 3;
 $plugin->requires  = 2013051400;
 $plugin->cron      = 0;
 $plugin->component = 'local_map';

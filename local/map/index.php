@@ -27,7 +27,7 @@
  */
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once('locallib.php'); // Maps lib
+require_once('locallib.php');
 
 require_login();
 $context = context_system::instance();
@@ -42,15 +42,15 @@ echo '<h1>Map module examples</h1>';
 echo '<p>Copy of <a href="iplookup.php">iplookup using local_map</a>.</p>';
 
 if (get_config('local_map', 'usemaps')) {
-    // Define markers/layers for later
-    // Single markers
+    // Define markers/layers for later use.
+    // Single markers.
     $greenwich = new local_map_marker('greenwich', 51.48, 0, 'Greenwich', '<p>Greenwich is notable for its maritime history and for giving its name to the Greenwich Meridian (0° longitude) and Greenwich Mean Time.<br/> -- <a href="http://en.wikipedia.org/wiki/Greenwich">Wikipedia</a></p>');
     $stornoway = new local_map_marker('stornoway', 58.209890518505084, -6.390060422709212, 'Stornoway', '<p>Stornoway (/ˈstɔrnəweɪ/; Scottish Gaelic: Steòrnabhagh) is a town on the Isle of Lewis, in the Outer Hebrides of Scotland.<br/> -- <a href="http://en.wikipedia.org/wiki/Stornoway">Wikipedia</a></p>');
 
-    // Group of markers
+    // Group of markers.
     $markers = new local_map_layer('marker', 'ukloc', 'UK locations', [$greenwich, $stornoway]);
 
-    // geoJSON
+    // Data in a geoJSON format string - will be output in JS.
     $geo = <<<EOT
 [{"type":"Feature Collection","features":[
 {"type":"Feature","id":"1","geometry":{"type":"Point","coordinates":[-1.588354,52.346163]},"properties":{"name":"Bishop’s Gate","description":"Elizabeth arrived on horseback on the evening of the 9 July 1575 at the Bishop’s Gate, where she was first admitted to the castle."}},
@@ -65,7 +65,7 @@ if (get_config('local_map', 'usemaps')) {
 {"type":"Feature","id":"10","geometry":{"type":"Point","coordinates":[-1.593276,52.347745]},"properties":{"name":"Great Hall","description":"The impressive great hall of the castle, dominated by huge deep-set windows and hung with tapestries was left unaltered by Leicester."}},
 {"type":"Feature","id":"11","geometry":{"type":"Point","coordinates":[-1.592807,52.346919]},"properties":{"name":"Mere pageants","description":"During the queen’s visit, a series of water pageants took place, including elaborate firework displays."}}]}]
 EOT;
-    $markers_geo = new local_map_layer('geojson', 'liz', 'Elizabeth I at Kenilworth', $geo);
+    $markersgeo = new local_map_layer('geojson', 'liz', 'Elizabeth I at Kenilworth', $geo);
 
     echo '<div class="generalbox" style="float: left;">';
     echo '<h2>Map with single marker</h2>';
@@ -82,14 +82,14 @@ EOT;
     echo '<div class="generalbox" style="float: right;">';
     echo '<h2>Map with specified view and size, and geoJSON markers</h2>';
     $view = new local_map_view(52.346919, -1.5915, 16, '100%', '600px');
-    $map3 = new local_map_map('map_view', [$markers_geo], $view);
+    $map3 = new local_map_map('map_view', [$markersgeo], $view);
     echo $map3->render();
     echo '</div>';
 
     echo '<div class="generalbox" style="float: left;">';
     echo '<h2>Map with multiple tilesets, multiple layers</h2>';
     $view = new local_map_view(54, -3, 4);
-    $map4 = new local_map_map('map_controls', [$markers, $markers_geo], $view, ['osm', 'mapquest_osm', 'mapquest_arial']);
+    $map4 = new local_map_map('map_controls', [$markers, $markersgeo], $view, ['osm', 'mapquest_osm', 'mapquest_arial']);
     echo $map4->render();
     echo '</div>';
 
