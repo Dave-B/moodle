@@ -15,7 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Map instantiation class.
+ * Map instantiation classes.
+ *
+ * Create maps, setting the view, tileset(s), and markers, and render to the page.
+ * Also supports reverse geocoding (Get a name from lat/long).
  *
  * @package    local_map
  * @copyright  2013 David Balch, University of Oxford <david.balch@conted.ox.ac.uk>
@@ -23,15 +26,43 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Map tile provider.
+ *
+ * All details needed to use a map provider, including API key if needed.
+ *
+ * @package    local_map
+ * @copyright  2013 David Balch, University of Oxford <david.balch@conted.ox.ac.uk>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class local_map_tile_provider {
+    /** @var string Name of provider */
     public $name;
+    /** @var string Display name of provider */
     public $title;
+    /** @var string Tile server URL */
     public $url;
+    /** @var string Tile copyright/license attribution */
     public $attribution;
+    /** @var int Minimum zoom level */
     public $zoommin;
+    /** @var int Maximum zoom level */
     public $zoommax;
+    /** @var string API key for providers that require authorisation */
     public $apikey;
 
+    /**
+     * Construct tile provider object
+     *
+     * @param string $name Name of provider
+     * @param string $title Display name of provider
+     * @param string $url Tile server URL
+     * @param string $attribution Tile copyright/license attribution
+     * @param int $zoommin Minimum zoom level
+     * @param int $zoommax Maximum zoom level
+     * @param string $apikey API key for providers that require authorisation
+     **/
     public function __construct($name, $title, $url, $attribution, $zoommin = null, $zoommax = null, $apikey = null) {
         $this->name = $name;
         $this->title = $title;
@@ -62,21 +93,34 @@ $alltileproviders['mapquest_arial'] = new local_map_tile_provider(
     'Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agencys',
     0, 11);
 
+/**
+ * Map instance.
+ *
+ * All details needed to create a map provider, plus a renderer to output it to the page.
+ *
+ * @package    local_map
+ * @copyright  2013 David Balch, University of Oxford <david.balch@conted.ox.ac.uk>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class local_map_map {
+    /** @var string domid for the map container */
     private $domid;
+    /** @var string Names of tileproviders to use. {@link local_map_tile_provider} */
     private $tileproviders;
+    /** @var string Setting for map: width, height, center, zoom. {@link local_map_view} */
     private $view;
+    /** @var string Data layers. {@link local_map_layer} */
     private $layers;
+    /** @var class Details to enable user-added markers to the map. {@link receive_marker()} */
     private $receivemarker;
 
     /**
      * Construct map object
      *
-     * @param string domid for the map container.
-     * @param array layers optional layer objects to add to the map. Layer types: 'marker' (pins and popups), 'geojson'.
-     * @param array view optional setting for map: width, height, center, zoom.
-     * @param array tileproviders names of tileproviders to use.
-     * @return void
+     * @param string $domid Id for the map container.
+     * @param array $layers Optional layer objects to add to the map. Layer types: 'marker' (pins and popups), 'geojson'.
+     * @param array $view Optional setting for map: width, height, center, zoom.
+     * @param array $tileproviders Optional names of tileproviders to use.
      **/
     public function __construct($domid, $layers = null, $view = null, $tileproviders = ['osm']) {
         global $PAGE;
@@ -107,8 +151,7 @@ class local_map_map {
     /**
      * Add layer to map object.
      *
-     * @param object layer - local_map_layer
-     * @return void
+     * @param object $layer - local_map_layer
      **/
     public function add_layer($layer) {
         $this->layers[] = $layer;
@@ -117,7 +160,7 @@ class local_map_map {
     /**
      * Add tileproviders to map object.
      *
-     * @param array view optional settings for map: width, height, center, zoom.
+     * @param string $provider Name of tile provider to add to map
      **/
     public function add_tilelayer($provider) {
         global $alltileproviders;
@@ -129,13 +172,11 @@ class local_map_map {
      * Puts the lat long values into CSS selector spcified fields.
      * Puts the geolocation value into CSS selector spcified field.
      *
-     * @param string markerid Id for new marker
-     * @param string latdest CSS selector of desitnation element for latitude value
-     * @param string lngdest CSS selector of desitnation element for longitude value
-     * @param string existingmarker Id of an existing marker to remove
-     * @param array reversegeocode CSS selector of desitnation element for reverse geocode, array of address components to return
-     * @return void
-     * @todo Finish documenting this function
+     * @param string $markerid Id for new marker
+     * @param string $latdest CSS selector of desitnation element for latitude value
+     * @param string $lngdest CSS selector of desitnation element for longitude value
+     * @param string $existingid Id of an existing marker to remove
+     * @param array $reversegeocode CSS selector of desitnation element for reverse geocode, array of address components to return
      **/
     public function receive_marker($markerid,
                                    $latdest = 'input.field_lat', $lngdest = 'input.field_long',
@@ -291,22 +332,35 @@ onEachFeature: function (feature, layer) {
     }
 }
 
+/**
+ * Map marker layer class.
+ *
+ * container for marker data, plus details needed for accessing it via javascript on-page.
+ *
+ * @package    local_map
+ * @copyright  2013 David Balch, University of Oxford <david.balch@conted.ox.ac.uk>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class local_map_layer {
+    /** @var string Type of layer, i.e. marker, geojson */
     public $type;
+    /** @var string Name of layer, used in JS */
     public $name;
+    /** @var string Title of layer for display */
     public $title;
+    /** @var array|string Data markers array, or geojson string  */
     public $data;
+    /** @var bool showcontrols Show UI for layer visibility */
     public $showcontrols;
 
     /**
-     * Construct layer object
+     * Construct a layer object.
      *
-     * @param string type of layer, i.e. marker, geojson
-     * @param string name of layer, used in JS
-     * @param string title of layer for display
-     * @param array|string data markers, or geojson string
-     * @param boolean showcontrols Show UI for layer visibility
-     * @return void
+     * @param string $type Type of layer, i.e. marker, geojson
+     * @param string $name Name of layer, used in JS
+     * @param string $title Title of layer for display
+     * @param array|string $data Marker array, or geojson string
+     * @param bool $showcontrols Show UI for layer visibility
      **/
     public function __construct($type, $name, $title, $data, $showcontrols = true) {
         $this->type = $type;
@@ -317,24 +371,38 @@ class local_map_layer {
     }
 }
 
+/**
+ * Map marker class.
+ *
+ * A single marker (i.e. pin) to be added to the map.
+ *
+ * @package    local_map
+ * @copyright  2013 David Balch, University of Oxford <david.balch@conted.ox.ac.uk>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class local_map_marker {
+    /** @var string Javascript id to use for the marker */
     public $id;
+    /** @var float Marker's latitude */
     public $lat;
+    /** @var float Marker's longitude */
     public $lng;
+    /** @var string Marker title, used in marker tooltip */
     public $title;
+    /** @var string HTML to be shown for marker, e.g. in a popup */
     public $content;
+    /** @var string How to show $content; e.g. in a popup, or a separate div element. */
     public $contentmode;
 
     /**
      * Construct marker object
      *
-     * @param string id Marker id, enabling manipulation via javascript
-     * @param float lat Marker latitude
-     * @param float lng Marker longitude
-     * @param string title Tooltip text
-     * @param string content to be shown, e.g. in a popup
-     * @param string contentmode to show content in, e.g. in a popup, or a separate div element.
-     * @return void
+     * @param string $id Marker Javascript id to use for the marker
+     * @param float $lat Marker's latitude
+     * @param float $lng Marker's longitude
+     * @param string $title Marker title, used in marker tooltip
+     * @param string $content HTML to be shown for marker, e.g. in a popup
+     * @param string $contentmode How to show $content; e.g. in a popup, or a separate div element.
      **/
     public function __construct($id, $lat, $lng, $title = null, $content = null, $contentmode = 'popup') {
         $this->id = $id;
@@ -346,22 +414,35 @@ class local_map_marker {
     }
 }
 
+/**
+ * Map view definition.
+ *
+ * Settings for map width and height on the page, plus location and zoom to focus on a particular location.
+ *
+ * @package    local_map
+ * @copyright  2013 David Balch, University of Oxford <david.balch@conted.ox.ac.uk>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class local_map_view {
+    /** @var float $lat Map center latitude */
     public $lat;
+    /** @var float $lat Map center longitude */
     public $lng;
+    /** @var int $lat Map center zoom value */
     public $zoom;
+    /** @var string $width Map container width as a CSS value */
     public $width;
+    /** @var string $height Map container height as a CSS value */
     public $height;
 
     /**
      * Construct view object, to define the map size on page, and area shown.
      *
-     * @param float lat Map center latitude
-     * @param float lng Map center longitude
-     * @param int zoom map zoom value
-     * @param string width HTML map container width
-     * @param string heightHTML map container height
-     * @return void
+     * @param float $lat Map center latitude
+     * @param float $lng Map center longitude
+     * @param int $zoom Map zoom value
+     * @param string $width Map container width as a CSS value
+     * @param string $height Map container height as a CSS value
      **/
     public function __construct($lat = null, $lng = null, $zoom = null, $width = null, $height = null) {
         // TODO: Get default values from settings in database.
