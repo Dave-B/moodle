@@ -13,8 +13,8 @@ Thanks for downloading! Please send feedback to:
 3. Visit [site_root]/local/map/ to see some maps examples, and view index.php to see the code.
 
 4. You may also be interested in these plugins:
- * "latlongmap" database field (a copy of latlong, with added maps)
- * "infomap" database preset (provides javascript plumbing to show maps from the "view list")
+ * latlongmap database field (a copy of latlong, with added maps)
+ * infomap_latlongmap database preset (provides javascript plumbing to show maps from the "view list")
 
 Have fun!
 
