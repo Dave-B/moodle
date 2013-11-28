@@ -8,31 +8,52 @@
 #datamapwrapper {
   margin: 0 auto;
   max-width: 950px;
+  border: 1px solid silver;
 }
 
 #datamap {
-  float: none; width: 100%; height: 350px;
+  width: 100%; height: 350px;
+  border-right: 1px solid silver;
 }
 #datamapinfopanel {
-  float: none; width: 100%;
-  border: 1px solid silver;
   padding: 0 9px;
   overflow: auto;
 }
+#datamapinfopanel h2, #datamapinfopanel h3 {
+  text-align: left;
+}
+#datamapinfo {
+  width: 100%;
+}
 
 a#mapentryremove {
-  float: right;
   border: 1px solid silver;
-  padding: 0 4px;
+  padding: 0 9px;
   color: silver;
   font-family: sans-serif;
 }
 
+#mod-data-map-template {
+  border-top: 1px solid silver;
+  width: 100%;
+}
+#datapanelvis {
+  padding: .5em;
+  border-top: 1px solid silver;
+}
+
 @media all and (min-width: 1024px) {
   #datamap {
-    float: left; width: 520px;
+    display: inline-block;
+    width: 54%;
   }
   #datamapinfopanel {
-    float: left; width: 390px; height: 348px;
+    display: inline-block;
+    max-width: 43%; height: 350px;
+    margin: 0 auto;
+  }
+
+  #mod-data-map-template, #datapanelvis {
+    margin-top: -3px;
   }
 }
