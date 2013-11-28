@@ -8,7 +8,7 @@ Thanks for downloading! Please send feedback to:
 
 1. You also need these plugins:
  * local_map (provides a map API)
- * "infomap" database preset (provides javascript plumbing to show maps from the "view list")
+ * infomap_latlongmap database preset (provides javascript plumbing to show maps from the "view list")
 
 2. Place the unzipped "latlongmap" directory in [site_root]/mod/data/field/
 
@@ -16,7 +16,7 @@ Thanks for downloading! Please send feedback to:
 $string['latlongmap'] = 'Latitude/longitude (with map)';
 $string['namelatlongmap'] = 'Latitude/longitude field (with map)';
 
-4. Visit [site_root]/admin and install the three plugins (local/maps, latlongmap field, infomap preset).
+4. Visit [site_root]/admin and install the three plugins (local/maps, latlongmap field, infomap_latlongmap preset).
 
 5. Create a database activity from the "Infomap" preset; customise and enjoy!
 
