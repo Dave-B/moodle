@@ -23,5 +23,5 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['modulename'] = 'Infomap';
-$string['pluginname'] = 'Infomap';
+$string['modulename'] = 'Infomap (plugin version)';
+$string['pluginname'] = 'Infomap (plugin version)';
