@@ -172,20 +172,18 @@ class local_map_map {
      * Puts the lat long values into CSS selector spcified fields.
      * Puts the geolocation value into CSS selector spcified field.
      *
-     * @param string $markerid Id for new marker
+     * @param string $markerid JS id for marker
      * @param string $latdest CSS selector of desitnation element for latitude value
      * @param string $lngdest CSS selector of desitnation element for longitude value
-     * @param string $existingid Id of an existing marker to remove
-     * @param array $reversegeocode CSS selector of desitnation element for reverse geocode, array of address components to return
+     * @param array $reversegeocode CSS selector of destination element for reverse geocode, array of address components to return
      **/
     public function receive_marker($markerid,
                                    $latdest = 'input.field_lat', $lngdest = 'input.field_long',
-                                   $existingid = null, $reversegeocode = null) {
+                                   $reversegeocode = null) {
         $rm = new stdClass();
         $rm->markerid = $markerid;
         $rm->latdest = $latdest;
         $rm->lngdest = $lngdest;
-        $rm->existingid = $existingid;
         $rm->reversegeocode = $reversegeocode;
 
         $this->receivemarker = $rm;
@@ -255,11 +253,7 @@ onEachFeature: function (feature, layer) {
 
         $jsreceivemarker = '';
         if ($this->receivemarker) {
-            if (isset($this->receivemarker->existingid)) {
-                $usermarker = $this->receivemarker->existingid;
-            } else {
-                $usermarker = 'editmarker';
-            }
+            $usermarker = $this->receivemarker->markerid;
             $jsreceivemarker = 'M.local_map.maps["'.$this->domid.'"].on("click", function(e) {
                 if (typeof '.$usermarker.' !== "undefined") {
                     M.local_map.maps["'.$this->domid.'"].removeLayer('.$usermarker.');
@@ -268,7 +262,8 @@ onEachFeature: function (feature, layer) {
                 Y.one("'.$this->receivemarker->latdest.'").set("value", e.latlng.lat);
                 Y.one("'.$this->receivemarker->lngdest.'").set("value", e.latlng.lng);';
 
-            if (true || isset($this->receivemarker->reversegeocode)) {
+            if (isset($this->receivemarker->reversegeocode)) {
+                // TODO: Define what of the address is used, e.g. via an array of properties to concat.
                 $jsreceivemarker .= 'M.local_map.reversegeocode(e.latlng.lat, e.latlng.lng, function(geo) {
                     loc = geo.address.country
                     if (geo.address.county) {
@@ -277,7 +272,7 @@ onEachFeature: function (feature, layer) {
                     if (geo.address.city) {
                         loc = geo.address.city + ", " + loc;
                     }
-                    Y.one("input.field_Area").set("value", loc);
+                    Y.one("'.$this->receivemarker->reversegeocode.'").set("value", loc);
                 });';
             }
             $jsreceivemarker .= '});';
