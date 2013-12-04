@@ -32,7 +32,7 @@ YUI({
         var notdataelements = Y.one('#showdata');
         Y.one('#hidedata').on('click', function() {dataelements.hide();notdataelements.show()});
         Y.one('#showdata').on('click', function() {dataelements.show();notdataelements.hide()});
-        notdataelements.hide();dataelements.show()
+        dataelements.hide();notdataelements.show()
      });
   }
 });
