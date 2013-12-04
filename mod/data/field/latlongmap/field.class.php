@@ -64,7 +64,7 @@ class data_field_latlongmap extends data_field_base {
             $markerid = 'record';
             if (isset($content)) {
                 // Existing record to load
-                $marker = new local_map_marker($mapid.'marker', $lat, $long);
+                $marker = new local_map_marker($markerid, $lat, $long);
                 $view = new local_map_view($lat, $long, 5);
                 $map = new local_map_map($mapid, $marker, $view);
             } else {
