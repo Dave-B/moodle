@@ -28,7 +28,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 3;
+$plugin->version   = 2013120300;
 $plugin->requires  = 2013051400;
 $plugin->cron      = 0;
 $plugin->component = 'local_map';
