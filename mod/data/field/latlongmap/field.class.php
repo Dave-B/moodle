@@ -70,7 +70,7 @@ class data_field_latlongmap extends data_field_base {
             } else {
                 $map = new local_map_map($mapid);
             }
-            $map->receive_marker($markerid, 'input.field_lat', 'input.field_long', $markerid);
+            $map->receive_marker($markerid, 'input.field_lat', 'input.field_long', 'input.field_Area');
             $str = $map->render();
             $str .= '<p>Click on the map to set the location. Zoom in and out with the buttons, and pan by dragging, to be more precise.</p>';
         } else {
