@@ -42,11 +42,11 @@ NS.reversegeocode = function(lat, lon, callback_apply) {
                 var parsedResponse;
                 try {
                     parsedResponse = Y.JSON.parse(r.responseText);
-                    callback_apply(parsedResponse);
                 }
                 catch (e) {
                     return;
                 }
+                callback_apply(parsedResponse);
             },
             failure : function () {
             }
