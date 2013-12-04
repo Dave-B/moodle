@@ -44,12 +44,12 @@ NS.reversegeocode = function(lat, lon, callback_apply) {
                 var parsedResponse;
                 try {
                     parsedResponse = Y.JSON.parse(r.responseText);
-                    callback_apply(parsedResponse);
                 }
                 catch (e) {
                     Y.log('reversegeocode: JSON Parse failed', 'error', 'moodle-local_map-map');
                     return;
                 }
+                callback_apply(parsedResponse);
             },
             failure : function () {
                 Y.log('reversegeocode: Lookup failed', 'error', 'moodle-local_map-map');
