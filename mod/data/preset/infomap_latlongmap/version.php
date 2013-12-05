@@ -26,3 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->version   = 2013111300;        // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2013051402;        // Requires this Moodle version
 $plugin->component = 'datapreset_infomap_latlongmap'; // Full name of the plugin (used for diagnostics)
+$plugin->dependencies = array('datafield_latlongmap' => ANY_VERSION);
+$plugin->maturity  = MATURITY_ALPHA;
+$plugin->release   = '0.1';
