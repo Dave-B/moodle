@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
- * Defines the version of map
- *
- * This code fragment is called by moodle_needs_upgrading() and
- * /admin/index.php
- *
  * @package    local_map
  * @copyright  2013 David Balch, University of Oxford <david.balch@conted.ox.ac.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -33,4 +27,4 @@ $plugin->requires  = 2013051400;
 $plugin->cron      = 0;
 $plugin->component = 'local_map';
 $plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = 'TODO';
+$plugin->release   = '0.1';
