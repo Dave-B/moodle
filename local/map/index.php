@@ -92,6 +92,14 @@ EOT;
     echo $map4->render();
     echo '</div>';
 
+    echo '<div class="generalbox" style="float: left;">';
+    echo '<h2>Map with marker input</h2>';
+    $view = new local_map_view(54, -3, 2);
+    $map_input = new local_map_map('map_input', null, $view);
+    $map_input->receive_marker('mymarker', 'input.field_lat', 'input.field_long', 'input.field_name');
+    echo $map_input->render();
+    echo '<form><label>Lat: <input class="field_lat"/></label><br/><label>Lng: <input class="field_long"/></label><br/><label>Name: <input class="field_name"/></label><br/></form>';
+    echo '</div>';
 
 } else {
     echo '<p>Maps not enabled. Enable in <a href="http://m2/admin/settings.php?section=mapsettings">settings</a>.</p>';
