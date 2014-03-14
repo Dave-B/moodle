@@ -31,6 +31,12 @@ defined('MOODLE_INTERNAL') || die();
  *
  * Class for event to be triggered when a note is viewed.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type string content hard-coded to notes.
+ * }
+ *
  * @package    core
  * @copyright  2013 Ankit Agarwal
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -42,7 +48,7 @@ class notes_viewed extends \core\event\content_viewed {
      */
     protected function init() {
         $this->data['crud'] = 'r';
-        $this->data['level'] = self::LEVEL_OTHER;
+        $this->data['edulevel'] = self::LEVEL_OTHER;
     }
 
     /**

@@ -170,7 +170,7 @@ function quiz_delete_instance($id) {
     quiz_delete_all_attempts($quiz);
     quiz_delete_all_overrides($quiz);
 
-    $DB->delete_records('quiz_question_instances', array('quiz' => $quiz->id));
+    $DB->delete_records('quiz_question_instances', array('quizid' => $quiz->id));
     $DB->delete_records('quiz_feedback', array('quizid' => $quiz->id));
 
     $events = $DB->get_records('event', array('modulename' => 'quiz', 'instance' => $quiz->id));
@@ -722,8 +722,13 @@ function quiz_grade_item_update($quiz, $grades = null) {
     if (!$params['hidden']) {
         // If the grade item is not hidden by the quiz logic, then we need to
         // hide it if the quiz is hidden from students.
-        $cm = get_coursemodule_from_instance('quiz', $quiz->id);
-        $params['hidden'] = !$cm->visible;
+        if (property_exists($quiz, 'visible')) {
+            // Saving the quiz form, and cm not yet updated in the database.
+            $params['hidden'] = !$quiz->visible;
+        } else {
+            $cm = get_coursemodule_from_instance('quiz', $quiz->id);
+            $params['hidden'] = !$cm->visible;
+        }
     }
 
     if ($grades  === 'reset') {
@@ -1278,7 +1283,7 @@ function quiz_questions_in_use($questionids) {
     require_once($CFG->libdir . '/questionlib.php');
     list($test, $params) = $DB->get_in_or_equal($questionids);
     return $DB->record_exists_select('quiz_question_instances',
-            'question ' . $test, $params) || question_engine::questions_in_use(
+            'questionid ' . $test, $params) || question_engine::questions_in_use(
             $questionids, new qubaid_join('{quiz_attempts} quiza',
             'quiza.uniqueid', 'quiza.preview = 0'));
 }

@@ -40,7 +40,7 @@ defined('MOODLE_INTERNAL') || die();
  * @property-read string $objecttable name of database table where is object record stored
  * @property-read int $objectid optional id of the object
  * @property-read string $crud letter indicating event type
- * @property-read int $level log level (number between 1 and 100)
+ * @property-read int $edulevel log level (one of the constants LEVEL_)
  * @property-read int $contextid
  * @property-read int $contextlevel
  * @property-read int $contextinstanceid
@@ -101,7 +101,7 @@ abstract class base implements \IteratorAggregate {
 
     /** @var array list of event properties */
     private static $fields = array(
-        'eventname', 'component', 'action', 'target', 'objecttable', 'objectid', 'crud', 'level', 'contextid',
+        'eventname', 'component', 'action', 'target', 'objecttable', 'objectid', 'crud', 'edulevel', 'contextid',
         'contextlevel', 'contextinstanceid', 'userid', 'courseid', 'relateduserid', 'other',
         'timecreated');
 
@@ -113,6 +113,24 @@ abstract class base implements \IteratorAggregate {
      */
     private final function __construct() {
         $this->data = array_fill_keys(self::$fields, null);
+
+        // Define some basic details.
+        $classname = get_called_class();
+        $parts = explode('\\', $classname);
+        if (count($parts) !== 3 or $parts[1] !== 'event') {
+            throw new \coding_exception("Invalid event class name '$classname', it must be defined in component\\event\\
+                    namespace");
+        }
+        $this->data['eventname'] = '\\'.$classname;
+        $this->data['component'] = $parts[0];
+
+        $pos = strrpos($parts[2], '_');
+        if ($pos === false) {
+            throw new \coding_exception("Invalid event class name '$classname', there must be at least one underscore separating
+                    object and action words");
+        }
+        $this->data['target'] = substr($parts[2], 0, $pos);
+        $this->data['action'] = substr($parts[2], $pos + 1);
     }
 
     /**
@@ -130,7 +148,7 @@ abstract class base implements \IteratorAggregate {
      * @throws \coding_exception
      */
     public static final function create(array $data = null) {
-        global $PAGE, $USER, $CFG;
+        global $USER, $CFG;
 
         $data = (array)$data;
 
@@ -143,23 +161,16 @@ abstract class base implements \IteratorAggregate {
         // Set static event data specific for child class.
         $event->init();
 
+        if (isset($event->data['level'])) {
+            if (!isset($event->data['edulevel'])) {
+                debugging('level property is deprecated, use edulevel property instead', DEBUG_DEVELOPER);
+                $event->data['edulevel'] = $event->data['level'];
+            }
+            unset($event->data['level']);
+        }
+
         // Set automatic data.
         $event->data['timecreated'] = time();
-
-        $classname = get_class($event);
-        $parts = explode('\\', $classname);
-        if (count($parts) !== 3 or $parts[1] !== 'event') {
-            throw new \coding_exception("Invalid event class name '$classname', it must be defined in component\\event\\ namespace");
-        }
-        $event->data['eventname'] = '\\'.$classname;
-        $event->data['component'] = $parts[0];
-
-        $pos = strrpos($parts[2], '_');
-        if ($pos === false) {
-            throw new \coding_exception("Invalid event class name '$classname', there must be at least one underscore separating object and action words");
-        }
-        $event->data['target'] = substr($parts[2], 0, $pos);
-        $event->data['action'] = substr($parts[2], $pos+1);
 
         // Set optional data or use defaults.
         $event->data['objectid'] = isset($data['objectid']) ? $data['objectid'] : null;
@@ -202,7 +213,7 @@ abstract class base implements \IteratorAggregate {
         // Warn developers if they do something wrong.
         if ($CFG->debugdeveloper) {
             static $automatickeys = array('eventname', 'component', 'action', 'target', 'contextlevel', 'contextinstanceid', 'timecreated');
-            static $initkeys = array('crud', 'level', 'objecttable');
+            static $initkeys = array('crud', 'level', 'objecttable', 'edulevel');
 
             foreach ($data as $key => $ignored) {
                 if ($key === 'context') {
@@ -231,7 +242,7 @@ abstract class base implements \IteratorAggregate {
      *
      * Set all required data properties:
      *  1/ crud - letter [crud]
-     *  2/ level - using a constant self::LEVEL_*.
+     *  2/ edulevel - using a constant self::LEVEL_*.
      *  3/ objecttable - name of database table if objectid specified
      *
      * Optionally it can set:
@@ -344,7 +355,7 @@ abstract class base implements \IteratorAggregate {
         if (isset($this->context)) {
             return $this->context;
         }
-        $this->context = \context::instance_by_id($this->data['contextid'], false);
+        $this->context = \context::instance_by_id($this->data['contextid'], IGNORE_MISSING);
         return $this->context;
     }
 
@@ -359,7 +370,7 @@ abstract class base implements \IteratorAggregate {
     /**
      * Return standardised event data as array.
      *
-     * @return array
+     * @return array All elements are scalars except the 'other' field which is array.
      */
     public function get_data() {
         return $this->data;
@@ -368,7 +379,9 @@ abstract class base implements \IteratorAggregate {
     /**
      * Return auxiliary data that was stored in logs.
      *
-     * TODO MDL-41331: Properly define this method once logging is finalised.
+     * List of standard properties:
+     *  - origin: IP number, cli,cron
+     *  - realuserid: id of the user when logged-in-as
      *
      * @return array the format is standardised by logging API
      */
@@ -422,8 +435,8 @@ abstract class base implements \IteratorAggregate {
         if (empty($this->data['crud'])) {
             throw new \coding_exception('crud must be specified in init() method of each method');
         }
-        if (!isset($this->data['level'])) {
-            throw new \coding_exception('level must be specified in init() method of each method');
+        if (!isset($this->data['edulevel'])) {
+            throw new \coding_exception('edulevel must be specified in init() method of each method');
         }
         if (!empty($this->data['objectid']) and empty($this->data['objecttable'])) {
             throw new \coding_exception('objecttable must be specified in init() method if objectid present');
@@ -436,15 +449,17 @@ abstract class base implements \IteratorAggregate {
             if (!in_array($this->data['crud'], array('c', 'r', 'u', 'd'), true)) {
                 debugging("Invalid event crud value specified.", DEBUG_DEVELOPER);
             }
-            if (!in_array($this->data['level'], array(self::LEVEL_OTHER, self::LEVEL_TEACHING, self::LEVEL_PARTICIPATING))) {
+            if (!in_array($this->data['edulevel'], array(self::LEVEL_OTHER, self::LEVEL_TEACHING, self::LEVEL_PARTICIPATING))) {
                 // Bitwise combination of levels is not allowed at this stage.
-                debugging('Event property level must a constant value, see event_base::LEVEL_*', DEBUG_DEVELOPER);
+                debugging('Event property edulevel must a constant value, see event_base::LEVEL_*', DEBUG_DEVELOPER);
             }
             if (self::$fields !== array_keys($this->data)) {
                 debugging('Number of event data fields must not be changed in event classes', DEBUG_DEVELOPER);
             }
             $encoded = json_encode($this->data['other']);
-            if ($encoded === false or $this->data['other'] !== json_decode($encoded, true)) {
+            // The comparison here is not set to strict as whole float numbers will be converted to integers through JSON encoding /
+            // decoding and send an unwanted debugging message.
+            if ($encoded === false or $this->data['other'] != json_decode($encoded, true)) {
                 debugging('other event data must be compatible with json encoding', DEBUG_DEVELOPER);
             }
             if ($this->data['userid'] and !is_number($this->data['userid'])) {
@@ -596,6 +611,10 @@ abstract class base implements \IteratorAggregate {
      * @return mixed
      */
     public function __get($name) {
+        if ($name === 'level') {
+            debugging('level property is deprecated, use edulevel property instead', DEBUG_DEVELOPER);
+            return $this->data['edulevel'];
+        }
         if (array_key_exists($name, $this->data)) {
             return $this->data[$name];
         }
@@ -625,6 +644,10 @@ abstract class base implements \IteratorAggregate {
      * @return bool
      */
     public function __isset($name) {
+        if ($name === 'level') {
+            debugging('level property is deprecated, use edulevel property instead', DEBUG_DEVELOPER);
+            return isset($this->data['edulevel']);
+        }
         return isset($this->data[$name]);
     }
 

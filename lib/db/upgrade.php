@@ -85,7 +85,7 @@ defined('MOODLE_INTERNAL') || die();
  * @return bool always true
  */
 function xmldb_main_upgrade($oldversion) {
-    global $CFG, $USER, $DB, $OUTPUT, $SITE;
+    global $CFG, $USER, $DB, $OUTPUT, $SITE, $COURSE;
 
     require_once($CFG->libdir.'/db/upgradelib.php'); // Core Upgrade-related functions
 
@@ -316,6 +316,10 @@ function xmldb_main_upgrade($oldversion) {
             $dbman->drop_field($table, $field);
         }
 
+        // Since structure of 'course' table has changed we need to re-read $SITE from DB.
+        $SITE = $DB->get_record('course', array('id' => $SITE->id));
+        $COURSE = clone($SITE);
+
         upgrade_main_savepoint(true, 2012031500.02);
     }
 
@@ -447,6 +451,10 @@ function xmldb_main_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
+        // Since structure of 'course' table has changed we need to re-read $SITE from DB.
+        $SITE = $DB->get_record('course', array('id' => $SITE->id));
+        $COURSE = clone($SITE);
+
         // Main savepoint reached
         upgrade_main_savepoint(true, 2012050300.03);
     }
@@ -562,6 +570,10 @@ function xmldb_main_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+
+        // Since structure of 'course' table has changed we need to re-read $SITE from DB.
+        $SITE = $DB->get_record('course', array('id' => $SITE->id));
+        $COURSE = clone($SITE);
 
         // Add course_sections_availability to add completion & grade availability conditions
         $table = new xmldb_table('course_sections_availability');
@@ -1291,13 +1303,13 @@ function xmldb_main_upgrade($oldversion) {
     }
 
     if ($oldversion < 2012103003.00) {
-        // Fix uuid field in event table to match RFC-2445 UID property
+        // Fix uuid field in event table to match RFC-2445 UID property.
         $table = new xmldb_table('event');
         $field = new xmldb_field('uuid', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'visible');
-        if ($dbman->field_exists($table, $field)) {
-            // Changing precision of field uuid on table event to (255)
-            $dbman->change_field_precision($table, $field);
-        }
+        // The column already exists, so make sure there are no nulls (crazy mysql).
+        $DB->set_field_select('event', 'uuid', '', "uuid IS NULL");
+        // Changing precision of field uuid on table event to (255).
+        $dbman->change_field_precision($table, $field);
         // Main savepoint reached
         upgrade_main_savepoint(true, 2012103003.00);
     }
@@ -1333,6 +1345,10 @@ function xmldb_main_upgrade($oldversion) {
 
         // Launch change of type for field format
         $dbman->change_field_type($table, $field);
+
+        // Since structure of 'course' table has changed we need to re-read $SITE from DB.
+        $SITE = $DB->get_record('course', array('id' => $SITE->id));
+        $COURSE = clone($SITE);
 
         // Main savepoint reached
         upgrade_main_savepoint(true, 2012110200.00);
@@ -1385,6 +1401,10 @@ function xmldb_main_upgrade($oldversion) {
                 $dbman->drop_field($table, $field);
             }
         }
+
+        // Since structure of 'course' table has changed we need to re-read $SITE from DB.
+        $SITE = $DB->get_record('course', array('id' => $SITE->id));
+        $COURSE = clone($SITE);
 
         // Main savepoint reached
         upgrade_main_savepoint(true, 2012110201.00);
@@ -1501,6 +1521,7 @@ function xmldb_main_upgrade($oldversion) {
         if ($SITE->format !== 'site') {
             $DB->set_field('course', 'format', 'site', array('id' => $SITE->id));
             $SITE->format = 'site';
+            $COURSE->format = 'site';
         }
 
         // Main savepoint reached
@@ -1989,6 +2010,10 @@ function xmldb_main_upgrade($oldversion) {
             $dbman->drop_field($table, $field);
         }
 
+        // Since structure of 'course' table has changed we need to re-read $SITE from DB.
+        $SITE = $DB->get_record('course', array('id' => $SITE->id));
+        $COURSE = clone($SITE);
+
         // Main savepoint reached.
         upgrade_main_savepoint(true, 2013040300.01);
     }
@@ -2376,6 +2401,10 @@ function xmldb_main_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
+        // Since structure of 'course' table has changed we need to re-read $SITE from DB.
+        $SITE = $DB->get_record('course', array('id' => $SITE->id));
+        $COURSE = clone($SITE);
+
         // Define field calendartype to be added to user.
         $table = new xmldb_table('user');
         $field = new xmldb_field('calendartype', XMLDB_TYPE_CHAR, '30', null, XMLDB_NOTNULL, null, 'gregorian');
@@ -2400,6 +2429,10 @@ function xmldb_main_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
+        // Since structure of 'course' table has changed we need to re-read $SITE from DB.
+        $SITE = $DB->get_record('course', array('id' => $SITE->id));
+        $COURSE = clone($SITE);
+
         // Main savepoint reached.
         upgrade_main_savepoint(true, 2013091000.02);
     }
@@ -2422,6 +2455,10 @@ function xmldb_main_upgrade($oldversion) {
         if ($dbman->field_exists($table, $field)) {
             $dbman->drop_field($table, $field);
         }
+
+        // Since structure of 'course' table has changed we need to re-read $SITE from DB.
+        $SITE = $DB->get_record('course', array('id' => $SITE->id));
+        $COURSE = clone($SITE);
 
         // Main savepoint reached.
         upgrade_main_savepoint(true, 2013091000.03);
@@ -2748,30 +2785,7 @@ function xmldb_main_upgrade($oldversion) {
     if ($oldversion < 2013102500.01) {
         // Find all fileareas that have missing root folder entry and add the root folder entry.
         if (empty($CFG->filesrootrecordsfixed)) {
-            $sql = "SELECT distinct f1.contextid, f1.component, f1.filearea, f1.itemid
-                FROM {files} f1 left JOIN {files} f2
-                    ON f1.contextid = f2.contextid
-                    AND f1.component = f2.component
-                    AND f1.filearea = f2.filearea
-                    AND f1.itemid = f2.itemid
-                    AND f2.filename = '.'
-                    AND f2.filepath = '/'
-                WHERE (f1.component <> 'user' or f1.filearea <> 'draft')
-                and f2.id is null";
-            $rs = $DB->get_recordset_sql($sql);
-            $defaults = array('filepath' => '/',
-                            'filename' => '.',
-                            'userid' => $USER->id,
-                            'filesize' => 0,
-                            'timecreated' => time(),
-                            'timemodified' => time(),
-                            'contenthash' => sha1(''));
-            foreach ($rs as $r) {
-                $pathhash = sha1("/$r->contextid/$r->component/$r->filearea/$r->itemid".'/.');
-                $DB->insert_record('files', (array)$r + $defaults +
-                        array('pathnamehash' => $pathhash));
-            }
-            $rs->close();
+            upgrade_fix_missing_root_folders();
             // To skip running the same script on the upgrade to the next major release.
             set_config('filesrootrecordsfixed', 1);
         }
@@ -2860,6 +2874,126 @@ function xmldb_main_upgrade($oldversion) {
 
         // Main savepoint reached.
         upgrade_main_savepoint(true, 2013111800.01);
+    }
+
+    if ($oldversion < 2013122400.01) {
+        // Purge stored passwords from config_log table, ideally this should be in each plugin
+        // but that would complicate backporting...
+        $items = array(
+            'core/cronremotepassword', 'core/proxypassword', 'core/smtppass', 'core/jabberpassword',
+            'enrol_database/dbpass', 'enrol_ldap/bind_pw', 'url/secretphrase');
+        foreach ($items as $item) {
+            list($plugin, $name) = explode('/', $item);
+            $sqlcomparevalue =  $DB->sql_compare_text('value');
+            $sqlcompareoldvalue = $DB->sql_compare_text('oldvalue');
+            if ($plugin === 'core') {
+                $sql = "UPDATE {config_log}
+                           SET value = :value
+                         WHERE name = :name AND plugin IS NULL AND $sqlcomparevalue <> :empty";
+                $params = array('value' => '********', 'name' => $name, 'empty' => '');
+                $DB->execute($sql, $params);
+
+                $sql = "UPDATE {config_log}
+                           SET oldvalue = :value
+                         WHERE name = :name AND plugin IS NULL AND $sqlcompareoldvalue <> :empty";
+                $params = array('value' => '********', 'name' => $name, 'empty' => '');
+                $DB->execute($sql, $params);
+
+            } else {
+                $sql = "UPDATE {config_log}
+                           SET value = :value
+                         WHERE name = :name AND plugin = :plugin AND $sqlcomparevalue <> :empty";
+                $params = array('value' => '********', 'name' => $name, 'plugin' => $plugin, 'empty' => '');
+                $DB->execute($sql, $params);
+
+                $sql = "UPDATE {config_log}
+                           SET oldvalue = :value
+                         WHERE name = :name AND plugin = :plugin AND  $sqlcompareoldvalue <> :empty";
+                $params = array('value' => '********', 'name' => $name, 'plugin' => $plugin, 'empty' => '');
+                $DB->execute($sql, $params);
+            }
+        }
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2013122400.01);
+    }
+
+    if ($oldversion < 2014011000.01) {
+
+        // Define table cache_text to be dropped.
+        $table = new xmldb_table('cache_text');
+
+        // Conditionally launch drop table for cache_text.
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        unset_config('cachetext');
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014011000.01);
+    }
+
+    if ($oldversion < 2014011701.00) {
+        // Fix gradebook sortorder duplicates.
+        upgrade_grade_item_fix_sortorder();
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014011701.00);
+    }
+
+    if ($oldversion < 2014012300.01) {
+        // Remove deleted users home pages.
+        $sql = "DELETE FROM {my_pages}
+                WHERE EXISTS (SELECT {user}.id
+                                  FROM {user}
+                                  WHERE {user}.id = {my_pages}.userid
+                                  AND {user}.deleted = 1)
+                AND {my_pages}.private = 1";
+        $DB->execute($sql);
+
+        // Reached main savepoint.
+        upgrade_main_savepoint(true, 2014012300.01);
+    }
+
+    if ($oldversion < 2014012400.00) {
+        // Define table lock_db to be created.
+        $table = new xmldb_table('lock_db');
+
+        // Adding fields to table lock_db.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('resourcekey', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('expires', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('owner', XMLDB_TYPE_CHAR, '36', null, null, null, null);
+
+        // Adding keys to table lock_db.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table lock_db.
+        $table->add_index('resourcekey_uniq', XMLDB_INDEX_UNIQUE, array('resourcekey'));
+        $table->add_index('expires_idx', XMLDB_INDEX_NOTUNIQUE, array('expires'));
+        $table->add_index('owner_idx', XMLDB_INDEX_NOTUNIQUE, array('owner'));
+
+        // Conditionally launch create table for lock_db.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014012400.00);
+    }
+
+    if ($oldversion < 2014020500.00) {
+        // Define field variant to be added to question_statistics.
+        $table = new xmldb_table('question_statistics');
+        $field = new xmldb_field('variant', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'subquestion');
+
+        // Conditionally launch add field variant.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014020500.00);
     }
 
     return true;

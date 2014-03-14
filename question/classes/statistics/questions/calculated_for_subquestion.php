@@ -34,4 +34,22 @@ class calculated_for_subquestion extends calculated {
     public $differentweights = false;
 
     public $negcovar = 0;
+
+    /**
+     * @var int only set immediately before display in the table. The order of display in the table.
+     */
+    public $subqdisplayorder;
+
+    /**
+     * @param object|null $step the step data for the step that this sub-question was first encountered in.
+     * @param int|null $variant the variant no
+     */
+    public function __construct($step = null, $variant = null) {
+        if ($step !== null) {
+            $this->questionid = $step->questionid;
+            $this->maxmark = $step->maxmark;
+        }
+        $this->variant = $variant;
+
+    }
 }

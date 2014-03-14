@@ -28,6 +28,13 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * mod_chat sessions viewed event class.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type int start start of period.
+ *      @type int end end of period.
+ * }
+ *
  * @package    mod_chat
  * @copyright  2013 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -49,8 +56,8 @@ class sessions_viewed extends \core\event\content_viewed {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        return array($this->courseid, 'chat', 'report', 'report.php?id=' . $this->context->instanceid,
-            $this->objectid, $this->context->instanceid);
+        return array($this->courseid, 'chat', 'report', 'report.php?id=' . $this->contextinstanceid,
+            $this->objectid, $this->contextinstanceid);
     }
 
     /**
@@ -68,7 +75,7 @@ class sessions_viewed extends \core\event\content_viewed {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/chat/report.php', array('id' => $this->context->instanceid));
+        return new \moodle_url('/mod/chat/report.php', array('id' => $this->contextinstanceid));
     }
 
     /**
@@ -78,7 +85,7 @@ class sessions_viewed extends \core\event\content_viewed {
      */
     protected function init() {
         $this->data['crud'] = 'r';
-        $this->data['level'] = self::LEVEL_OTHER;
+        $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = 'chat';
     }
 

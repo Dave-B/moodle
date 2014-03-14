@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="lib/db" VERSION="20131009" COMMENT="XMLDB file for core Moodle tables"
+<XMLDB PATH="lib/db" VERSION="20140115" COMMENT="XMLDB file for core Moodle tables"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../lib/xmldb/xmldb.xsd"
 >
@@ -530,21 +530,6 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="filter_md5key" UNIQUE="false" FIELDS="filter, md5key"/>
-      </INDEXES>
-    </TABLE>
-    <TABLE NAME="cache_text" COMMENT="For storing temporary copies of processed texts">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="md5key" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="formattedtext" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-      <INDEXES>
-        <INDEX NAME="md5key" UNIQUE="false" FIELDS="md5key"/>
-        <INDEX NAME="timemodified" UNIQUE="false" FIELDS="timemodified" COMMENT="Mainly to help deletion of expired records from cron"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="log" COMMENT="Every action is logged as far as possible">
@@ -1491,6 +1476,7 @@
         <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="slot" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The position in the quiz where this question appears"/>
         <FIELD NAME="subquestion" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="variant" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="s" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="effectiveweight" TYPE="number" LENGTH="15" NOTNULL="false" SEQUENCE="false" DECIMALS="5"/>
         <FIELD NAME="negcovar" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -3080,6 +3066,22 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
+    </TABLE>
+    <TABLE NAME="lock_db" COMMENT="Stores active and inactive lock types for db locking method.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="resourcekey" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="String identifying the resource to be locked. Should use frankenstyle format."/>
+        <FIELD NAME="expires" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Expiry time for an active lock."/>
+        <FIELD NAME="owner" TYPE="char" LENGTH="36" NOTNULL="false" SEQUENCE="false" COMMENT="uuid indicating the owner of the lock."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="resourcekey_uniq" UNIQUE="true" FIELDS="resourcekey" COMMENT="Unique index for resourcekey"/>
+        <INDEX NAME="expires_idx" UNIQUE="false" FIELDS="expires" COMMENT="Index on expires column"/>
+        <INDEX NAME="owner_idx" UNIQUE="false" FIELDS="owner" COMMENT="Index on owner"/>
+      </INDEXES>
     </TABLE>
   </TABLES>
 </XMLDB>

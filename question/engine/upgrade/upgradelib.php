@@ -73,7 +73,7 @@ class question_engine_attempt_upgrader {
     }
 
     protected function prevent_timeout() {
-        set_time_limit(300);
+        core_php_time_limit::raise(300);
         if ($this->doingbackup) {
             return;
         }
@@ -465,10 +465,10 @@ class question_engine_upgrade_question_loader {
 
         if ($quizid) {
             $question = $DB->get_record_sql("
-                SELECT q.*, qqi.grade AS maxmark
+                SELECT q.*, qqi.maxmark
                 FROM {question} q
-                JOIN {quiz_question_instances} qqi ON qqi.question = q.id
-                WHERE q.id = $questionid AND qqi.quiz = $quizid");
+                JOIN {quiz_question_instances} qqi ON qqi.questionid = q.id
+                WHERE q.id = ? AND qqi.quizid = ?", array($questionid, $quizid));
         } else {
             $question = $DB->get_record('question', array('id' => $questionid));
         }

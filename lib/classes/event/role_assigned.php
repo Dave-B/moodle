@@ -21,6 +21,14 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Role assigned event.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type int id role assigned id.
+ *      @type string component name of component.
+ *      @type int itemid id of item.
+ * }
+ *
  * @package    core
  * @copyright  2013 Petr Skoda {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -30,7 +38,7 @@ class role_assigned extends base {
     protected function init() {
         $this->data['objecttable'] = 'role';
         $this->data['crud'] = 'c';
-        $this->data['level'] = self::LEVEL_OTHER;
+        $this->data['edulevel'] = self::LEVEL_OTHER;
     }
 
     /**

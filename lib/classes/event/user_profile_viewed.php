@@ -17,6 +17,14 @@
 /**
  * Defines the user profile viewed event.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type int courseid id of course.
+ *      @type string courseshortname short name of course.
+ *      @type string coursefullname fullname of course.
+ * }
+ *
  * @package    core
  * @copyright  2013 Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -34,7 +42,7 @@ class user_profile_viewed extends base {
     protected function init() {
         $this->data['objecttable'] = 'user';
         $this->data['crud'] = 'r';
-        $this->data['level'] = self::LEVEL_OTHER;
+        $this->data['edulevel'] = self::LEVEL_OTHER;
     }
 
     /**

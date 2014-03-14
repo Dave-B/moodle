@@ -103,8 +103,7 @@ $event = \mod_feedback\event\course_module_viewed::create(array(
     'other' => array(
         'cmid' => $cm->id,
         'instanceid' => $feedback->id,
-        'anonymous' => $feedback->anonymous,
-        'content' => 'feedbackmoduleview'
+        'anonymous' => $feedback->anonymous
         )
     ));
 $event->add_record_snapshot('course_modules', $cm);
@@ -122,8 +121,8 @@ if ($course->id == SITEID) {
     $PAGE->set_pagelayout('incourse');
 }
 $PAGE->set_url('/mod/feedback/view.php', array('id'=>$cm->id, 'do_show'=>'view'));
-$PAGE->set_title(format_string($feedback->name));
-$PAGE->set_heading(format_string($course->fullname));
+$PAGE->set_title($feedback->name);
+$PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 
 //ishidden check.

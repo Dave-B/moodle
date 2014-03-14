@@ -1229,16 +1229,10 @@ function fix_utf8($value) {
         // No null bytes expected in our data, so let's remove it.
         $value = str_replace("\0", '', $value);
 
-        // Lower error reporting because glibc throws bogus notices.
-        $olderror = error_reporting();
-        if ($olderror & E_NOTICE) {
-            error_reporting($olderror ^ E_NOTICE);
-        }
-
         // Note: this duplicates min_fix_utf8() intentionally.
         static $buggyiconv = null;
         if ($buggyiconv === null) {
-            $buggyiconv = (!function_exists('iconv') or iconv('UTF-8', 'UTF-8//IGNORE', '100'.chr(130).'€') !== '100€');
+            $buggyiconv = (!function_exists('iconv') or @iconv('UTF-8', 'UTF-8//IGNORE', '100'.chr(130).'€') !== '100€');
         }
 
         if ($buggyiconv) {
@@ -1254,11 +1248,7 @@ function fix_utf8($value) {
             }
 
         } else {
-            $result = iconv('UTF-8', 'UTF-8//IGNORE', $value);
-        }
-
-        if ($olderror & E_NOTICE) {
-            error_reporting($olderror);
+            $result = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
         }
 
         return $result;
@@ -3220,8 +3210,8 @@ function require_logout() {
  */
 function require_course_login($courseorid, $autologinguest = true, $cm = null, $setwantsurltome = true, $preventredirect = false) {
     global $CFG, $PAGE, $SITE;
-    $issite = (is_object($courseorid) and $courseorid->id == SITEID)
-          or (!is_object($courseorid) and $courseorid == SITEID);
+    $issite = ((is_object($courseorid) and $courseorid->id == SITEID)
+          or (!is_object($courseorid) and $courseorid == SITEID));
     if ($issite && !empty($cm) && !($cm instanceof cm_info)) {
         // Note: nearly all pages call get_fast_modinfo anyway and it does not make any
         // db queries so this is not really a performance concern, however it is obviously
@@ -3407,9 +3397,7 @@ function get_user_key($script, $userid, $instance=null, $iprestriction=null, $va
  * @return bool Always returns true
  */
 function update_user_login_times() {
-    global $USER, $DB, $CFG;
-
-    require_once($CFG->dirroot.'/user/lib.php');
+    global $USER, $DB;
 
     if (isguestuser()) {
         // Do not update guest access times/ips for performance.
@@ -3435,7 +3423,9 @@ function update_user_login_times() {
     $USER->lastaccess = $user->lastaccess = $now;
     $USER->lastip = $user->lastip = getremoteaddr();
 
-    user_update_user($user, false);
+    // Note: do not call user_update_user() here because this is part of the login process,
+    //       the login event means that these fields were updated.
+    $DB->update_record('user', $user);
     return true;
 }
 
@@ -3638,7 +3628,7 @@ function fullname($user, $override=false) {
     // The special characters are Japanese brackets that are common enough to make allowances for them (not covered by :punct:).
     $patterns[] = '/[[:punct:]「」]*EMPTY[[:punct:]「」]*/u';
     // This regular expression is to remove any double spaces in the display name.
-    $patterns[] = '/\s{2,}/';
+    $patterns[] = '/\s{2,}/u';
     foreach ($patterns as $pattern) {
         $displayname = preg_replace($pattern, ' ', $displayname);
     }
@@ -4243,6 +4233,9 @@ function delete_user(stdClass $user) {
     // Remove users private keys.
     $DB->delete_records('user_private_key', array('userid' => $user->id));
 
+    // Remove users customised pages.
+    $DB->delete_records('my_pages', array('userid' => $user->id, 'private' => 1));
+
     // Force logout - may fail if file based sessions used, sorry.
     \core\session\manager::kill_user_sessions($user->id);
 
@@ -4345,16 +4338,24 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
         // Use manual if auth not set.
         $auth = empty($user->auth) ? 'manual' : $user->auth;
         if (!empty($user->suspended)) {
-            add_to_log(SITEID, 'login', 'error', 'index.php', $username);
-            error_log('[client '.getremoteaddr()."]  $CFG->wwwroot  Suspended Login:  $username  ".$_SERVER['HTTP_USER_AGENT']);
             $failurereason = AUTH_LOGIN_SUSPENDED;
+
+            // Trigger login failed event.
+            $event = \core\event\user_login_failed::create(array('userid' => $user->id,
+                    'other' => array('username' => $username, 'reason' => $failurereason)));
+            $event->trigger();
+            error_log('[client '.getremoteaddr()."]  $CFG->wwwroot  Suspended Login:  $username  ".$_SERVER['HTTP_USER_AGENT']);
             return false;
         }
         if ($auth=='nologin' or !is_enabled_auth($auth)) {
-            add_to_log(SITEID, 'login', 'error', 'index.php', $username);
-            error_log('[client '.getremoteaddr()."]  $CFG->wwwroot  Disabled Login:  $username  ".$_SERVER['HTTP_USER_AGENT']);
             // Legacy way to suspend user.
             $failurereason = AUTH_LOGIN_SUSPENDED;
+
+            // Trigger login failed event.
+            $event = \core\event\user_login_failed::create(array('userid' => $user->id,
+                    'other' => array('username' => $username, 'reason' => $failurereason)));
+            $event->trigger();
+            error_log('[client '.getremoteaddr()."]  $CFG->wwwroot  Disabled Login:  $username  ".$_SERVER['HTTP_USER_AGENT']);
             return false;
         }
         $auths = array($auth);
@@ -4362,16 +4363,27 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
     } else {
         // Check if there's a deleted record (cheaply), this should not happen because we mangle usernames in delete_user().
         if ($DB->get_field('user', 'id', array('username' => $username, 'mnethostid' => $CFG->mnet_localhost_id,  'deleted' => 1))) {
-            error_log('[client '.getremoteaddr()."]  $CFG->wwwroot  Deleted Login:  $username  ".$_SERVER['HTTP_USER_AGENT']);
             $failurereason = AUTH_LOGIN_NOUSER;
+
+            // Trigger login failed event.
+            $event = \core\event\user_login_failed::create(array('other' => array('username' => $username,
+                    'reason' => $failurereason)));
+            $event->trigger();
+            error_log('[client '.getremoteaddr()."]  $CFG->wwwroot  Deleted Login:  $username  ".$_SERVER['HTTP_USER_AGENT']);
             return false;
         }
 
         // Do not try to authenticate non-existent accounts when user creation is not disabled.
         if (!empty($CFG->authpreventaccountcreation)) {
-            add_to_log(SITEID, 'login', 'error', 'index.php', $username);
-            error_log('[client '.getremoteaddr()."]  $CFG->wwwroot  Unknown user, can not create new accounts:  $username  ".$_SERVER['HTTP_USER_AGENT']);
             $failurereason = AUTH_LOGIN_NOUSER;
+
+            // Trigger login failed event.
+            $event = \core\event\user_login_failed::create(array('other' => array('username' => $username,
+                    'reason' => $failurereason)));
+            $event->trigger();
+
+            error_log('[client '.getremoteaddr()."]  $CFG->wwwroot  Unknown user, can not create new accounts:  $username  ".
+                    $_SERVER['HTTP_USER_AGENT']);
             return false;
         }
 
@@ -4387,9 +4399,14 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
     } else if ($user->id) {
         // Verify login lockout after other ways that may prevent user login.
         if (login_is_lockedout($user)) {
-            add_to_log(SITEID, 'login', 'error', 'index.php', $username);
-            error_log('[client '.getremoteaddr()."]  $CFG->wwwroot  Login lockout:  $username  ".$_SERVER['HTTP_USER_AGENT']);
             $failurereason = AUTH_LOGIN_LOCKOUT;
+
+            // Trigger login failed event.
+            $event = \core\event\user_login_failed::create(array('userid' => $user->id,
+                    'other' => array('username' => $username, 'reason' => $failurereason)));
+            $event->trigger();
+
+            error_log('[client '.getremoteaddr()."]  $CFG->wwwroot  Login lockout:  $username  ".$_SERVER['HTTP_USER_AGENT']);
             return false;
         }
     } else {
@@ -4435,14 +4452,21 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
 
         if (empty($user->id)) {
             $failurereason = AUTH_LOGIN_NOUSER;
+            // Trigger login failed event.
+            $event = \core\event\user_login_failed::create(array('other' => array('username' => $username,
+                    'reason' => $failurereason)));
+            $event->trigger();
             return false;
         }
 
         if (!empty($user->suspended)) {
             // Just in case some auth plugin suspended account.
-            add_to_log(SITEID, 'login', 'error', 'index.php', $username);
-            error_log('[client '.getremoteaddr()."]  $CFG->wwwroot  Suspended Login:  $username  ".$_SERVER['HTTP_USER_AGENT']);
             $failurereason = AUTH_LOGIN_SUSPENDED;
+            // Trigger login failed event.
+            $event = \core\event\user_login_failed::create(array('userid' => $user->id,
+                    'other' => array('username' => $username, 'reason' => $failurereason)));
+            $event->trigger();
+            error_log('[client '.getremoteaddr()."]  $CFG->wwwroot  Suspended Login:  $username  ".$_SERVER['HTTP_USER_AGENT']);
             return false;
         }
 
@@ -4452,7 +4476,6 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
     }
 
     // Failed if all the plugins have failed.
-    add_to_log(SITEID, 'login', 'error', 'index.php', $username);
     if (debugging('', DEBUG_ALL)) {
         error_log('[client '.getremoteaddr()."]  $CFG->wwwroot  Failed Login:  $username  ".$_SERVER['HTTP_USER_AGENT']);
     }
@@ -4460,8 +4483,16 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
     if ($user->id) {
         login_attempt_failed($user);
         $failurereason = AUTH_LOGIN_FAILED;
+        // Trigger login failed event.
+        $event = \core\event\user_login_failed::create(array('userid' => $user->id,
+                'other' => array('username' => $username, 'reason' => $failurereason)));
+        $event->trigger();
     } else {
         $failurereason = AUTH_LOGIN_NOUSER;
+        // Trigger login failed event.
+        $event = \core\event\user_login_failed::create(array('other' => array('username' => $username,
+                'reason' => $failurereason)));
+        $event->trigger();
     }
 
     return false;
@@ -4543,38 +4574,6 @@ function password_is_legacy_hash($password) {
 }
 
 /**
- * Checks whether the password compatibility library will work with the current
- * version of PHP. This cannot be done using PHP version numbers since the fix
- * has been backported to earlier versions in some distributions.
- *
- * See https://github.com/ircmaxell/password_compat/issues/10 for more details.
- *
- * @return bool True if the library is NOT supported.
- */
-function password_compat_not_supported() {
-
-    $hash = '$2y$04$usesomesillystringfore7hnbRJHxXVLeakoG8K30oukPsA.ztMG';
-
-    // Create a one off application cache to store bcrypt support status as
-    // the support status doesn't change and crypt() is slow.
-    $cache = cache::make_from_params(cache_store::MODE_APPLICATION, 'core', 'password_compat');
-
-    if (!$bcryptsupport = $cache->get('bcryptsupport')) {
-        $test = crypt('password', $hash);
-        // Cache string instead of boolean to avoid MDL-37472.
-        if ($test == $hash) {
-            $bcryptsupport = 'supported';
-        } else {
-            $bcryptsupport = 'not supported';
-        }
-        $cache->set('bcryptsupport', $bcryptsupport);
-    }
-
-    // Return true if bcrypt *not* supported.
-    return ($bcryptsupport !== 'supported');
-}
-
-/**
  * Compare password against hash stored in user object to determine if it is valid.
  *
  * If necessary it also updates the stored hash to the current format.
@@ -4648,15 +4647,6 @@ function hash_internal_user_password($password, $fasthash = false) {
     global $CFG;
     require_once($CFG->libdir.'/password_compat/lib/password.php');
 
-    // Use the legacy hashing algorithm (md5) if PHP is not new enough to support bcrypt properly.
-    if (password_compat_not_supported()) {
-        if (isset($CFG->passwordsaltmain)) {
-            return md5($password.$CFG->passwordsaltmain);
-        } else {
-            return md5($password);
-        }
-    }
-
     // Set the cost factor to 4 for fast hashing, otherwise use default cost.
     $options = ($fasthash) ? array('cost' => 4) : array();
 
@@ -4689,9 +4679,6 @@ function update_internal_user_password($user, $password) {
     global $CFG, $DB;
     require_once($CFG->libdir.'/password_compat/lib/password.php');
 
-    // Use the legacy hashing algorithm (md5) if PHP doesn't support bcrypt properly.
-    $legacyhash = password_compat_not_supported();
-
     // Figure out what the hashed password should be.
     $authplugin = get_auth_plugin($user->auth);
     if ($authplugin->prevent_local_passwords()) {
@@ -4700,14 +4687,9 @@ function update_internal_user_password($user, $password) {
         $hashedpassword = hash_internal_user_password($password);
     }
 
-    if ($legacyhash) {
-        $passwordchanged = ($user->password !== $hashedpassword);
-        $algorithmchanged = false;
-    } else {
-        // If verification fails then it means the password has changed.
-        $passwordchanged = !password_verify($password, $user->password);
-        $algorithmchanged = password_needs_rehash($user->password, PASSWORD_DEFAULT);
-    }
+    // If verification fails then it means the password has changed.
+    $passwordchanged = !password_verify($password, $user->password);
+    $algorithmchanged = password_needs_rehash($user->password, PASSWORD_DEFAULT);
 
     if ($passwordchanged || $algorithmchanged) {
         $DB->set_field('user', 'password',  $hashedpassword, array('id' => $user->id));
@@ -5706,6 +5688,11 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
         return false;
     }
 
+    if (defined('BEHAT_SITE_RUNNING')) {
+        // Fake email sending in behat.
+        return true;
+    }
+
     if (!empty($CFG->noemailever)) {
         // Hidden setting for development sites, set in config.php if needed.
         debugging('Not sending email due to $CFG->noemailever config setting', DEBUG_NORMAL);
@@ -5884,7 +5871,18 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
         }
         return true;
     } else {
-        add_to_log(SITEID, 'library', 'mailer', qualified_me(), 'ERROR: '. $mail->ErrorInfo);
+        // Trigger event for failing to send email.
+        $event = \core\event\email_failed::create(array(
+            'context' => context_system::instance(),
+            'userid' => $from->id,
+            'relateduserid' => $user->id,
+            'other' => array(
+                'subject' => $subject,
+                'message' => $messagetext,
+                'errorinfo' => $mail->ErrorInfo
+            )
+        ));
+        $event->trigger();
         if (CLI_SCRIPT) {
             mtrace('Error: lib/moodlelib.php email_to_user(): '.$mail->ErrorInfo);
         }
@@ -7660,7 +7658,6 @@ function random_string ($length=15) {
     $pool .= 'abcdefghijklmnopqrstuvwxyz';
     $pool .= '0123456789';
     $poollen = strlen($pool);
-    mt_srand ((double) microtime() * 1000000);
     $string = '';
     for ($i = 0; $i < $length; $i++) {
         $string .= substr($pool, (mt_rand()%($poollen)), 1);
@@ -7681,7 +7678,6 @@ function complex_random_string($length=null) {
     $pool  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     $pool .= '`~!@#%^&*()_+-=[];,./<>?:{} ';
     $poollen = strlen($pool);
-    mt_srand ((double) microtime() * 1000000);
     if ($length===null) {
         $length = floor(rand(24, 32));
     }
@@ -7981,7 +7977,6 @@ function unformat_float($localefloat, $strict = false) {
  */
 function swapshuffle($array) {
 
-    srand ((double) microtime() * 10000000);
     $last = count($array) - 1;
     for ($i = 0; $i <= $last; $i++) {
         $from = rand(0, $last);
@@ -8021,7 +8016,6 @@ function swapshuffle_assoc($array) {
  * @return array
  */
 function draw_rand_array($array, $draws) {
-    srand ((double) microtime() * 10000000);
 
     $return = array();
 
@@ -8903,6 +8897,10 @@ function get_performance_info() {
     $info['dbqueries'] = $DB->perf_get_reads().'/'.($DB->perf_get_writes() - $PERF->logwrites);
     $info['html'] .= '<span class="dbqueries">DB reads/writes: '.$info['dbqueries'].'</span> ';
     $info['txt'] .= 'db reads/writes: '.$info['dbqueries'].' ';
+
+    $info['dbtime'] = round($DB->perf_get_queries_time(), 5);
+    $info['html'] .= '<span class="dbtime">DB queries time: '.$info['dbtime'].' secs</span> ';
+    $info['txt'] .= 'db queries time: ' . $info['dbtime'] . 's ';
 
     if (function_exists('posix_times')) {
         $ptimes = posix_times();

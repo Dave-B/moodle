@@ -54,8 +54,7 @@ require_capability('mod/page:view', $context);
 // Trigger module viewed event.
 $event = \mod_page\event\course_module_viewed::create(array(
    'objectid' => $page->id,
-   'context' => $context,
-   'other' => array('content' => 'pageresourceview')
+   'context' => $context
 ));
 $event->add_record_snapshot('course_modules', $cm);
 $event->add_record_snapshot('course', $course);
@@ -74,7 +73,7 @@ $options = empty($page->displayoptions) ? array() : unserialize($page->displayop
 if ($inpopup and $page->display == RESOURCELIB_DISPLAY_POPUP) {
     $PAGE->set_pagelayout('popup');
     $PAGE->set_title($course->shortname.': '.$page->name);
-    $PAGE->set_heading(format_string($course->fullname));
+    $PAGE->set_heading($course->fullname);
 } else {
     $PAGE->set_title($course->shortname.': '.$page->name);
     $PAGE->set_heading($course->fullname);

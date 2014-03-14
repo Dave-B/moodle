@@ -195,6 +195,15 @@ class page_requirements_manager {
         $this->YUI_config->comboBase    = $this->yui3loader->comboBase;
         $this->YUI_config->combine      = $this->yui3loader->combine;
 
+        // If we've had to patch any YUI modules between releases, we must override the YUI configuration to include them.
+        // For important information on patching YUI modules, please see http://docs.moodle.org/dev/YUI/Patching.
+        if (!empty($CFG->yuipatchedmodules) && !empty($CFG->yuipatchlevel)) {
+            $this->YUI_config->define_patched_core_modules($this->yui3loader->local_comboBase,
+                    $CFG->yui3version,
+                    $CFG->yuipatchlevel,
+                    $CFG->yuipatchedmodules);
+        }
+
         $configname = $this->YUI_config->set_config_source('lib/yui/config/yui2.js');
         $this->YUI_config->add_group('yui2', array(
             // Loader configuration for our 2in3, for now ignores $CFG->useexternalyui.
@@ -226,6 +235,20 @@ class page_requirements_manager {
             )
         ));
 
+        $this->YUI_config->add_group('gallery', array(
+            'name' => 'gallery',
+            'base' => $CFG->httpswwwroot . '/lib/yuilib/gallery/',
+            'combine' => $this->yui3loader->combine,
+            'comboBase' => $CFG->httpswwwroot . '/theme/yui_combo.php' . $sep,
+            'ext' => false,
+            'root' => 'gallery/' . $jsrev . '/',
+            'patterns' => array(
+                'gallery-' => array(
+                    'group' => 'gallery',
+                )
+            )
+        ));
+
         // Set some more loader options applying to groups too.
         if ($CFG->debugdeveloper) {
             // When debugging is enabled, we want to load the non-minified (RAW) versions of YUI library modules rather
@@ -240,6 +263,7 @@ class page_requirements_manager {
             $this->YUI_config->debug = true;
         } else {
             $this->yui3loader->filter = null;
+            $this->YUI_config->groups['moodle']['filter'] = null;
             $this->YUI_config->debug = false;
         }
 
@@ -286,6 +310,9 @@ class page_requirements_manager {
         );
         if ($CFG->debugdeveloper) {
             $this->M_cfg['developerdebug'] = true;
+        }
+        if (defined('BEHAT_SITE_RUNNING')) {
+            $this->M_cfg['behatsiterunning'] = true;
         }
 
         // Accessibility stuff.
@@ -613,20 +640,6 @@ class page_requirements_manager {
     }
 
     /**
-     * This method was used to load YUI2 libraries into global scope,
-     * use YUI 2in3 instead. Every YUI2 module is represented as a yui2-*
-     * sandboxed module in YUI3 code via Y.YUI2. property.
-     *
-     * {@see http://tracker.moodle.org/browse/MDL-34741}
-     *
-     * @param string|array $libname
-     * @deprecated since 2.4
-     */
-    public function yui2_lib($libname) {
-        throw new coding_exception('PAGE->yui2_lib() is not available any more, use YUI 2in3 instead, see MDL-34741 for more information.');
-    }
-
-    /**
      * Returns the actual url through which a script is served.
      *
      * @param moodle_url|string $url full moodle url, or shortened path to script
@@ -951,23 +964,6 @@ class page_requirements_manager {
     }
 
     /**
-     * Adds a call to make use of a YUI gallery module. DEPRECATED DO NOT USE!!!
-     *
-     * @deprecated DO NOT USE
-     *
-     * @param string|array $modules One or more gallery modules to require
-     * @param string $version
-     * @param string $function
-     * @param array $arguments
-     * @param bool $ondomready
-     */
-    public function js_gallery_module($modules, $version, $function, array $arguments = null, $ondomready = false) {
-        global $CFG;
-        debugging('This function will be removed before 2.0 is released please change it from js_gallery_module to yui_module', DEBUG_DEVELOPER);
-        $this->yui_module($modules, $function, $arguments, $version, $ondomready);
-    }
-
-    /**
      * Creates a JavaScript function call that requires one or more modules to be loaded.
      *
      * This function can be used to include all of the standard YUI module types within JavaScript:
@@ -979,27 +975,19 @@ class page_requirements_manager {
      * @param array|string $modules One or more modules
      * @param string $function The function to call once modules have been loaded
      * @param array $arguments An array of arguments to pass to the function
-     * @param string $galleryversion The gallery version to use
+     * @param string $galleryversion Deprecated: The gallery version to use
      * @param bool $ondomready
      */
     public function yui_module($modules, $function, array $arguments = null, $galleryversion = null, $ondomready = false) {
-        global $CFG;
-
-        if (!$galleryversion) {
-            $galleryversion = '2010.04.08-12-35';
-        }
-
         if (!is_array($modules)) {
             $modules = array($modules);
         }
-        if (empty($CFG->useexternalyui)) {
-            // We need to set the M.yui.galleryversion to the correct version
-            $jscode = 'M.yui.galleryversion='.json_encode($galleryversion).';';
-        } else {
-            // Set Y's config.gallery to the version
-            $jscode = 'Y.config.gallery='.json_encode($galleryversion).';';
+
+        if ($galleryversion != null) {
+            debugging('The galleryversion parameter to yui_module has been deprecated since Moodle 2.3.');
         }
-        $jscode .= 'Y.use('.join(',', array_map('json_encode', convert_to_array($modules))).',function() {'.js_writer::function_call($function, $arguments).'});';
+
+        $jscode = 'Y.use('.join(',', array_map('json_encode', convert_to_array($modules))).',function() {'.js_writer::function_call($function, $arguments).'});';
         if ($ondomready) {
             $jscode = "Y.on('domready', function() { $jscode });";
         }
@@ -1043,14 +1031,18 @@ class page_requirements_manager {
     public function js_init_code($jscode, $ondomready = false, array $module = null) {
         $jscode = trim($jscode, " ;\n"). ';';
 
+        $uniqid = html_writer::random_id();
+        $startjs = " M.util.js_pending('" . $uniqid . "');";
+        $endjs = " M.util.js_complete('" . $uniqid . "');";
+
         if ($module) {
             $this->js_module($module);
             $modulename = $module['name'];
-            $jscode = "Y.use('$modulename', function(Y) { $jscode });";
+            $jscode = "$startjs Y.use('$modulename', function(Y) { $jscode $endjs });";
         }
 
         if ($ondomready) {
-            $jscode = "Y.on('domready', function() { $jscode });";
+            $jscode = "$startjs Y.on('domready', function() { $jscode $endjs });";
         }
 
         $this->jsinitcode[] = $jscode;
@@ -1216,7 +1208,7 @@ class page_requirements_manager {
                 $output .= js_writer::function_call($data[0], $data[1], $data[2]);
             }
             if (!empty($ondomready)) {
-                $output = "    Y.on('domready', function() {\n$output\n    });";
+                $output = "    Y.on('domready', function() {\n$output\n});";
             }
         }
         return $output;
@@ -1249,14 +1241,20 @@ class page_requirements_manager {
         $code = '';
 
         $jsrev = $this->get_jsrev();
+
+        $yuiformat = '-min';
+        if ($this->yui3loader->filter === 'RAW') {
+            $yuiformat = '';
+        }
+
+        $format = '-min';
+        if ($this->YUI_config->groups['moodle']['filter'] === 'DEBUG') {
+            $format = '-debug';
+        }
+
         $baserollups = array(
-            'rollup/' . $CFG->yui3version . '/yui-moodlesimple-min.js',
-        );
-        // The reason for separate rollups is that the Y = YUI().use('*') call is run async and
-        // it gets it's knickers in a twist. Putting it in a separate <script>
-        // to the moodle rollup means that it's completed before the moodle one starts.
-        $moodlerollups = array(
-            'rollup/' . $jsrev . '/mcore-min.js',
+            'rollup/' . $CFG->yui3version . "/yui-moodlesimple{$yuiformat}.js",
+            'rollup/' . $jsrev . "/mcore{$format}.js",
         );
 
         if ($this->yui3loader->combine) {
@@ -1267,11 +1265,9 @@ class page_requirements_manager {
                 }
                 $code .= '<link rel="stylesheet" type="text/css" href="'.$this->yui3loader->comboBase.implode('&amp;', $modules).'" />';
             }
-            $code .= '<link rel="stylesheet" type="text/css" href="'.$this->yui3loader->local_comboBase.'rollup/'.$CFG->yui3version.'/yui-moodlesimple-min.css" />';
+            $code .= '<link rel="stylesheet" type="text/css" href="'.$this->yui3loader->local_comboBase.'rollup/'.$CFG->yui3version.'/yui-moodlesimple' . $yuiformat . '.css" />';
             $code .= '<script type="text/javascript" src="'.$this->yui3loader->local_comboBase
                     . implode('&amp;', $baserollups) . '"></script>';
-            $code .= '<script type="text/javascript" src="'.$this->yui3loader->local_comboBase
-                    . implode('&amp;', $moodlerollups) . '"></script>';
 
         } else {
             if (!empty($page->theme->yuicssmodules)) {
@@ -1279,21 +1275,16 @@ class page_requirements_manager {
                     $code .= '<link rel="stylesheet" type="text/css" href="'.$this->yui3loader->base.$module.'/'.$module.'-min.css" />';
                 }
             }
-            $code .= '<link rel="stylesheet" type="text/css" href="'.$this->yui3loader->local_comboBase.'rollup/'.$CFG->yui3version.'/yui-moodlesimple-min.css" />';
+            $code .= '<link rel="stylesheet" type="text/css" href="'.$this->yui3loader->local_comboBase.'rollup/'.$CFG->yui3version.'/yui-moodlesimple' . $yuiformat . '.css" />';
             foreach ($baserollups as $rollup) {
-                $code .= '<script type="text/javascript" src="'.$this->yui3loader->local_comboBase.$rollup.'"></script>';
-            }
-            foreach ($moodlerollups as $rollup) {
                 $code .= '<script type="text/javascript" src="'.$this->yui3loader->local_comboBase.$rollup.'"></script>';
             }
         }
 
         if ($this->yui3loader->filter === 'RAW') {
             $code = str_replace('-min.css', '.css', $code);
-            $code = str_replace('-min.js', '.js', $code);
         } else if ($this->yui3loader->filter === 'DEBUG') {
             $code = str_replace('-min.css', '.css', $code);
-            $code = str_replace('-min.js', '-debug.js', $code);
         }
         return $code;
     }
@@ -1453,6 +1444,8 @@ class page_requirements_manager {
 
         // Add other requested modules.
         $output = $this->get_extra_modules_code();
+
+        $this->js_init_code('M.util.js_complete("init");', true);
 
         // All the other linked scripts - there should be as few as possible.
         if ($this->jsincludes['footer']) {
@@ -1788,6 +1781,59 @@ class YUI_config {
             }
         }
         return $modules;
+    }
+
+    /**
+     * Define YUI modules which we have been required to patch between releases.
+     *
+     * We must do this because we aggressively cache content on the browser, and we must also override use of the
+     * external CDN which will serve the true authoritative copy of the code without our patches.
+     *
+     * @param String combobase The local combobase
+     * @param String yuiversion The current YUI version
+     * @param Int patchlevel The patch level we're working to for YUI
+     * @param Array patchedmodules An array containing the names of the patched modules
+     * @return void
+     */
+    public function define_patched_core_modules($combobase, $yuiversion, $patchlevel, $patchedmodules) {
+        // The version we use is suffixed with a patchlevel so that we can get additional revisions between YUI releases.
+        $subversion = $yuiversion . '_' . $patchlevel;
+
+        if ($this->comboBase == $combobase) {
+            // If we are using the local combobase in the loader, we can add a group and still make use of the combo
+            // loader. We just need to specify a different root which includes a slightly different YUI version number
+            // to include our patchlevel.
+            $patterns = array();
+            $modules = array();
+            foreach ($patchedmodules as $modulename) {
+                // We must define the pattern and module here so that the loader uses our group configuration instead of
+                // the standard module definition. We may lose some metadata provided by upstream but this will be
+                // loaded when the module is loaded anyway.
+                $patterns[$modulename] = array(
+                    'group' => 'yui-patched',
+                );
+                $modules[$modulename] = array();
+            }
+
+            // Actually add the patch group here.
+            $this->add_group('yui-patched', array(
+                'combine' => true,
+                'root' => $subversion . '/',
+                'patterns' => $patterns,
+                'modules' => $modules,
+            ));
+
+        } else {
+            // The CDN is in use - we need to instead use the local combobase for this module and override the modules
+            // definition. We cannot use the local base - we must use the combobase because we cannot invalidate the
+            // local base in browser caches.
+            $fullpathbase = $combobase . $subversion . '/';
+            foreach ($patchedmodules as $modulename) {
+                $this->modules[$modulename] = array(
+                    'fullpath' => $fullpathbase . $modulename . '/' . $modulename . '-min.js'
+                );
+            }
+        }
     }
 }
 

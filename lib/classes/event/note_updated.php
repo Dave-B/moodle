@@ -31,6 +31,12 @@ defined('MOODLE_INTERNAL') || die();
  *
  * Class for event to be triggered when a note is updated.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type string publishstate publish state.
+ * }
+ *
  * @package    core
  * @copyright  2013 Ankit Agarwal
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -43,7 +49,7 @@ class note_updated extends \core\event\base {
     protected function init() {
         $this->data['objecttable'] = 'post';
         $this->data['crud'] = 'u';
-        $this->data['level'] = self::LEVEL_OTHER;
+        $this->data['edulevel'] = self::LEVEL_OTHER;
     }
 
     /**

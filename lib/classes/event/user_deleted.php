@@ -28,6 +28,16 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Event when user profile is deleted.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type string username name of user.
+ *      @type string email user email.
+ *      @type string idnumber user idnumber.
+ *      @type string picture user picture.
+ *      @type int mnethostid mnet host id.
+ * }
+ *
  * @package    core
  * @copyright  2013 Rajesh Taneja <rajesh@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -40,7 +50,7 @@ class user_deleted extends base {
     protected function init() {
         $this->data['objecttable'] = 'user';
         $this->data['crud'] = 'd';
-        $this->data['level'] = self::LEVEL_OTHER;
+        $this->data['edulevel'] = self::LEVEL_OTHER;
     }
 
     /**

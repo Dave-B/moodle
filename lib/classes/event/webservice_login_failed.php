@@ -28,6 +28,14 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * core web service login_failed event class.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type string method authentication method.
+ *      @type string reason failure reason.
+ *      @type string tokenid id of token.
+ * }
+ *
  * @package    core
  * @copyright  2013 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -75,7 +83,7 @@ class webservice_login_failed extends \core\event\base {
      */
     protected function init() {
         $this->data['crud'] = 'r';
-        $this->data['level'] = self::LEVEL_OTHER;
+        $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->context = \context_system::instance();
     }
 

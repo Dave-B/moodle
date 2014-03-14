@@ -30,6 +30,12 @@ defined('MOODLE_INTERNAL') || die();
  * Please note that the name of this event is not following the event naming convention.
  * Its name should not be used as a reference for other events to be created.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type int submitterid id of submitter.
+ * }
+ *
  * @package    mod_quiz
  * @copyright  2013 Adrian Greeve <adrian@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -42,7 +48,7 @@ class attempt_becameoverdue extends \core\event\base {
     protected function init() {
         $this->data['objecttable'] = 'quiz_attempts';
         $this->data['crud'] = 'u';
-        $this->data['level'] = self::LEVEL_PARTICIPATING;
+        $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
 
     /**
@@ -96,7 +102,7 @@ class attempt_becameoverdue extends \core\event\base {
         $legacyeventdata->timestamp = $attempt->timemodified;
         $legacyeventdata->userid = $this->relateduserid;
         $legacyeventdata->quizid = $attempt->quiz;
-        $legacyeventdata->cmid = $this->context->instanceid;
+        $legacyeventdata->cmid = $this->contextinstanceid;
         $legacyeventdata->courseid = $this->courseid;
         $legacyeventdata->submitterid = $this->other['submitterid'];
 

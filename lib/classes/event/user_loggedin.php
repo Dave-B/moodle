@@ -29,6 +29,12 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * User login event class.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type string username name of user.
+ * }
+ *
  * @package    core
  * @copyright  2013 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -89,7 +95,7 @@ class user_loggedin extends \core\event\base {
     protected function init() {
         $this->context = \context_system::instance();
         $this->data['crud'] = 'r';
-        $this->data['level'] = self::LEVEL_OTHER;
+        $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = 'user';
     }
 

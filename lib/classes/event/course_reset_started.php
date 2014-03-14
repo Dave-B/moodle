@@ -28,6 +28,12 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * core course reset started event class.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type array reset_options all reset options settings including courseid.
+ * }
+ *
  * @package    core
  * @copyright  2013 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -68,7 +74,7 @@ class course_reset_started extends \core\event\base {
      */
     protected function init() {
         $this->data['crud'] = 'd';
-        $this->data['level'] = self::LEVEL_OTHER;
+        $this->data['edulevel'] = self::LEVEL_OTHER;
     }
 
     /**

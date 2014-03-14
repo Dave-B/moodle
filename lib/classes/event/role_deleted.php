@@ -21,6 +21,14 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Role assigned event.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type string shortname shortname of role.
+ *      @type string description role description.
+ *      @type string archetype role type.
+ * }
+ *
  * @package    core_event
  * @copyright  2013 Rajesh Taneja <rajesh@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -33,7 +41,7 @@ class role_deleted extends base {
     protected function init() {
         $this->data['objecttable'] = 'role';
         $this->data['crud'] = 'd';
-        $this->data['level'] = self::LEVEL_OTHER;
+        $this->data['edulevel'] = self::LEVEL_OTHER;
     }
 
     /**

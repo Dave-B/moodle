@@ -797,7 +797,7 @@ class flexible_table {
             }
             return format_text($text, $format, $options);
         } else {
-            $eci =& $this->export_class_instance();
+            $eci = $this->export_class_instance();
             return $eci->format_text($text, $format, $options, $courseid);
         }
     }
@@ -978,8 +978,23 @@ class flexible_table {
 
     /**
      * This function is not part of the public api.
+     *
+     * Please do not use .r0/.r1 for css, as they will be removed in Moodle 2.9.
+     * @todo MDL-43902 , remove r0 and r1 from tr classes.
      */
     function print_row($row, $classname = '') {
+        echo $this->get_row_html($row, $classname);
+    }
+
+    /**
+     * Generate html code for the passed row.
+     *
+     * @param array $row Row data.
+     * @param string $classname classes to add.
+     *
+     * @return string $html html code for the row passed.
+     */
+    public function get_row_html($row, $classname = '') {
         static $suppress_lastrow = NULL;
         $oddeven = $this->currentrow % 2;
         $rowclasses = array('r' . $oddeven);
@@ -989,13 +1004,14 @@ class flexible_table {
         }
 
         $rowid = $this->uniqueid . '_r' . $this->currentrow;
+        $html = '';
 
-        echo html_writer::start_tag('tr', array('class' => implode(' ', $rowclasses), 'id' => $rowid));
+        $html .= html_writer::start_tag('tr', array('class' => implode(' ', $rowclasses), 'id' => $rowid));
 
         // If we have a separator, print it
         if ($row === NULL) {
             $colcount = count($this->columns);
-            echo html_writer::tag('td', html_writer::tag('div', '',
+            $html .= html_writer::tag('td', html_writer::tag('div', '',
                     array('class' => 'tabledivider')), array('colspan' => $colcount));
 
         } else {
@@ -1013,20 +1029,21 @@ class flexible_table {
                     $content = '&nbsp;';
                 }
 
-                echo html_writer::tag('td', $content, array(
+                $html .= html_writer::tag('td', $content, array(
                         'class' => 'cell c' . $index . $this->column_class[$column],
                         'id' => $rowid . '_c' . $index,
                         'style' => $this->make_styles_string($this->column_style[$column])));
             }
         }
 
-        echo html_writer::end_tag('tr');
+        $html .= html_writer::end_tag('tr');
 
         $suppress_enabled = array_sum($this->column_suppress);
         if ($suppress_enabled) {
             $suppress_lastrow = $row;
         }
         $this->currentrow++;
+        return $html;
     }
 
     /**
@@ -1527,9 +1544,9 @@ class table_spreadsheet_export_format_parent extends table_default_export_format
         $filename = $filename.'.'.$this->fileextension;
         $this->define_workbook();
         // format types
-        $this->formatnormal =& $this->workbook->add_format();
+        $this->formatnormal = $this->workbook->add_format();
         $this->formatnormal->set_bold(0);
-        $this->formatheaders =& $this->workbook->add_format();
+        $this->formatheaders = $this->workbook->add_format();
         $this->formatheaders->set_bold(1);
         $this->formatheaders->set_align('center');
         // Sending HTTP headers

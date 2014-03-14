@@ -21,6 +21,13 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Course updated event.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type string shortname shortname of course.
+ *      @type string fullname fullname of course.
+ * }
+ *
  * @package    core
  * @copyright  2013 Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -36,7 +43,7 @@ class course_updated extends base {
     protected function init() {
         $this->data['objecttable'] = 'course';
         $this->data['crud'] = 'u';
-        $this->data['level'] = self::LEVEL_TEACHING;
+        $this->data['edulevel'] = self::LEVEL_TEACHING;
     }
 
     /**

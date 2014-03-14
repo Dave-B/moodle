@@ -312,11 +312,29 @@ class mod_assign_external extends external_api {
                 unset($courses[$id]);
             }
         }
-        $extrafields='m.id as assignmentid, m.course, m.nosubmissions, m.submissiondrafts, m.sendnotifications, '.
-                     'm.sendlatenotifications, m.duedate, m.allowsubmissionsfromdate, m.grade, m.timemodified, '.
-                     'm.completionsubmit, m.cutoffdate, m.teamsubmission, m.requireallteammemberssubmit, '.
-                     'm.teamsubmissiongroupingid, m.blindmarking, m.revealidentities, m.attemptreopenmethod, '.
-                     'm.maxattempts, m.markingworkflow, m.markingallocation, m.requiresubmissionstatement';
+        $extrafields='m.id as assignmentid, ' .
+                     'm.course, ' .
+                     'm.nosubmissions, ' .
+                     'm.submissiondrafts, ' .
+                     'm.sendnotifications, '.
+                     'm.sendlatenotifications, ' .
+                     'm.sendstudentnotifications, ' .
+                     'm.duedate, ' .
+                     'm.allowsubmissionsfromdate, '.
+                     'm.grade, ' .
+                     'm.timemodified, '.
+                     'm.completionsubmit, ' .
+                     'm.cutoffdate, ' .
+                     'm.teamsubmission, ' .
+                     'm.requireallteammemberssubmit, '.
+                     'm.teamsubmissiongroupingid, ' .
+                     'm.blindmarking, ' .
+                     'm.revealidentities, ' .
+                     'm.attemptreopenmethod, '.
+                     'm.maxattempts, ' .
+                     'm.markingworkflow, ' .
+                     'm.markingallocation, ' .
+                     'm.requiresubmissionstatement';
         $coursearray = array();
         foreach ($courses as $id => $course) {
             $assignmentarray = array();
@@ -359,6 +377,7 @@ class mod_assign_external extends external_api {
                         'submissiondrafts' => $module->submissiondrafts,
                         'sendnotifications' => $module->sendnotifications,
                         'sendlatenotifications' => $module->sendlatenotifications,
+                        'sendstudentnotifications' => $module->sendstudentnotifications,
                         'duedate' => $module->duedate,
                         'allowsubmissionsfromdate' => $module->allowsubmissionsfromdate,
                         'grade' => $module->grade,
@@ -412,6 +431,7 @@ class mod_assign_external extends external_api {
                 'submissiondrafts' => new external_value(PARAM_INT, 'submissions drafts'),
                 'sendnotifications' => new external_value(PARAM_INT, 'send notifications'),
                 'sendlatenotifications' => new external_value(PARAM_INT, 'send notifications'),
+                'sendstudentnotifications' => new external_value(PARAM_INT, 'send student notifications (default)'),
                 'duedate' => new external_value(PARAM_INT, 'assignment due date'),
                 'allowsubmissionsfromdate' => new external_value(PARAM_INT, 'allow submissions from date'),
                 'grade' => new external_value(PARAM_INT, 'grade type'),
@@ -1402,9 +1422,10 @@ class mod_assign_external extends external_api {
         $warnings = array();
         $data = new stdClass();
         $data->submissionstatement = $acceptsubmissionstatement;
+        $notices = array();
 
-        if (!$assignment->submit_for_grading($data)) {
-            $detail = 'User id: ' . $USER->id . ', Assignment id: ' . $assignmentid;
+        if (!$assignment->submit_for_grading($data, $notices)) {
+            $detail = 'User id: ' . $USER->id . ', Assignment id: ' . $assignmentid . ' Notices:' . implode(', ', $notices);
             $warnings[] = self::generate_warning($assignmentid,
                                                  'couldnotsubmitforgrading',
                                                  $detail);
@@ -1644,6 +1665,7 @@ class mod_assign_external extends external_api {
     public static function save_grade_parameters() {
         global $CFG;
         require_once("$CFG->dirroot/mod/assign/locallib.php");
+        require_once("$CFG->dirroot/grade/grading/lib.php");
         $instance = new assign(null, null, null);
         $pluginfeedbackparams = array();
 
@@ -1654,20 +1676,41 @@ class mod_assign_external extends external_api {
             }
         }
 
+        $advancedgradingdata = array();
+        $methods = array_keys(grading_manager::available_methods(false));
+        foreach ($methods as $method) {
+            require_once($CFG->dirroot.'/grade/grading/form/'.$method.'/lib.php');
+            $details  = call_user_func('gradingform_'.$method.'_controller::get_external_instance_filling_details');
+            if (!empty($details)) {
+                $items = array();
+                foreach ($details as $key => $value) {
+                    $value->required = VALUE_OPTIONAL;
+                    unset($value->content->keys['id']);
+                    $items[$key] = new external_multiple_structure (new external_single_structure(
+                        array(
+                            'criterionid' => new external_value(PARAM_INT, 'criterion id'),
+                            'fillings' => $value
+                        )
+                    ));
+                }
+                $advancedgradingdata[$method] = new external_single_structure($items, 'items', VALUE_OPTIONAL);
+            }
+        }
+
         return new external_function_parameters(
             array(
                 'assignmentid' => new external_value(PARAM_INT, 'The assignment id to operate on'),
                 'userid' => new external_value(PARAM_INT, 'The student id to operate on'),
-                'grade' => new external_value(PARAM_FLOAT, 'The new grade for this user'),
+                'grade' => new external_value(PARAM_FLOAT, 'The new grade for this user. Ignored if advanced grading used'),
                 'attemptnumber' => new external_value(PARAM_INT, 'The attempt number (-1 means latest attempt)'),
                 'addattempt' => new external_value(PARAM_BOOL, 'Allow another attempt if the attempt reopen method is manual'),
                 'workflowstate' => new external_value(PARAM_ALPHA, 'The next marking workflow state'),
                 'applytoall' => new external_value(PARAM_BOOL, 'If true, this grade will be applied ' .
                                                                'to all members ' .
                                                                'of the group (for group assignments).'),
-                'plugindata' => new external_single_structure(
-                    $pluginfeedbackparams
-                )
+                'plugindata' => new external_single_structure($pluginfeedbackparams, 'plugin data', VALUE_DEFAULT, array()),
+                'advancedgradingdata' => new external_single_structure($advancedgradingdata, 'advanced grading data',
+                                                                       VALUE_DEFAULT, array())
             )
         );
     }
@@ -1677,12 +1720,13 @@ class mod_assign_external extends external_api {
      *
      * @param int $assignmentid The id of the assignment
      * @param int $userid The id of the user
-     * @param float $grade The grade
+     * @param float $grade The grade (ignored if the assignment uses advanced grading)
      * @param int $attemptnumber The attempt number
      * @param bool $addattempt Allow another attempt
      * @param string $workflowstate New workflow state
      * @param bool $applytoall Apply the grade to all members of the group
      * @param array $plugindata Custom data used by plugins
+     * @param array $advancedgradingdata Advanced grading data
      * @return null
      * @since Moodle 2.6
      */
@@ -1693,7 +1737,8 @@ class mod_assign_external extends external_api {
                                       $addattempt,
                                       $workflowstate,
                                       $applytoall,
-                                      $plugindata) {
+                                      $plugindata = array(),
+                                      $advancedgradingdata = array()) {
         global $CFG, $USER;
         require_once("$CFG->dirroot/mod/assign/locallib.php");
 
@@ -1705,22 +1750,38 @@ class mod_assign_external extends external_api {
                                                   'workflowstate' => $workflowstate,
                                                   'addattempt' => $addattempt,
                                                   'applytoall' => $applytoall,
-                                                  'plugindata' => $plugindata));
+                                                  'plugindata' => $plugindata,
+                                                  'advancedgradingdata' => $advancedgradingdata));
 
-        $cm = get_coursemodule_from_instance('assign', $assignmentid, 0, false, MUST_EXIST);
+        $cm = get_coursemodule_from_instance('assign', $params['assignmentid'], 0, false, MUST_EXIST);
         $context = context_module::instance($cm->id);
-
+        self::validate_context($context);
         $assignment = new assign($context, $cm, null);
 
-        $gradedata = (object)$plugindata;
+        $gradedata = (object)$params['plugindata'];
 
-        $gradedata->addattempt = $addattempt;
-        $gradedata->attemptnumber = $attemptnumber;
-        $gradedata->workflowstate = $workflowstate;
-        $gradedata->applytoall = $applytoall;
-        $gradedata->grade = $grade;
+        $gradedata->addattempt = $params['addattempt'];
+        $gradedata->attemptnumber = $params['attemptnumber'];
+        $gradedata->workflowstate = $params['workflowstate'];
+        $gradedata->applytoall = $params['applytoall'];
+        $gradedata->grade = $params['grade'];
 
-        $assignment->save_grade($userid, $gradedata);
+        if (!empty($params['advancedgradingdata'])) {
+            $advancedgrading = array();
+            $criteria = reset($params['advancedgradingdata']);
+            foreach ($criteria as $key => $criterion) {
+                $details = array();
+                foreach ($criterion as $value) {
+                    foreach ($value['fillings'] as $filling) {
+                        $details[$value['criterionid']] = $filling;
+                    }
+                }
+                $advancedgrading[$key] = $details;
+            }
+            $gradedata->advancedgrading = $advancedgrading;
+        }
+
+        $assignment->save_grade($params['userid'], $gradedata);
 
         return null;
     }
@@ -1732,6 +1793,157 @@ class mod_assign_external extends external_api {
      * @since Moodle 2.6
      */
     public static function save_grade_returns() {
+        return null;
+    }
+
+    /**
+     * Describes the parameters for save_grades
+     * @return external_external_function_parameters
+     * @since  Moodle 2.7
+     */
+    public static function save_grades_parameters() {
+        global $CFG;
+        require_once("$CFG->dirroot/mod/assign/locallib.php");
+        require_once("$CFG->dirroot/grade/grading/lib.php");
+        $instance = new assign(null, null, null);
+        $pluginfeedbackparams = array();
+
+        foreach ($instance->get_feedback_plugins() as $plugin) {
+            $pluginparams = $plugin->get_external_parameters();
+            if (!empty($pluginparams)) {
+                $pluginfeedbackparams = array_merge($pluginfeedbackparams, $pluginparams);
+            }
+        }
+
+        $advancedgradingdata = array();
+        $methods = array_keys(grading_manager::available_methods(false));
+        foreach ($methods as $method) {
+            require_once($CFG->dirroot.'/grade/grading/form/'.$method.'/lib.php');
+            $details  = call_user_func('gradingform_'.$method.'_controller::get_external_instance_filling_details');
+            if (!empty($details)) {
+                $items = array();
+                foreach ($details as $key => $value) {
+                    $value->required = VALUE_OPTIONAL;
+                    unset($value->content->keys['id']);
+                    $items[$key] = new external_multiple_structure (new external_single_structure(
+                        array(
+                            'criterionid' => new external_value(PARAM_INT, 'criterion id'),
+                            'fillings' => $value
+                        )
+                    ));
+                }
+                $advancedgradingdata[$method] = new external_single_structure($items, 'items', VALUE_OPTIONAL);
+            }
+        }
+
+        return new external_function_parameters(
+            array(
+                'assignmentid' => new external_value(PARAM_INT, 'The assignment id to operate on'),
+                'applytoall' => new external_value(PARAM_BOOL, 'If true, this grade will be applied ' .
+                                                               'to all members ' .
+                                                               'of the group (for group assignments).'),
+                'grades' => new external_multiple_structure(
+                    new external_single_structure(
+                        array (
+                            'userid' => new external_value(PARAM_INT, 'The student id to operate on'),
+                            'grade' => new external_value(PARAM_FLOAT, 'The new grade for this user. '.
+                                                                       'Ignored if advanced grading used'),
+                            'attemptnumber' => new external_value(PARAM_INT, 'The attempt number (-1 means latest attempt)'),
+                            'addattempt' => new external_value(PARAM_BOOL, 'Allow another attempt if manual attempt reopen method'),
+                            'workflowstate' => new external_value(PARAM_ALPHA, 'The next marking workflow state'),
+                            'plugindata' => new external_single_structure($pluginfeedbackparams, 'plugin data',
+                                                                          VALUE_DEFAULT, array()),
+                            'advancedgradingdata' => new external_single_structure($advancedgradingdata, 'advanced grading data',
+                                                                                   VALUE_DEFAULT, array())
+                        )
+                    )
+                )
+            )
+        );
+    }
+
+    /**
+     * Save multiple student grades for a single assignment.
+     *
+     * @param int $assignmentid The id of the assignment
+     * @param boolean $applytoall If set to true and this is a team assignment,
+     * apply the grade to all members of the group
+     * @param array $grades grade data for one or more students that includes
+     *                  userid - The id of the student being graded
+     *                  grade - The grade (ignored if the assignment uses advanced grading)
+     *                  attemptnumber - The attempt number
+     *                  addattempt - Allow another attempt
+     *                  workflowstate - New workflow state
+     *                  plugindata - Custom data used by plugins
+     *                  advancedgradingdata - Optional Advanced grading data
+     * @throws invalid_parameter_exception if multiple grades are supplied for
+     * a team assignment that has $applytoall set to true
+     * @return null
+     * @since Moodle 2.7
+     */
+    public static function save_grades($assignmentid, $applytoall = false, $grades) {
+        global $CFG, $USER;
+        require_once("$CFG->dirroot/mod/assign/locallib.php");
+
+        $params = self::validate_parameters(self::save_grades_parameters(),
+                                            array('assignmentid' => $assignmentid,
+                                                  'applytoall' => $applytoall,
+                                                  'grades' => $grades));
+
+        $cm = get_coursemodule_from_instance('assign', $params['assignmentid'], 0, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+        $assignment = new assign($context, $cm, null);
+
+        if ($assignment->get_instance()->teamsubmission && $params['applytoall']) {
+            // Check that only 1 user per submission group is provided.
+            $groupids = array();
+            foreach ($params['grades'] as $gradeinfo) {
+                $group = $assignment->get_submission_group($gradeinfo['userid']);
+                if (in_array($group->id, $groupids)) {
+                    throw new invalid_parameter_exception('Multiple grades for the same team have been supplied '
+                                                          .' this is not permitted when the applytoall flag is set');
+                } else {
+                    $groupids[] = $group->id;
+                }
+            }
+        }
+
+        foreach ($params['grades'] as $gradeinfo) {
+            $gradedata = (object)$gradeinfo['plugindata'];
+            $gradedata->addattempt = $gradeinfo['addattempt'];
+            $gradedata->attemptnumber = $gradeinfo['attemptnumber'];
+            $gradedata->workflowstate = $gradeinfo['workflowstate'];
+            $gradedata->applytoall = $params['applytoall'];
+            $gradedata->grade = $gradeinfo['grade'];
+
+            if (!empty($gradeinfo['advancedgradingdata'])) {
+                $advancedgrading = array();
+                $criteria = reset($gradeinfo['advancedgradingdata']);
+                foreach ($criteria as $key => $criterion) {
+                    $details = array();
+                    foreach ($criterion as $value) {
+                        foreach ($value['fillings'] as $filling) {
+                            $details[$value['criterionid']] = $filling;
+                        }
+                    }
+                    $advancedgrading[$key] = $details;
+                }
+                $gradedata->advancedgrading = $advancedgrading;
+            }
+            $assignment->save_grade($gradeinfo['userid'], $gradedata);
+        }
+
+        return null;
+    }
+
+    /**
+     * Describes the return value for save_grades
+     *
+     * @return external_single_structure
+     * @since Moodle 2.7
+     */
+    public static function save_grades_returns() {
         return null;
     }
 

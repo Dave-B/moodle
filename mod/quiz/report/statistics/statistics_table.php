@@ -28,7 +28,9 @@ require_once($CFG->libdir.'/tablelib.php');
 
 /**
  * This table has one row for each question in the quiz, with sub-rows when
- * random questions appear. There are columns for the various statistics.
+ * random questions and variants appear.
+ *
+ * There are columns for the various item and position statistics.
  *
  * @copyright 2008 Jamie Pratt
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -136,11 +138,20 @@ class quiz_statistics_table extends flexible_table {
      * @return string contents of this table cell.
      */
     protected function col_number($questionstat) {
-        if ($questionstat->subquestion) {
+        if (!isset($questionstat->question->number)) {
             return '';
         }
+        $number = $questionstat->question->number;
 
-        return $questionstat->question->number;
+        if (isset($questionstat->subqdisplayorder)) {
+            $number = $number . '.'.$questionstat->subqdisplayorder;
+        }
+
+        if ($questionstat->question->qtype != 'random' && !is_null($questionstat->variant)) {
+            $number = $number . '.'.$questionstat->variant;
+        }
+
+        return $number;
     }
 
     /**
@@ -180,6 +191,13 @@ class quiz_statistics_table extends flexible_table {
     protected function col_name($questionstat) {
         $name = $questionstat->question->name;
 
+        if (!is_null($questionstat->variant)) {
+            $a = new stdClass();
+            $a->name = $name;
+            $a->variant = $questionstat->variant;
+            $name = get_string('nameforvariant', 'quiz_statistics', $a);
+        }
+
         if ($this->is_downloading()) {
             return $name;
         }
@@ -198,6 +216,10 @@ class quiz_statistics_table extends flexible_table {
 
         if ($this->is_dubious_question($questionstat)) {
             $name = html_writer::tag('div', $name, array('class' => 'dubious'));
+        }
+
+        if (!empty($questionstat->minmedianmaxnotice)) {
+            $name = get_string($questionstat->minmedianmaxnotice, 'quiz_statistics') . '<br />' . $name;
         }
 
         return $name;

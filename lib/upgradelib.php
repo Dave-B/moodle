@@ -156,9 +156,9 @@ function upgrade_set_timeout($max_execution_time=300) {
 
     if (CLI_SCRIPT) {
         // there is no point in timing out of CLI scripts, admins can stop them if necessary
-        set_time_limit(0);
+        core_php_time_limit::raise();
     } else {
-        set_time_limit($max_execution_time);
+        core_php_time_limit::raise($max_execution_time);
     }
     set_config('upgraderunning', $expected_end); // keep upgrade locked until this time
 }
@@ -401,7 +401,7 @@ function upgrade_plugins($type, $startcallback, $endcallback, $verbose) {
 
     foreach ($plugs as $plug=>$fullplug) {
         // Reset time so that it works when installing a large number of plugins
-        set_time_limit(600);
+        core_php_time_limit::raise(600);
         $component = clean_param($type.'_'.$plug, PARAM_COMPONENT); // standardised plugin name
 
         // check plugin dir is valid name
@@ -565,10 +565,11 @@ function upgrade_plugins_modules($startcallback, $endcallback, $verbose) {
             throw new plugin_defective_exception($component, 'Missing version.php');
         }
 
+        // TODO: Support for $module will end with Moodle 2.10 by MDL-43896. Was deprecated for Moodle 2.7 by MDL-43040.
         $plugin = new stdClass();
         $plugin->version = null;
         $module = $plugin;
-        require($fullmod .'/version.php');  // Defines $module/$plugin with version etc.
+        require($fullmod .'/version.php');  // Defines $plugin with version etc.
         $plugin = clone($module);
         unset($module->version);
         unset($module->component);
@@ -1463,7 +1464,7 @@ function install_core($version, $verbose) {
     make_writable_directory($CFG->dataroot.'/muc', true);
 
     try {
-        set_time_limit(600);
+        core_php_time_limit::raise(600);
         print_upgrade_part_start('moodle', true, $verbose); // does not store upgrade running flag
 
         $DB->get_manager()->install_from_xmldb_file("$CFG->libdir/db/install.xml");
@@ -1502,7 +1503,7 @@ function install_core($version, $verbose) {
  * @return void, may throw exception
  */
 function upgrade_core($version, $verbose) {
-    global $CFG;
+    global $CFG, $SITE, $DB, $COURSE;
 
     raise_memory_limit(MEMORY_EXTRA);
 
@@ -1521,7 +1522,7 @@ function upgrade_core($version, $verbose) {
         // Pre-upgrade scripts for local hack workarounds.
         $preupgradefile = "$CFG->dirroot/local/preupgrade.php";
         if (file_exists($preupgradefile)) {
-            set_time_limit(0);
+            core_php_time_limit::raise();
             require($preupgradefile);
             // Reset upgrade timeout to default.
             upgrade_set_timeout();
@@ -1532,6 +1533,10 @@ function upgrade_core($version, $verbose) {
             // store version if not already there
             upgrade_main_savepoint($result, $version, false);
         }
+
+        // In case structure of 'course' table has been changed and we forgot to update $SITE, re-read it from db.
+        $SITE = $DB->get_record('course', array('id' => $SITE->id));
+        $COURSE = clone($SITE);
 
         // perform all other component upgrade routines
         update_capabilities('moodle');
@@ -1627,7 +1632,7 @@ function core_tables_exist() {
 function upgrade_plugin_mnet_functions($component) {
     global $DB, $CFG;
 
-    list($type, $plugin) = explode('_', $component);
+    list($type, $plugin) = core_component::normalize_component($component);
     $path = core_component::get_plugin_directory($type, $plugin);
 
     $publishes = array();
@@ -2048,4 +2053,74 @@ function upgrade_rename_old_backup_files_using_shortname() {
         }
         @rename($dir . '/' . $file, $dir . '/' . $newname);
     }
+}
+
+/**
+ * Detect duplicate grade item sortorders and resort the
+ * items to remove them.
+ */
+function upgrade_grade_item_fix_sortorder() {
+    global $DB;
+
+    // The simple way to fix these sortorder duplicates would be simply to resort each
+    // affected course. But in order to reduce the impact of this upgrade step we're trying
+    // to do it more efficiently by doing a series of update statements rather than updating
+    // every single grade item in affected courses.
+
+    $transaction = $DB->start_delegated_transaction();
+
+    $sql = "SELECT DISTINCT g1.id, g1.courseid, g1.sortorder
+              FROM {grade_items} g1
+              JOIN {grade_items} g2 ON g1.courseid = g2.courseid
+             WHERE g1.sortorder = g2.sortorder AND g1.id != g2.id
+             ORDER BY g1.courseid ASC, g1.sortorder DESC, g1.id DESC";
+
+    // Get all duplicates in course order, highest sort order, and higest id first so that we can make space at the
+    // bottom higher end of the sort orders and work down by id.
+    $rs = $DB->get_recordset_sql($sql);
+
+    foreach($rs as $duplicate) {
+        $DB->execute("UPDATE {grade_items}
+                         SET sortorder = sortorder + 1
+                       WHERE courseid = :courseid AND
+                       (sortorder > :sortorder OR (sortorder = :sortorder2 AND id > :id))",
+            array('courseid' => $duplicate->courseid,
+                'sortorder' => $duplicate->sortorder,
+                'sortorder2' => $duplicate->sortorder,
+                'id' => $duplicate->id));
+    }
+    $rs->close();
+
+    $transaction->allow_commit();
+}
+
+/**
+ * Detect file areas with missing root directory records and add them.
+ */
+function upgrade_fix_missing_root_folders() {
+    global $DB, $USER;
+
+    $transaction = $DB->start_delegated_transaction();
+
+    $sql = "SELECT contextid, component, filearea, itemid
+              FROM {files}
+             WHERE (component <> 'user' OR filearea <> 'draft')
+          GROUP BY contextid, component, filearea, itemid
+            HAVING MAX(CASE WHEN filename = '.' AND filepath = '/' THEN 1 ELSE 0 END) = 0";
+
+    $rs = $DB->get_recordset_sql($sql);
+    $defaults = array('filepath' => '/',
+        'filename' => '.',
+        'userid' => 0, // Don't rely on any particular user for these system records.
+        'filesize' => 0,
+        'timecreated' => time(),
+        'timemodified' => time(),
+        'contenthash' => sha1(''));
+    foreach ($rs as $r) {
+        $pathhash = sha1("/$r->contextid/$r->component/$r->filearea/$r->itemid/.");
+        $DB->insert_record('files', (array)$r + $defaults +
+            array('pathnamehash' => $pathhash));
+    }
+    $rs->close();
+    $transaction->allow_commit();
 }

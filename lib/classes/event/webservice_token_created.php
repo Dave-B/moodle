@@ -28,6 +28,12 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * core webservice token_created event class.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type bool auto automatically created.
+ * }
+ *
  * @package    core
  * @copyright  2013 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -81,7 +87,7 @@ class webservice_token_created extends \core\event\base {
     protected function init() {
         $this->context = \context_system::instance();
         $this->data['crud'] = 'c';
-        $this->data['level'] = self::LEVEL_OTHER;
+        $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = 'external_tokens';
     }
 

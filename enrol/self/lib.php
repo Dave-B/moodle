@@ -195,7 +195,6 @@ class enrol_self_plugin extends enrol_plugin {
         }
 
         $this->enrol_user($instance, $USER->id, $instance->roleid, $timestart, $timeend);
-        add_to_log($instance->courseid, 'course', 'enrol', '../enrol/users.php?id='.$instance->courseid, $instance->courseid); //TODO: There should be userid somewhere!
 
         if ($instance->password and $instance->customint1 and $data->enrolpassword !== $instance->password) {
             // It must be a group enrolment, let's assign group too.
@@ -468,7 +467,7 @@ class enrol_self_plugin extends enrol_plugin {
         }
 
         // Unfortunately this may take a long time, execution can be interrupted safely here.
-        @set_time_limit(0);
+        core_php_time_limit::raise();
         raise_memory_limit(MEMORY_HUGE);
 
         $trace->output('Verifying self-enrolments...');

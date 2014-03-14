@@ -41,7 +41,7 @@ require_login($course);
 $PAGE->set_pagelayout('incourse');
 
 // Trigger instances list viewed event.
-$event = \mod_feedback\event\instances_list_viewed::create(array('context' => $context));
+$event = \mod_feedback\event\course_module_instance_list_viewed::create(array('context' => $context));
 $event->trigger();
 
 /// Print the page header
@@ -49,7 +49,7 @@ $strfeedbacks = get_string("modulenameplural", "feedback");
 $strfeedback  = get_string("modulename", "feedback");
 
 $PAGE->navbar->add($strfeedbacks);
-$PAGE->set_heading(format_string($course->fullname));
+$PAGE->set_heading($course->fullname);
 $PAGE->set_title(get_string('modulename', 'feedback').' '.get_string('activities'));
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strfeedbacks);

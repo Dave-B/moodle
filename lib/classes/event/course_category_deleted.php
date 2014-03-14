@@ -19,7 +19,13 @@ namespace core\event;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * category deleted event.
+ * Category deleted event.
+ *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type string name category name.
+ * }
  *
  * @package    core
  * @copyright  2013 Mark Nelson <markn@moodle.com>
@@ -38,7 +44,7 @@ class course_category_deleted extends base {
     protected function init() {
         $this->data['objecttable'] = 'course_categories';
         $this->data['crud'] = 'd';
-        $this->data['level'] = self::LEVEL_OTHER;
+        $this->data['edulevel'] = self::LEVEL_OTHER;
     }
 
     /**

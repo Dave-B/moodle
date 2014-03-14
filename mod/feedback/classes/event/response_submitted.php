@@ -30,6 +30,14 @@ defined('MOODLE_INTERNAL') || die();
  *
  * Class for event to be triggered when a feedback response is submitted.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type int anonymous if feedback is anonymous.
+ *      @type int cmid course module id.
+ *      @type int instanceid id of instance.
+ * }
+ *
  * @package    mod_feedback
  * @copyright  2013 Ankit Agarwal
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
@@ -45,7 +53,7 @@ class response_submitted extends \core\event\base {
         require_once($CFG->dirroot.'/mod/feedback/lib.php');
         $this->data['objecttable'] = 'feedback_completed';
         $this->data['crud'] = 'c';
-        $this->data['level'] = self::LEVEL_PARTICIPATING;
+        $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
 
     /**
@@ -63,7 +71,7 @@ class response_submitted extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return 'The user ' . $this->other['relateduserid']. ' submited a feedback';
+        return 'The user ' . $this->relateduserid . ' submited a feedback';
     }
 
     /**
@@ -76,7 +84,7 @@ class response_submitted extends \core\event\base {
                     'do_show' => 'showoneentry' , 'userid' => $this->relateduserid));
         } else {
             return new \moodle_url('/mod/feedback/show_entries_anonym.php', array('id' => $this->other['cmid'],
-                    'do_show' => 'showoneentry', 'showall', 'showcompleted' => $this->objectid));
+                    'do_show' => 'showoneentry', 'showall' => 1, 'showcompleted' => $this->objectid));
         }
     }
 

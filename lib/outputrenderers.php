@@ -468,9 +468,20 @@ class core_renderer extends renderer_base {
 
         $output = '';
         if (isset($CFG->maintenance_later) and $CFG->maintenance_later > time()) {
-            $output .= $this->box_start('errorbox maintenancewarning');
-            $output .= get_string('maintenancemodeisscheduled', 'admin', (int)(($CFG->maintenance_later-time())/60));
+            $timeleft = $CFG->maintenance_later - time();
+            // If timeleft less than 30 sec, set the class on block to error to highlight.
+            $errorclass = ($timeleft < 30) ? 'error' : 'warning';
+            $output .= $this->box_start($errorclass . ' moodle-has-zindex maintenancewarning');
+            $a = new stdClass();
+            $a->min = (int)($timeleft/60);
+            $a->sec = (int)($timeleft % 60);
+            $output .= get_string('maintenancemodeisscheduled', 'admin', $a) ;
             $output .= $this->box_end();
+            $this->page->requires->yui_module('moodle-core-maintenancemodetimer', 'M.core.maintenancemodetimer',
+                    array(array('timeleftinsec' => $timeleft)));
+            $this->page->requires->strings_for_js(
+                    array('maintenancemodeisscheduled', 'sitemaintenance'),
+                    'admin');
         }
         return $output;
     }
@@ -528,9 +539,6 @@ class core_renderer extends renderer_base {
               <li><a href="http://www.contentquality.com/mynewtester/cynthia.exe?rptmode=0&amp;warnp2n3e=1&amp;url1=' . urlencode(qualified_me()) . '">WCAG 1 (2,3) Check</a></li>
             </ul></div>';
         }
-        if (!empty($CFG->additionalhtmlfooter)) {
-            $output .= "\n".$CFG->additionalhtmlfooter;
-        }
         return $output;
     }
 
@@ -552,15 +560,22 @@ class core_renderer extends renderer_base {
 
     /**
      * The standard tags (typically script tags that are not needed earlier) that
-     * should be output after everything else, . Designed to be called in theme layout.php files.
+     * should be output after everything else. Designed to be called in theme layout.php files.
      *
      * @return string HTML fragment.
      */
     public function standard_end_of_body_html() {
+        global $CFG;
+
         // This function is normally called from a layout.php file in {@link core_renderer::header()}
         // but some of the content won't be known until later, so we return a placeholder
         // for now. This will be replaced with the real content in {@link core_renderer::footer()}.
-        return $this->unique_end_html_token;
+        $output = '';
+        if (!empty($CFG->additionalhtmlfooter)) {
+            $output .= "\n".$CFG->additionalhtmlfooter;
+        }
+        $output .= $this->unique_end_html_token;
+        return $output;
     }
 
     /**
@@ -1088,24 +1103,20 @@ class core_renderer extends renderer_base {
         foreach ($menu->get_primary_actions($this) as $action) {
             if ($action instanceof renderable) {
                 $content = $this->render($action);
-                $role = 'presentation';
             } else {
                 $content = $action;
-                $role = 'menuitem';
             }
-            $output .= html_writer::tag('li', $content, array('role' => $role));
+            $output .= html_writer::tag('li', $content, array('role' => 'presentation'));
         }
         $output .= html_writer::end_tag('ul');
         $output .= html_writer::start_tag('ul', $menu->attributessecondary);
         foreach ($menu->get_secondary_actions() as $action) {
             if ($action instanceof renderable) {
                 $content = $this->render($action);
-                $role = 'presentation';
             } else {
                 $content = $action;
-                $role = 'menuitem';
             }
-            $output .= html_writer::tag('li', $content, array('role' => $role));
+            $output .= html_writer::tag('li', $content, array('role' => 'presentation'));
         }
         $output .= html_writer::end_tag('ul');
         $output .= html_writer::end_tag('div');
@@ -1406,7 +1417,7 @@ class core_renderer extends renderer_base {
                 $output .= $this->block($bc, $region);
                 $lastblock = $bc->title;
             } else if ($bc instanceof block_move_target) {
-                $output .= $this->block_move_target($bc, $zones, $lastblock);
+                $output .= $this->block_move_target($bc, $zones, $lastblock, $region);
             } else {
                 throw new coding_exception('Unexpected type of thing (' . get_class($bc) . ') found in list of block contents.');
             }
@@ -1420,11 +1431,18 @@ class core_renderer extends renderer_base {
      * @param block_move_target $target with the necessary details.
      * @param array $zones array of areas where the block can be moved to
      * @param string $previous the block located before the area currently being rendered.
+     * @param string $region the name of the region
      * @return string the HTML to be output.
      */
-    public function block_move_target($target, $zones, $previous) {
+    public function block_move_target($target, $zones, $previous, $region) {
         if ($previous == null) {
-            $position = get_string('moveblockbefore', 'block', $zones[0]);
+            if (empty($zones)) {
+                // There are no zones, probably because there are no blocks.
+                $regions = $this->page->theme->get_all_block_regions();
+                $position = get_string('moveblockinregion', 'block', $regions[$region]);
+            } else {
+                $position = get_string('moveblockbefore', 'block', $zones[0]);
+            }
         } else {
             $position = get_string('moveblockafter', 'block', $previous);
         }
@@ -3248,6 +3266,9 @@ EOD;
                 $additionalclasses[] = 'used-region-'.$region;
             } else {
                 $additionalclasses[] = 'empty-region-'.$region;
+            }
+            if ($this->page->blocks->region_completely_docked($region, $this)) {
+                $additionalclasses[] = 'docked-region-'.$region;
             }
         }
         foreach ($this->page->layout_options as $option => $value) {

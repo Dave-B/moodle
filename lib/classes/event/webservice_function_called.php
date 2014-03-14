@@ -28,6 +28,12 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * core webservice function_called event class.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type string function name of the function.
+ * }
+ *
  * @package    core
  * @copyright  2013 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -73,7 +79,7 @@ class webservice_function_called extends \core\event\base {
      */
     protected function init() {
         $this->data['crud'] = 'r';
-        $this->data['level'] = self::LEVEL_OTHER;
+        $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->context = \context_system::instance();
     }
 

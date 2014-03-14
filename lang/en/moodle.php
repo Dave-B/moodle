@@ -115,6 +115,8 @@ $string['administratorsandteachers'] = 'Administrators and teachers';
 $string['advanced'] = 'Advanced';
 $string['advancedfilter'] = 'Advanced search';
 $string['advancedsettings'] = 'Advanced settings';
+$string['afterresource'] = 'After resource "{$a}"';
+$string['aftersection'] = 'After section "{$a}"';
 $string['again'] = 'again';
 $string['aimid'] = 'AIM ID';
 $string['ajaxuse'] = 'AJAX and Javascript';
@@ -372,12 +374,14 @@ $string['courserequestsupport'] = 'Supporting information to help the administra
 $string['courserestore'] = 'Course restore';
 $string['courses'] = 'Courses';
 $string['coursesectionsummaries'] = 'Course section summaries';
+$string['coursesectiontitle'] = 'Course: {$a->course}, {$a->sectionname}: {$a->sectiontitle}';
 $string['coursesettings'] = 'Course default settings';
 $string['coursesmovedout'] = 'Courses moved out from {$a}';
 $string['coursespending'] = 'Courses pending approval';
 $string['coursestart'] = 'Course start';
 $string['coursesummary'] = 'Course summary';
 $string['coursesummary_help'] = 'The course summary is displayed in the list of courses. A course search searches course summary text in addition to course names.';
+$string['coursetitle'] = 'Course: {$a->course}';
 $string['courseupdates'] = 'Course updates';
 $string['create'] = 'Create';
 $string['createaccount'] = 'Create my new account';
@@ -710,18 +714,26 @@ $string['errorcreatingactivity'] = 'Unable to create an instance of activity \'{
 $string['errorfiletoobig'] = 'The file was bigger than the limit of {$a} bytes';
 $string['errornouploadrepo'] = 'There is no upload repository enabled for this site';
 $string['errorwhenconfirming'] = 'You are not confirmed yet because an error occurred.  If you clicked on a link in an email to get here, make sure that the line in your email wasn\'t broken or wrapped. You may have to use cut and paste to reconstruct the link properly.';
+$string['eventcommentcreated'] = 'Comment created';
+$string['eventcommentdeleted'] = 'Comment deleted';
+$string['eventcommentsviewed'] = 'Comments viewed';
+$string['eventcoursecategorycreated'] = 'Category created';
 $string['eventcoursecategorydeleted'] = 'Category deleted';
+$string['eventcoursecategoryupdated'] = 'Category updated';
 $string['eventcoursecontentdeleted'] = 'Course content deleted';
 $string['eventcoursecreated'] = 'Course created';
 $string['eventcoursedeleted'] = 'Course deleted';
 $string['eventcoursemodulecreated'] = 'Course module created';
 $string['eventcoursemoduledeleted'] = 'Course module deleted';
 $string['eventcoursemoduleupdated'] = 'Course module updated';
+$string['eventcoursemoduleviewed'] = 'Course module viewed';
 $string['eventcourseresetended'] = 'Course reset ended';
 $string['eventcourseresetstarted'] = 'Course reset started';
 $string['eventcourserestored'] = 'Course restored';
 $string['eventcourseupdated'] = 'Course updated';
 $string['eventcoursesectionupdated'] = ' Course section updated';
+$string['eventcoursemoduleinstancelistviewed'] = 'Course module instance list viewed';
+$string['eventemailfailed'] = 'Email failed to send';
 $string['eventusercreated'] = 'User created';
 $string['eventuserdeleted'] = 'User deleted';
 $string['eventuserlistviewed'] = 'User list viewed';
@@ -785,7 +797,7 @@ $string['forgotteninvalidurl'] = 'Invalid password reset URL';
 $string['format'] = 'Format';
 $string['format_help'] = 'The course format determines the layout of the course page.
 
-* SCORM format - For displaying a SCORM package in the first section of the course page (as an alternative to using the SCORM/AICC module)
+* Single activity format - For displaying a single activity or resource (such as a Quiz or SCORM package) on the course page
 * Social format - A forum is displayed on the course page
 * Topics format - The course page is organised into topic sections
 * Weekly format - The course page is organised into weekly sections, with the first week starting on the course start date';
@@ -1114,8 +1126,6 @@ $string['minute'] = 'minute';
 $string['minutes'] = 'minutes';
 $string['miscellaneous'] = 'Miscellaneous';
 $string['missingcategory'] = 'You need to choose a category';
-$string['missingcity'] = 'Missing city/town';
-$string['missingcountry'] = 'Missing country';
 $string['missingdescription'] = 'Missing description';
 $string['missingemail'] = 'Missing email address';
 $string['missingfirstname'] = 'Missing given name';
@@ -1157,6 +1167,8 @@ $string['moreinformation'] = 'More information about this error';
 $string['moreprofileinfoneeded'] = 'Please tell us more about yourself';
 $string['mostrecently'] = 'most recently';
 $string['move'] = 'Move';
+$string['movecoursemodule'] = 'Move resource';
+$string['movecoursesection'] = 'Move section';
 $string['movecontent'] = 'Move {$a}';
 $string['movecategorycontentto'] = 'Move into';
 $string['movecategorysuccess'] = 'Successfully moved category \'{$a->moved}\' into category \'{$a->to}\'';
@@ -1332,7 +1344,6 @@ $string['numyears'] = '{$a} years';
 $string['ok'] = 'OK';
 $string['oldpassword'] = 'Current password';
 $string['olduserdirectory'] = 'This is the OLD users directory, and is no longer needed. You may safely delete it. The files it contains have been copied to the NEW user directory.';
-$string['opentoguests'] = 'Guest access';
 $string['optional'] = 'optional';
 $string['options'] = 'options';
 $string['order'] = 'Order';
@@ -1567,7 +1578,12 @@ $string['searchagain'] = 'Search again';
 $string['searchbyemail'] = 'Search by email address';
 $string['searchbyusername'] = 'Search by username';
 $string['searchcourses'] = 'Search courses';
-$string['searchhelp'] = 'You can search for multiple words at once.<br /><br />word : find any match of this word within the text.<br />+word : only exact matching words will be found.<br />-word : don\'t include results containing this word.';
+$string['searchhelp'] = '<p>You can search for multiple words at once and can refine your search as follows:</p>
+<ul>
+<li>word - find any match of this word within the text.</li>
+<li>+word - only exact matching words will be found.</li>
+<li>-word - don\'t include results containing this word.</li>
+</ul>';
 $string['searchoptions'] = 'Search options';
 $string['searchresults'] = 'Search results';
 $string['sec'] = 'sec';
@@ -1608,7 +1624,7 @@ $string['selectmoduletoviewhelp'] = 'Select an activity or resource to view its 
 Double-click on an activity or resource name to quickly add it.';
 $string['selectnos'] = 'Select all \'No\'';
 $string['selectperiod'] = 'Select period';
-$string['selectcategorysort'] = 'Which categories would you like to sort';
+$string['selectcategorysort'] = 'Which categories would you like to sort?';
 $string['selectcategorysortby'] = 'Select how you would like to sort categories';
 $string['selectcoursesortby'] = 'Select how you would like to sort courses';
 $string['senddetails'] = 'Send my details via email';
@@ -1808,6 +1824,7 @@ $string['topicoutline'] = 'Topic outline';
 $string['topicshow'] = 'Show this topic to {$a}';
 $string['topichide'] = 'Hide this topic from {$a}';
 $string['total'] = 'Total';
+$string['totopofsection'] = 'To the top of section "{$a}"';
 $string['trackforums'] = 'Forum tracking';
 $string['trackforumsno'] = 'No: don\'t keep track of posts I have seen';
 $string['trackforumsyes'] = 'Yes: highlight new posts for me';

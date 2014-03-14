@@ -30,6 +30,14 @@ defined('MOODLE_INTERNAL') || die();
  *
  * Class for event to be triggered when a course module is updated.
  *
+ * @property-read array $other {
+ *      Extra information about event.
+ *
+ *      @type string modulename name of module updated.
+ *      @type string name title of module.
+ *      @type string instanceid id of module instance.
+ * }
+ *
  * @package    core
  * @copyright  2013 Ankit Agarwal
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
@@ -42,7 +50,7 @@ class course_module_updated extends base {
     protected function init() {
         $this->data['objecttable'] = 'course_modules';
         $this->data['crud'] = 'u';
-        $this->data['level'] = self::LEVEL_TEACHING;
+        $this->data['edulevel'] = self::LEVEL_TEACHING;
     }
 
     /**
