@@ -102,7 +102,7 @@ EOT;
     echo '</div>';
 
 } else {
-    echo '<p>Maps not enabled. Enable in <a href="http://m2/admin/settings.php?section=mapsettings">settings</a>.</p>';
+    echo "<p>Maps not enabled. Enable in <a href=\"$CFG->wwwroot/admin/settings.php?section=mapsettings\">settings</a>.</p>";
 }
 
 echo $OUTPUT->footer();
