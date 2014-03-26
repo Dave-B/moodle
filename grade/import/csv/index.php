@@ -74,7 +74,8 @@ if ($id) {
 }
 
 // Set up the import form.
-$mform = new grade_import_form(null, array('includeseparator'=>true, 'verbosescales'=>true));
+$mform = new grade_import_form(null, array('includeseparator' => true, 'verbosescales' => true, 'acceptedtypes' =>
+        array('.csv', '.txt')));
 
 // If the csv file hasn't been imported yet then look for a form submission or
 // show the initial submission form.
@@ -235,7 +236,7 @@ if ($formdata = $mform2->get_data()) {
                     $studentid = $value;
                 break;
                 case 'useridnumber':
-                    if (!$user = $DB->get_record('user', array('idnumber' => $value))) {
+                    if (empty($value) || !$user = $DB->get_record('user', array('idnumber' => $value))) {
                          // user not found, abort whole import
                         import_cleanup($importcode);
                         echo $OUTPUT->notification("user mapping error, could not find user with idnumber \"$value\"");

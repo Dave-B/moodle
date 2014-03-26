@@ -2286,7 +2286,6 @@ function xmldb_main_upgrade($oldversion) {
         // Main savepoint reached.
         upgrade_main_savepoint(true, 2013070800.01);
     }
-
     if ($oldversion < 2013071500.01) {
         // The enrol_authorize plugin has been removed, if there are no records
         // and no plugin files then remove the plugin data.
@@ -2982,7 +2981,13 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2014012400.00);
     }
 
-    if ($oldversion < 2014020500.00) {
+    if ($oldversion < 2014021300.01) {
+        // Delete any cached stats to force recalculation later, then we can be sure that cached records will have the correct
+        // field.
+        $DB->delete_records('question_response_analysis');
+        $DB->delete_records('question_statistics');
+        $DB->delete_records('quiz_statistics');
+
         // Define field variant to be added to question_statistics.
         $table = new xmldb_table('question_statistics');
         $field = new xmldb_field('variant', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'subquestion');
@@ -2993,7 +2998,189 @@ function xmldb_main_upgrade($oldversion) {
         }
 
         // Main savepoint reached.
-        upgrade_main_savepoint(true, 2014020500.00);
+        upgrade_main_savepoint(true, 2014021300.01);
+    }
+
+    if ($oldversion < 2014021300.02) {
+
+        // Define field variant to be added to question_response_analysis.
+        $table = new xmldb_table('question_response_analysis');
+        $field = new xmldb_field('variant', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'questionid');
+
+        // Conditionally launch add field variant.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014021300.02);
+    }
+
+    if ($oldversion < 2014021800.00) {
+
+        // Define field queued to be added to portfolio_tempdata.
+        $table = new xmldb_table('portfolio_tempdata');
+        $field = new xmldb_field('queued', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'instance');
+
+        // Conditionally launch add field queued.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014021800.00);
+    }
+
+    if ($oldversion < 2014021900.01) {
+        // Force uninstall of deleted tool.
+        if (!file_exists("$CFG->dirroot/$CFG->admin/tool/qeupgradehelper")) {
+            // Remove all other associated config.
+            unset_all_config_for_plugin('tool_qeupgradehelper');
+        }
+        upgrade_main_savepoint(true, 2014021900.01);
+    }
+
+    if ($oldversion < 2014021900.02) {
+
+        // Define table question_states to be dropped.
+        $table = new xmldb_table('question_states');
+
+        // Conditionally launch drop table for question_states.
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014021900.02);
+    }
+
+    if ($oldversion < 2014021900.03) {
+
+        // Define table question_sessions to be dropped.
+        $table = new xmldb_table('question_sessions');
+
+        // Conditionally launch drop table for question_sessions.
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014021900.03);
+    }
+
+    if ($oldversion < 2014022600.00) {
+        $table = new xmldb_table('task_scheduled');
+
+        // Adding fields to table task_scheduled.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('component', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('classname', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('lastruntime', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('nextruntime', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('blocking', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('minute', XMLDB_TYPE_CHAR, '25', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('hour', XMLDB_TYPE_CHAR, '25', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('day', XMLDB_TYPE_CHAR, '25', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('month', XMLDB_TYPE_CHAR, '25', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('dayofweek', XMLDB_TYPE_CHAR, '25', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('faildelay', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('customised', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table task_scheduled.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table task_scheduled.
+        $table->add_index('classname_uniq', XMLDB_INDEX_UNIQUE, array('classname'));
+
+        // Conditionally launch create table for task_scheduled.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table task_adhoc to be created.
+        $table = new xmldb_table('task_adhoc');
+
+        // Adding fields to table task_adhoc.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('component', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('classname', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('nextruntime', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('faildelay', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('customdata', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('blocking', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table task_adhoc.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table task_adhoc.
+        $table->add_index('nextruntime_idx', XMLDB_INDEX_NOTUNIQUE, array('nextruntime'));
+
+        // Conditionally launch create table for task_adhoc.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014022600.00);
+    }
+
+    if ($oldversion < 2014031400.02) {
+        // Delete any cached stats to force recalculation later, then we can be sure that cached records will have the correct
+        // field.
+        $DB->delete_records('question_response_analysis');
+        $DB->delete_records('question_statistics');
+        $DB->delete_records('quiz_statistics');
+
+        // Define field response to be dropped from question_response_analysis.
+        $table = new xmldb_table('question_response_analysis');
+        $field = new xmldb_field('rcount');
+
+        // Conditionally launch drop field response.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014031400.02);
+    }
+
+    if ($oldversion < 2014031400.03) {
+
+        // Define table question_response_count to be created.
+        $table = new xmldb_table('question_response_count');
+
+        // Adding fields to table question_response_count.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('analysisid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('try', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('rcount', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table question_response_count.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('analysisid', XMLDB_KEY_FOREIGN, array('analysisid'), 'question_response_analysis', array('id'));
+
+        // Conditionally launch create table for question_response_count.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014031400.03);
+    }
+
+    if ($oldversion < 2014031400.04) {
+
+        // Define field whichtries to be added to question_response_analysis.
+        $table = new xmldb_table('question_response_analysis');
+        $field = new xmldb_field('whichtries', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'hashcode');
+
+        // Conditionally launch add field whichtries.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014031400.04);
     }
 
     return true;

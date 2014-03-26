@@ -19,7 +19,7 @@
  *
  * @author Andreas Grabs
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package feedback
+ * @package mod_feedback
  */
 
 require_once("../../config.php");
@@ -177,8 +177,8 @@ if ((empty($cm->visible) AND
 //check, if the feedback is open (timeopen, timeclose)
 $checktime = time();
 
-$feedback_is_closed = ($feedback->timeopen > $checktime) OR
-                      ($feedback->timeclose < $checktime AND
+$feedback_is_closed = ($feedback->timeopen > $checktime) ||
+                      ($feedback->timeclose < $checktime &&
                             $feedback->timeclose > 0);
 
 if ($feedback_is_closed) {

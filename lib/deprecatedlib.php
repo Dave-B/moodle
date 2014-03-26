@@ -31,6 +31,88 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
+ * Add an entry to the log table.
+ *
+ * Add an entry to the log table.  These are "action" focussed rather
+ * than web server hits, and provide a way to easily reconstruct what
+ * any particular student has been doing.
+ *
+ * @deprecated since 2.7 use new events instead
+ *
+ * @param    int     $courseid  The course id
+ * @param    string  $module  The module name  e.g. forum, journal, resource, course, user etc
+ * @param    string  $action  'view', 'update', 'add' or 'delete', possibly followed by another word to clarify.
+ * @param    string  $url     The file and parameters used to see the results of the action
+ * @param    string  $info    Additional description information
+ * @param    int     $cm      The course_module->id if there is one
+ * @param    int|stdClass $user If log regards $user other than $USER
+ * @return void
+ */
+function add_to_log($courseid, $module, $action, $url='', $info='', $cm=0, $user=0) {
+    // TODO: Uncomment after all add_to_log() are removed from standard distribution - ideally before 2.7 release.
+    //debugging('ideally all add_to_log() calls should be replaced() with new events', DEBUG_DEVELOPER);
+
+    // This is a nasty hack that allows us to put all the legacy stuff into legacy storage,
+    // this way we may move all the legacy settings there too.
+    $manager = get_log_manager();
+    if (method_exists($manager, 'legacy_add_to_log')) {
+        $manager->legacy_add_to_log($courseid, $module, $action, $url, $info, $cm, $user);
+    }
+}
+
+/**
+ * Adds a file upload to the log table so that clam can resolve the filename to the user later if necessary
+ *
+ * @deprecated since 2.7 - use new file picker instead
+ *
+ * @param string $newfilepath
+ * @param stdClass $course
+ * @param bool $nourl
+ */
+function clam_log_upload($newfilepath, $course=null, $nourl=false) {
+    debugging('clam_log_upload() is not supposed to be used any more, use new file picker instead', DEBUG_DEVELOPER);
+}
+
+/**
+ * This function logs to error_log and to the log table that an infected file has been found and what's happened to it.
+ *
+ * @deprecated since 2.7 - use new file picker instead
+ *
+ * @param string $oldfilepath
+ * @param string $newfilepath
+ * @param int $userid The user
+ */
+function clam_log_infected($oldfilepath='', $newfilepath='', $userid=0) {
+    debugging('clam_log_infected() is not supposed to be used any more, use new file picker instead', DEBUG_DEVELOPER);
+}
+
+/**
+ * Some of the modules allow moving attachments (glossary), in which case we need to hunt down an original log and change the path.
+ *
+ * @deprecated since 2.7 - use new file picker instead
+ *
+ * @param string $oldpath
+ * @param string $newpath
+ * @param boolean $update
+ */
+function clam_change_log($oldpath, $newpath, $update=true) {
+    debugging('clam_change_log() is not supposed to be used any more, use new file picker instead', DEBUG_DEVELOPER);
+}
+
+/**
+ * Replaces the given file with a string.
+ *
+ * @deprecated since 2.7 - infected files are now deleted in file picker
+ *
+ * @param string $file
+ * @return boolean
+ */
+function clam_replace_infected_file($file) {
+    debugging('clam_change_log() is not supposed to be used any more', DEBUG_DEVELOPER);
+    return false;
+}
+
+/**
  * Checks whether the password compatibility library will work with the current
  * version of PHP. This cannot be done using PHP version numbers since the fix
  * has been backported to earlier versions in some distributions.
@@ -119,19 +201,6 @@ function session_kill($sid) {
 function session_kill_user($userid) {
     debugging('session_kill_user() is deprecated, use \core\session\manager::kill_user_sessions() instead', DEBUG_DEVELOPER);
     \core\session\manager::kill_user_sessions($userid);
-}
-
-/**
- * Session garbage collection
- * - verify timeout for all users
- * - kill sessions of all deleted users
- * - kill sessions of users with disabled plugins or 'nologin' plugin
- *
- * @deprecated since 2.6
- */
-function session_gc() {
-    debugging('session_gc() is deprecated, use \core\session\manager::gc() instead', DEBUG_DEVELOPER);
-    \core\session\manager::gc();
 }
 
 /**

@@ -19,7 +19,7 @@
  * Library of functions and constants for module glossary
  * (replace glossary with the name of your module and delete this line)
  *
- * @package   mod-glossary
+ * @package   mod_glossary
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -364,7 +364,7 @@ function glossary_get_recent_mod_activity(&$activities, &$index, $timestart, $co
     $params['timestart'] = $timestart;
     $params['glossaryid'] = $cm->instance;
 
-    $ufields = user_picture::fields('u', array('lastaccess', 'firstname', 'lastname', 'email', 'picture', 'imagealt'));
+    $ufields = user_picture::fields('u', null, 'useridagain');
     $entries = $DB->get_records_sql("
               SELECT ge.id AS entryid, ge.*, $ufields
                 FROM {glossary_entries} ge
@@ -399,6 +399,8 @@ function glossary_get_recent_mod_activity(&$activities, &$index, $timestart, $co
         }
 
         $tmpactivity                       = new stdClass();
+        $tmpactivity->user                 = user_picture::unalias($entry, null, 'useridagain');
+        $tmpactivity->user->fullname       = fullname($tmpactivity->user, $viewfullnames);
         $tmpactivity->type                 = 'glossary';
         $tmpactivity->cmid                 = $cm->id;
         $tmpactivity->glossaryid           = $entry->glossaryid;
@@ -409,14 +411,6 @@ function glossary_get_recent_mod_activity(&$activities, &$index, $timestart, $co
         $tmpactivity->content->entryid     = $entry->entryid;
         $tmpactivity->content->concept     = $entry->concept;
         $tmpactivity->content->definition  = $entry->definition;
-        $tmpactivity->user                 = new stdClass();
-        $tmpactivity->user->id             = $entry->userid;
-        $tmpactivity->user->firstname      = $entry->firstname;
-        $tmpactivity->user->lastname       = $entry->lastname;
-        $tmpactivity->user->fullname       = fullname($entry, $viewfullnames);
-        $tmpactivity->user->picture        = $entry->picture;
-        $tmpactivity->user->imagealt       = $entry->imagealt;
-        $tmpactivity->user->email          = $entry->email;
 
         $activities[$index++] = $tmpactivity;
     }

@@ -19,9 +19,9 @@
  * This file contains several classes uses to render the diferent pages
  * of the wiki module
  *
- * @package mod-wiki-2.0
- * @copyrigth 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
- * @copyrigth 2009 Universitat Politecnica de Catalunya http://www.upc.edu
+ * @package mod_wiki
+ * @copyright 2009 Marc Alier, Jordi Piguillem marc.alier@upc.edu
+ * @copyright 2009 Universitat Politecnica de Catalunya http://www.upc.edu
  *
  * @author Jordi Piguillem
  * @author Marc Alier
@@ -1045,7 +1045,7 @@ class page_wiki_preview extends page_wiki_edit {
             }
             $parseroutput = wiki_parse_content($data->contentformat, $text, $options);
             $this->set_newcontent($text);
-            echo $OUTPUT->notification(get_string('previewwarning', 'wiki'), 'notifyproblem wiki_info');
+            echo $OUTPUT->notification(get_string('previewwarning', 'wiki'), 'notifyproblem');
             $content = format_text($parseroutput['parsed_text'], FORMAT_HTML, array('overflowdiv'=>true, 'filter'=>false));
             echo $OUTPUT->box($content, 'generalbox wiki_previewbox');
             $content = $this->newcontent;
@@ -1834,11 +1834,15 @@ class page_wiki_restoreversion extends page_wiki {
     }
 
     function print_content() {
-        global $CFG, $PAGE;
+        global $PAGE;
 
-        require_capability('mod/wiki:managewiki', $this->modcontext, NULL, true, 'nomanagewikipermission', 'wiki');
+        $wiki = $PAGE->activityrecord;
+        if (wiki_user_can_edit($this->subwiki, $wiki)) {
+            $this->print_restoreversion();
+        } else {
+            echo get_string('cannoteditpage', 'wiki');
+        }
 
-        $this->print_restoreversion();
     }
 
     function set_url() {
@@ -2149,13 +2153,17 @@ class page_wiki_confirmrestore extends page_wiki_save {
         $PAGE->set_url($CFG->wwwroot . '/mod/wiki/viewversion.php', array('pageid' => $this->page->id, 'versionid' => $this->version->id));
     }
 
+    function print_header() {
+        $this->set_url();
+    }
+
     function print_content() {
         global $CFG, $PAGE;
 
-        require_capability('mod/wiki:managewiki', $this->modcontext, NULL, true, 'nomanagewikipermission', 'wiki');
-
         $version = wiki_get_version($this->version->id);
-        if (wiki_restore_page($this->page, $version, $this->modcontext)) {
+        $wiki = $PAGE->activityrecord;
+        if (wiki_user_can_edit($this->subwiki, $wiki) &&
+                wiki_restore_page($this->page, $version, $this->modcontext)) {
             redirect($CFG->wwwroot . '/mod/wiki/view.php?pageid=' . $this->page->id, get_string('restoring', 'wiki', $version->version), 3);
         } else {
             print_error('restoreerror', 'wiki', $version->version);
