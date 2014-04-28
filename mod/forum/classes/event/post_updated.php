@@ -35,6 +35,7 @@ defined('MOODLE_INTERNAL') || die();
  *     - string forumtype: The type of forum the post is part of.
  *
  * @package    mod_forum
+ * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -79,7 +80,7 @@ class post_updated extends \core\event\base {
             // Single discussion forums are an exception. We show
             // the forum itself since it only has one discussion
             // thread.
-            $url = new \moodle_url('/mod/forum/view.php', array('id' => $this->other['forumid']));
+            $url = new \moodle_url('/mod/forum/view.php', array('f' => $this->other['forumid']));
         } else {
             $url = new \moodle_url('/mod/forum/discuss.php', array('d' => $this->other['discussionid']));
         }

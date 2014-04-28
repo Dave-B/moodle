@@ -2464,7 +2464,6 @@ class core_moodlelib_testcase extends advanced_testcase {
 
         $this->assertTimeCurrent($user->firstaccess);
         $this->assertTimeCurrent($user->lastaccess);
-        $this->assertTimeCurrent($user->timemodified);
 
         $this->assertTimeCurrent($USER->firstaccess);
         $this->assertTimeCurrent($USER->lastaccess);
@@ -2687,5 +2686,40 @@ class core_moodlelib_testcase extends advanced_testcase {
         $expectedarray->picture = 23;
         $expectedarray->imagealt = 'Michael Jordan draining another basket.';
         $this->assertEquals($user, $expectedarray);
+    }
+
+    /**
+     * Test function count_words().
+     */
+    public function test_count_words() {
+        $count = count_words("one two three'four");
+        $this->assertEquals(3, $count);
+
+        $count = count_words('one+two three’four');
+        $this->assertEquals(3, $count);
+
+        $count = count_words('one"two three-four');
+        $this->assertEquals(3, $count);
+
+        $count = count_words('one@two three_four');
+        $this->assertEquals(4, $count);
+
+        $count = count_words('one\two three/four');
+        $this->assertEquals(4, $count);
+
+        $count = count_words(' one ... two &nbsp; three...four ');
+        $this->assertEquals(4, $count);
+
+        $count = count_words('one.2 3,four');
+        $this->assertEquals(4, $count);
+
+        $count = count_words('1³ £2 €3.45 $6,789');
+        $this->assertEquals(4, $count);
+
+        $count = count_words('one—two ブルース カンベッル');
+        $this->assertEquals(4, $count);
+
+        $count = count_words('one…two ブルース … カンベッル');
+        $this->assertEquals(4, $count);
     }
 }

@@ -4138,9 +4138,9 @@ function truncate_userinfo(array $info) {
         'icq'         =>  15,
         'phone1'      =>  20,
         'phone2'      =>  20,
-        'institution' =>  40,
-        'department'  =>  30,
-        'address'     =>  70,
+        'institution' => 255,
+        'department'  => 255,
+        'address'     => 255,
         'city'        => 120,
         'country'     =>   2,
         'url'         => 255,
@@ -4214,7 +4214,7 @@ function delete_user(stdClass $user) {
     // TODO: remove from cohorts using standard API here.
 
     // Remove user tags.
-    tag_set('user', $user->id, array());
+    tag_set('user', $user->id, array(), 'core', $usercontext->id);
 
     // Unconditionally unenrol from all courses.
     enrol_user_delete($user);
@@ -4933,6 +4933,11 @@ function delete_course($courseorid, $showfeedback = true) {
     $DB->delete_records("course", array("id" => $courseid));
     $DB->delete_records("course_format_options", array("courseid" => $courseid));
 
+    // Reset all course related caches here.
+    if (class_exists('format_base', false)) {
+        format_base::reset_course_cache($courseid);
+    }
+
     // Trigger a course deleted event.
     $event = \core\event\course_deleted::create(array(
         'objectid' => $course->id,
@@ -5073,12 +5078,6 @@ function remove_course_contents($courseid, $showfeedback = true, array $options 
     $DB->delete_records_select('course_modules_completion',
            'coursemoduleid IN (SELECT id from {course_modules} WHERE course=?)',
            array($courseid));
-    $DB->delete_records_select('course_modules_availability',
-           'coursemoduleid IN (SELECT id from {course_modules} WHERE course=?)',
-           array($courseid));
-    $DB->delete_records_select('course_modules_avail_fields',
-           'coursemoduleid IN (SELECT id from {course_modules} WHERE course=?)',
-           array($courseid));
 
     // Remove course-module data.
     $cms = $DB->get_records('course_modules', array('course' => $course->id));
@@ -5188,13 +5187,7 @@ function remove_course_contents($courseid, $showfeedback = true, array $options 
     }
     $DB->update_record('course', $oldcourse);
 
-    // Delete course sections and availability options.
-    $DB->delete_records_select('course_sections_availability',
-           'coursesectionid IN (SELECT id from {course_sections} WHERE course=?)',
-           array($course->id));
-    $DB->delete_records_select('course_sections_avail_fields',
-           'coursesectionid IN (SELECT id from {course_sections} WHERE course=?)',
-           array($course->id));
+    // Delete course sections.
     $DB->delete_records('course_sections', array('course' => $course->id));
 
     // Delete legacy, section and any other course files.
@@ -7665,7 +7658,18 @@ function moodle_setlocale($locale='') {
         $messages= setlocale (LC_MESSAGES, 0);
     }
     // Set locale to all.
-    setlocale (LC_ALL, $currentlocale);
+    $result = setlocale (LC_ALL, $currentlocale);
+    // If setting of locale fails try the other utf8 or utf-8 variant,
+    // some operating systems support both (Debian), others just one (OSX).
+    if ($result === false) {
+        if (stripos($currentlocale, '.UTF-8') !== false) {
+            $newlocale = str_ireplace('.UTF-8', '.UTF8', $currentlocale);
+            setlocale (LC_ALL, $newlocale);
+        } else if (stripos($currentlocale, '.UTF8') !== false) {
+            $newlocale = str_ireplace('.UTF8', '.UTF-8', $currentlocale);
+            setlocale (LC_ALL, $newlocale);
+        }
+    }
     // Set old values.
     setlocale (LC_MONETARY, $monetary);
     setlocale (LC_NUMERIC, $numeric);
@@ -7689,7 +7693,16 @@ function moodle_setlocale($locale='') {
  */
 function count_words($string) {
     $string = strip_tags($string);
-    return count(preg_split("/\w\b/", $string)) - 1;
+    // Decode HTML entities.
+    $string = html_entity_decode($string);
+    // Replace underscores (which are classed as word characters) with spaces.
+    $string = preg_replace('/_/u', ' ', $string);
+    // Remove any characters that shouldn't be treated as word boundaries.
+    $string = preg_replace('/[\'’-]/u', '', $string);
+    // Remove dots and commas from within numbers only.
+    $string = preg_replace('/([0-9])[.,]([0-9])/u', '$1$2', $string);
+
+    return count(preg_split('/\w\b/u', $string)) - 1;
 }
 
 /**

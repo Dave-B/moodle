@@ -54,15 +54,49 @@ select {
     .header {
         margin-bottom: 3px;
     }
-    .maincontent {
-        .left {
-            padding: 0 10px 0 10px;
+    .picture img {
+        margin: 3px;
+        &.userpicture {
+            margin-left: 3px;
+            margin-right: 10px;
+        }
+    }
+    .content {
+        .posting.fullpost {
+            margin-top: 8px;
+        }
+    }
+    .row {
+        .topic,
+        .content-mask,
+        .options {
+            margin-left: 48px;
+        }
+        &.side {
+            clear: both;
+        }
+    }
+}
+
+.dir-rtl .forumpost {
+    .picture img {
+        &.userpicture {
+            margin-left: 10px;
+            margin-right: 3px;
+        }
+    }
+    .row {
+        .topic,
+        .content-mask,
+        .options {
+            margin-left: 0;
+            margin-right: 48px;
         }
     }
 }
 
 .forumpost .row .left {
-    width: auto;
+    width: 48px;
 }
 
 .forumpost .options .commands {
@@ -86,11 +120,11 @@ select {
 #page-footer {
     margin-top: 1em;
     padding: 1em 0;
-    border-top: 2px solid #eee;
+    border-top: 2px solid @tableBorder;
 }
 
 .maincalendar .calendarmonth td,.maincalendar .calendarmonth th {
-    border: 1px dotted #ddd;
+    border: 1px dotted @tableBorder;
 }
 
 .path-grade-report-grader h1 {
@@ -213,8 +247,8 @@ div#dock {
 
 .path-mod-survey {
     .surveytable {
-      > tbody > tr:nth-of-type(odd) {background-color: #eee;}
-      > tbody > tr:nth-of-type(even) {background-color: #ddd;}
+      > tbody > tr:nth-of-type(odd) {background-color: @tableBackground;}
+      > tbody > tr:nth-of-type(even) {background-color: @tableBackgroundAccent;}
         .rblock label {text-align: center;}
     }
     .resultgraph, .reportsummary, .studentreport, .reportbuttons, .centerpara {

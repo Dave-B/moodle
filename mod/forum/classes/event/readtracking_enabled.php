@@ -33,6 +33,7 @@ defined('MOODLE_INTERNAL') || die();
  *     - int forumid: The id of the forum which readtracking has been enabled on.
  *
  * @package    mod_forum
+ * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -71,7 +72,7 @@ class readtracking_enabled extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/forum/view.php', array('id' => $this->other['forumid']));
+        return new \moodle_url('/mod/forum/view.php', array('f' => $this->other['forumid']));
     }
 
     /**

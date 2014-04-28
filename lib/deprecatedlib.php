@@ -285,8 +285,7 @@ function css_minify_css($files) {
  * @return int number of failed events
  */
 function events_trigger($eventname, $eventdata) {
-    // TODO: uncomment after conversion of all events in standard distribution
-    // debugging('events_trigger() is deprecated, please use new events instead', DEBUG_DEVELOPER);
+    debugging('events_trigger() is deprecated, please use new events instead', DEBUG_DEVELOPER);
     return events_trigger_legacy($eventname, $eventdata);
 }
 
@@ -2386,7 +2385,6 @@ function delete_course_module($id) {
     // features are not turned on, in case they were turned on previously (these will be
     // very quick on an empty table)
     $DB->delete_records('course_modules_completion', array('coursemoduleid' => $cm->id));
-    $DB->delete_records('course_modules_availability', array('coursemoduleid'=> $cm->id));
     $DB->delete_records('course_completion_criteria', array('moduleinstance' => $cm->id,
                                                             'criteriatype' => COMPLETION_CRITERIA_TYPE_ACTIVITY));
 
@@ -4022,7 +4020,7 @@ function get_context_url(context $context) {
  * @deprecated since 2.2
  * @see context::get_course_context()
  * @param context $context
- * @return course_context context of the enclosing course, null if not found or exception
+ * @return context_course context of the enclosing course, null if not found or exception
  */
 function get_course_context(context $context) {
     debugging('get_course_context() is deprecated, please use $context->get_course_context(true) instead.', DEBUG_DEVELOPER);
@@ -4334,4 +4332,77 @@ function badges_get_issued_badge_info($hash) {
 function can_use_html_editor() {
     debugging('can_use_html_editor has been deprecated please update your code to assume it returns true.', DEBUG_DEVELOPER);
     return true;
+}
+
+
+/**
+ * Returns an object with counts of failed login attempts
+ *
+ * Returns information about failed login attempts.  If the current user is
+ * an admin, then two numbers are returned:  the number of attempts and the
+ * number of accounts.  For non-admins, only the attempts on the given user
+ * are shown.
+ *
+ * @deprecate since Moodle 2.7, use {@link user_count_login_failures()} instead.
+ * @global moodle_database $DB
+ * @uses CONTEXT_SYSTEM
+ * @param string $mode Either 'admin' or 'everybody'
+ * @param string $username The username we are searching for
+ * @param string $lastlogin The date from which we are searching
+ * @return int
+ */
+function count_login_failures($mode, $username, $lastlogin) {
+    global $DB;
+
+    debugging('This method has been deprecated. Please use user_count_login_failures() instead.', DEBUG_DEVELOPER);
+
+    $params = array('mode'=>$mode, 'username'=>$username, 'lastlogin'=>$lastlogin);
+    $select = "module='login' AND action='error' AND time > :lastlogin";
+
+    $count = new stdClass();
+
+    if (is_siteadmin()) {
+        if ($count->attempts = $DB->count_records_select('log', $select, $params)) {
+            $count->accounts = $DB->count_records_select('log', $select, $params, 'COUNT(DISTINCT info)');
+            return $count;
+        }
+    } else if ($mode == 'everybody') {
+        if ($count->attempts = $DB->count_records_select('log', "$select AND info = :username", $params)) {
+            return $count;
+        }
+    }
+    return NULL;
+}
+
+/**
+ * Returns whether ajax is enabled/allowed or not.
+ * This function is deprecated and always returns true.
+ *
+ * @param array $unused - not used any more.
+ * @return bool
+ * @deprecated since 2.7 MDL-33099 - please do not use this function any more.
+ * @todo MDL-44088 This will be removed in Moodle 2.9.
+ */
+function ajaxenabled(array $browsers = null) {
+    debugging('ajaxenabled() is deprecated - please update your code to assume it returns true.', DEBUG_DEVELOPER);
+    return true;
+}
+
+/**
+ * Determine whether a course module is visible within a course,
+ * this is different from instance_is_visible() - faster and visibility for user
+ *
+ * @global object
+ * @global object
+ * @uses DEBUG_DEVELOPER
+ * @uses CONTEXT_MODULE
+ * @param object $cm object
+ * @param int $userid empty means current user
+ * @return bool Success
+ * @deprecated Since Moodle 2.7
+ */
+function coursemodule_visible_for_user($cm, $userid=0) {
+    debugging('coursemodule_visible_for_user() deprecated since Moodle 2.7. ' .
+            'Replace with \core_availability\info_module::is_user_visible().');
+    return \core_availability\info_module::is_user_visible($cm, $userid, false);
 }

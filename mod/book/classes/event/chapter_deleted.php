@@ -29,17 +29,32 @@ defined('MOODLE_INTERNAL') || die();
  * mod_book chapter deleted event class.
  *
  * @package    mod_book
+ * @since      Moodle 2.6
  * @copyright  2013 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class chapter_deleted extends \core\event\base {
-
     /**
-     * Legacy log data.
+     * Create instance of event.
      *
-     * @var array
+     * @since Moodle 2.7
+     *
+     * @param \stdClass $book
+     * @param \context_module $context
+     * @param \stdClass $chapter
+     * @return chapter_deleted
      */
-    protected $legacylogdata;
+    public static function create_from_chapter(\stdClass $book, \context_module $context, \stdClass $chapter) {
+        $data = array(
+            'context' => $context,
+            'objectid' => $chapter->id,
+        );
+        /** @var chapter_deleted $event */
+        $event = self::create($data);
+        $event->add_record_snapshot('book', $book);
+        $event->add_record_snapshot('book_chapters', $chapter);
+        return $event;
+    }
 
     /**
      * Returns description of what happened.
@@ -56,7 +71,8 @@ class chapter_deleted extends \core\event\base {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        return $this->legacylogdata;
+        $chapter = $this->get_record_snapshot('book_chapters', $this->objectid);
+        return array($this->courseid, 'book', 'update', 'view.php?id='.$this->contextinstanceid, $chapter->bookid, $this->contextinstanceid);
     }
 
     /**
@@ -87,14 +103,4 @@ class chapter_deleted extends \core\event\base {
         $this->data['edulevel'] = self::LEVEL_TEACHING;
         $this->data['objecttable'] = 'book_chapters';
     }
-
-    /**
-     * Set the legacy event log data.
-     *
-     * @return array|null
-     */
-    public function set_legacy_logdata($legacydata) {
-        $this->legacylogdata = $legacydata;
-    }
-
 }

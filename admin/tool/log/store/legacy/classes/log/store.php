@@ -39,7 +39,8 @@ class store implements \tool_log\log\store, \core\log\sql_select_reader {
         'timecreated'       => 'time',
         'courseid'          => 'course',
         'contextinstanceid' => 'cmid',
-        'origin'            => 'ip'
+        'origin'            => 'ip',
+        'anonymous'         => 0,
     );
 
     /** @var string Regex to replace the crud params */
@@ -84,6 +85,8 @@ class store implements \tool_log\log\store, \core\log\sql_select_reader {
 
     public function get_events_select($selectwhere, array $params, $sort, $limitfrom, $limitnum) {
         global $DB;
+
+        $sort = self::tweak_sort_by_id($sort);
 
         // Replace the query with hardcoded mappings required for core.
         list($selectwhere, $params, $sort) = self::replace_sql_legacy($selectwhere, $params, $sort);

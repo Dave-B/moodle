@@ -30,17 +30,37 @@ defined('MOODLE_INTERNAL') || die();
  * mod_assign all submissions downloaded event class.
  *
  * @package    mod_assign
+ * @since      Moodle 2.6
  * @copyright  2013 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class all_submissions_downloaded extends \core\event\base {
+class all_submissions_downloaded extends base {
+    /**
+     * Flag for prevention of direct create() call.
+     * @var bool
+     */
+    protected static $preventcreatecall = true;
 
     /**
-     * Legacy log data.
+     * Create instance of event.
      *
-     * @var array
+     * @since Moodle 2.7
+     *
+     * @param \assign $assign
+     * @return all_submissions_downloaded
      */
-    protected $legacylogdata;
+    public static function create_from_assign(\assign $assign) {
+        $data = array(
+            'context' => $assign->get_context(),
+            'objectid' => $assign->get_instance()->id
+        );
+        self::$preventcreatecall = false;
+        /** @var submission_graded $event */
+        $event = self::create($data);
+        self::$preventcreatecall = true;
+        $event->set_assign($assign);
+        return $event;
+    }
 
     /**
      * Returns description of what happened.
@@ -52,40 +72,12 @@ class all_submissions_downloaded extends \core\event\base {
     }
 
     /**
-     * Return legacy data for add_to_log().
-     *
-     * @return array
-     */
-    protected function get_legacy_logdata() {
-        return $this->legacylogdata;
-    }
-
-    /**
      * Return localised event name.
      *
      * @return string
      */
     public static function get_name() {
-        return get_string('event_all_submissions_downloaded', 'mod_assign');
-    }
-
-    /**
-     * Get URL related to the action.
-     *
-     * @return \moodle_url
-     */
-    public function get_url() {
-        return new \moodle_url('/mod/assign/view.php', array('id' => $this->contextinstanceid));
-    }
-
-    /**
-     * Sets the legacy event log data.
-     *
-     * @param stdClass $legacylogdata legacy log data.
-     * @return void
-     */
-    public function set_legacy_logdata($legacylogdata) {
-        $this->legacylogdata = $legacylogdata;
+        return get_string('eventallsubmissionsdownloaded', 'mod_assign');
     }
 
     /**
@@ -99,4 +91,27 @@ class all_submissions_downloaded extends \core\event\base {
         $this->data['objecttable'] = 'assign';
     }
 
+    /**
+     * Return legacy data for add_to_log().
+     *
+     * @return array
+     */
+    protected function get_legacy_logdata() {
+        $this->set_legacy_logdata('download all submissions', get_string('downloadall', 'assign'));
+        return parent::get_legacy_logdata();
+    }
+
+    /**
+     * Custom validation.
+     *
+     * @throws \coding_exception
+     * @return void
+     */
+    protected function validate_data() {
+        if (self::$preventcreatecall) {
+            throw new \coding_exception('cannot call all_submissions_downloaded::create() directly, use all_submissions_downloaded::create_from_assign() instead.');
+        }
+
+        parent::validate_data();
+    }
 }
