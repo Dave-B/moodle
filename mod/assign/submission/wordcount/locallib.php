@@ -84,8 +84,9 @@ class assign_submission_wordcount extends assign_submission_plugin {
 
         $mform->addElement('text', 'wordcount', $this->get_name(), null);
         $mform->setType('wordcount', PARAM_INT);
-        $mform->addRule('wordcount', get_string('error'), 'required');
-        $mform->addRule('wordcount', get_string('error'), 'numeric');
+        $mform->addRule('wordcount', get_string('wordcount_help', 'assignsubmission_wordcount'), 'required', null, 'client');
+        $mform->addRule('wordcount', get_string('wordcount_help', 'assignsubmission_wordcount'), 'nonzero', null, 'client');
+        $mform->addRule('wordcount', get_string('wordcount_help', 'assignsubmission_wordcount'), 'regex', '/^[0-9]{1,8}$/', 'client');
         $mform->addHelpButton('wordcount', 'wordcount', 'assignsubmission_wordcount');
 
         return true;
