@@ -28,3 +28,5 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->version   = 2014050100;
 $plugin->requires  = 2013110500;
 $plugin->component = 'assignsubmission_wordcount';
+$plugin->maturity = MATURITY_RC;
+$plugin->release = '0.9';
