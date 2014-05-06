@@ -54,7 +54,7 @@ class assign_submission_wordcount extends assign_submission_plugin {
     private function get_wordcount_submission($submissionid) {
         global $DB;
 
-        return $DB->get_record('assignsubmission_wordcount', array('submission'=>$submissionid));
+        return $DB->get_record('assignsubmission_wordcount', array('submission' => $submissionid));
     }
 
     /**
@@ -125,6 +125,7 @@ class assign_submission_wordcount extends assign_submission_plugin {
       * Display word count
       *
       * @param stdClass $submission
+      * @param bool $showviewlink - If the summary has been truncated set this to true
       * @return string
       */
     public function view_summary(stdClass $submission, &$showviewlink) {
@@ -143,7 +144,7 @@ class assign_submission_wordcount extends assign_submission_plugin {
      * @return string
      */
     public function view(stdClass $submission) {
-        // TODO: Verify if this is actually needed 2014-05-02
+        // TODO: Verify if this is actually needed 2014-05-02.
         $wordcountsubmission = $this->get_wordcount_submission($submission->id);
 
         if ($wordcountsubmission) {
@@ -176,7 +177,7 @@ class assign_submission_wordcount extends assign_submission_plugin {
     public function delete_instance() {
         global $DB;
         $DB->delete_records('assignsubmission_wordcount',
-                            array('assignment'=>$this->assignment->get_instance()->id));
+                            array('assignment' => $this->assignment->get_instance()->id));
 
         return true;
     }
