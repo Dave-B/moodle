@@ -1594,8 +1594,8 @@ class assign {
 
         // Collect all submissions from the past 24 hours that require mailing.
         // Submissions are excluded if the assignment is hidden in the gradebook.
-        $sql = 'SELECT g.id as gradeid, a.course, a.name, a.blindmarking, a.revealidentities,
-                       g.*, g.timemodified as lastmodified
+        $sql = 'SELECT g.id as gradeid, a.course, a.name, a.blindmarking, a.revealidentities, a.markingworkflow
+                       g.*, g.timemodified as lastmodified, uf.workflowstate
                  FROM {assign} a
                  JOIN {assign_grades} g ON g.assignment = a.id
             LEFT JOIN {assign_user_flags} uf ON uf.assignment = a.id AND uf.userid = g.userid
@@ -1698,6 +1698,11 @@ class assign {
 
             if (!$mod->visible) {
                 // Hold mail notification for hidden assignments until later.
+                continue;
+            }
+
+            // Skip assignments that have workflow enabled and the grade isn't released
+            if ($submission->markingworkflow && $submission->workflowstate != ASSIGN_MARKING_WORKFLOW_STATE_RELEASED) {
                 continue;
             }
 
