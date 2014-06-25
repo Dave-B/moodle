@@ -1,6 +1,10 @@
 This files describes API changes in core libraries and APIs,
 information provided here is intended especially for developers.
 
+=== 2.8 ===
+
+* lib/excelllib.class.php has been updated. The class MoodleExcelWorkbook will now only produce excel 2007 files.
+
 === 2.7 ===
 
 * PHPUnit cannot be installed via PEAR any more, please use composer package manager instead.
@@ -10,6 +14,8 @@ Events and Logging:
 * Significant changes in Logging API. For upgrading existing events_trigger() and
   add_to_log() see http://docs.moodle.org/dev/Migrating_logging_calls_in_plugins
   For accessing logs from plugins see http://docs.moodle.org/dev/Migrating_log_access_in_reports
+* The validation of the following events is now stricter:
+    - \core\event\course_section_updated
 
 DEPRECATIONS:
 * $module uses in mod/xxx/version.php files is now deprecated. Please use $plugin instead. It will be removed in Moodle 2.10.

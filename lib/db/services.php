@@ -825,6 +825,13 @@ $functions = array(
         'type'        => 'read'
     ),
 
+    'core_grading_save_definitions' => array(
+        'classname'   => 'core_grading_external',
+        'methodname'  => 'save_definitions',
+        'description' => 'Save grading definitions',
+        'type'        => 'write'
+    ),
+
     'core_grading_get_gradingform_instances' => array(
         'classname'   => 'core_grading_external',
         'methodname'  => 'get_gradingform_instances',
@@ -947,7 +954,10 @@ $services = array(
             'message_airnotifier_is_system_configured',
             'message_airnotifier_are_notification_preferences_configured',
             'core_grades_get_grades',
-            'core_grades_update_grades'),
+            'core_grades_update_grades',
+            'mod_forum_get_forums_by_courses',
+            'mod_forum_get_forum_discussions',
+            'mod_forum_get_forum_discussion_posts'),
         'enabled' => 0,
         'restrictedusers' => 0,
         'shortname' => MOODLE_OFFICIAL_MOBILE_SERVICE,

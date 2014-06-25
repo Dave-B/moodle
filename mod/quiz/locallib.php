@@ -310,28 +310,10 @@ function quiz_attempt_save_started($quizobj, $quba, $attempt) {
 
     // Trigger the event.
     $event->add_record_snapshot('quiz', $quizobj->get_quiz());
+    $event->add_record_snapshot('quiz_attempts', $attempt);
     $event->trigger();
 
     return $attempt;
-}
-
-/**
- * Fire an event to tell the rest of Moodle a quiz attempt has started.
- *
- * @param object $attempt
- * @param quiz   $quizobj
- */
-function quiz_fire_attempt_started_event($attempt, $quizobj) {
-    // Trigger event.
-    $eventdata = array();
-    $eventdata['context'] = $quizobj->get_context();
-    $eventdata['courseid'] = $quizobj->get_courseid();
-    $eventdata['relateduserid'] = $attempt->userid;
-    $eventdata['objectid'] = $attempt->id;
-    $event = \mod_quiz\event\attempt_started::create($eventdata);
-    $event->add_record_snapshot('quiz', $quizobj->get_quiz());
-    $event->add_record_snapshot('quiz_attempts', $attempt);
-    $event->trigger();
 }
 
 /**
@@ -1126,8 +1108,21 @@ function quiz_get_overdue_handling_options() {
 }
 
 /**
- * @param string $state one of the state constants like IN_PROGRESS.
- * @return string the human-readable state name.
+ * Get the choices for what size user picture to show.
+ * @return array string => lang string the options for whether to display the user's picture.
+ */
+function quiz_get_user_image_options() {
+    return array(
+        QUIZ_SHOWIMAGE_NONE  => get_string('shownoimage', 'quiz'),
+        QUIZ_SHOWIMAGE_SMALL => get_string('showsmallimage', 'quiz'),
+        QUIZ_SHOWIMAGE_LARGE => get_string('showlargeimage', 'quiz'),
+    );
+}
+
+/**
+ * Get the human-readable name for a quiz attempt state.
+ * @param string $state one of the state constants like {@link quiz_attempt::IN_PROGRESS}.
+ * @return string The lang string to describe that state.
  */
 function quiz_attempt_state_name($state) {
     switch ($state) {
