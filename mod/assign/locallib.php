@@ -5881,7 +5881,13 @@ class assign {
             }
         }
         $mform->addElement('selectyesno', 'sendstudentnotifications', get_string('sendstudentnotifications', 'assign'));
-        $mform->setDefault('sendstudentnotifications', $this->get_instance()->sendstudentnotifications);
+        // If using markingworkflow, prevent notifying students until in "Released" state.
+        if ($this->get_instance()->markingworkflow) {
+            $mform->disabledIf('sendstudentnotifications', 'workflowstate', 'neq', ASSIGN_MARKING_WORKFLOW_STATE_RELEASED);
+            $mform->setDefault('sendstudentnotifications', 0);
+        } else {
+            $mform->setDefault('sendstudentnotifications', $this->get_instance()->sendstudentnotifications);
+        }
 
         $mform->addElement('hidden', 'action', 'submitgrade');
         $mform->setType('action', PARAM_ALPHA);
