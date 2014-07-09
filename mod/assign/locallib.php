@@ -2340,8 +2340,7 @@ class assign {
                                                       get_string('quickgradingresult', 'assign')));
         $gradingresult = new assign_gradingmessage(get_string('quickgradingresult', 'assign'),
                                                    $message,
-                                                   $this->get_course_module()->id,
-                                                   true);
+                                                   $this->get_course_module()->id);
         $o .= $this->get_renderer()->render($gradingresult);
         $o .= $this->view_footer();
         return $o;
