@@ -29,6 +29,12 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * The mod_assign statement accepted event class.
  *
+ * @property-read array $other {
+ *      Extra information about the event.
+ *
+ *      - string statement: Text of the statement accepted.
+ * }
+ *
  * @package    mod_assign
  * @since      Moodle 2.6
  * @copyright  2013 Frédéric Massart
@@ -53,7 +59,8 @@ class statement_accepted extends base {
     public static function create_from_submission(\assign $assign, \stdClass $submission) {
         $data = array(
             'context' => $assign->get_context(),
-            'objectid' => $submission->id
+            'objectid' => $submission->id,
+            'other' => array('statement' => $assign->get_admin_config()->submissionstatement)
         );
         self::$preventcreatecall = false;
         /** @var statement_accepted $event */
@@ -115,6 +122,9 @@ class statement_accepted extends base {
     protected function validate_data() {
         if (self::$preventcreatecall) {
             throw new \coding_exception('cannot call statement_accepted::create() directly, use statement_accepted::create_from_submission() instead.');
+        }
+        if (!isset($this->other['statement'])) {
+            throw new \coding_exception('The \'statement\' value must be set in other.');
         }
 
         parent::validate_data();
