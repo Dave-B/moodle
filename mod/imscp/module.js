@@ -47,9 +47,9 @@ M.mod_imscp.init = function(Y) {
             var content = new Y.YUI2.util.Element('imscp_content');
             if (node.href) {
                 try {
-                    // first try IE way - it can not set name attribute later
-                    // and also it has some restrictions on DOM access from object tag
-                    var obj = document.createElement('<iframe id="imscp_object" src="'+node.href+'">');
+                    // First try IE way - it can not set name attribute later
+                    // and also it has some restrictions on DOM access from object tag.
+                    var obj = document.createElement('<iframe id="imscp_object" src="' + node.href + '">');
                 } catch (e) {
                     var obj = document.createElement('object');
                     obj.setAttribute('id', 'imscp_object');
@@ -106,17 +106,16 @@ M.mod_imscp.init = function(Y) {
             imscp_buttons[4].set('disabled', (imscp_skipnext(imscp_current_node) == null));
         };
 
-
         var imscp_resize_layout = function(alsowidth) {
             if (alsowidth) {
                 var layout = Y.YUI2.util.Dom.get('imscp_layout');
                 var newwidth = imscp_get_htmlelement_size('maincontent', 'width');
                 layout.style.width = '600px';
                 if (newwidth > 600) {
-                    layout.style.width = newwidth+'px';
+                    layout.style.width = newwidth + 'px';
                 }
             }
-            // make sure that the max width of the TOC doesn't go to far
+            // Make sure that the max width of the TOC doesn't go to far.
 
             var left = imscp_layout_widget.getUnitByPosition('left');
             var maxwidth = parseInt(Y.YUI2.util.Dom.getStyle('imscp_layout', 'width'));
@@ -132,7 +131,7 @@ M.mod_imscp.init = function(Y) {
             if (newheight < 400) {
                 newheight = 400;
             }
-            imscp_layout_widget.setStyle('height', newheight+'px');
+            imscp_layout_widget.setStyle('height', newheight + 'px');
 
             imscp_layout_widget.render();
             imscp_resize_frame();
@@ -142,7 +141,7 @@ M.mod_imscp.init = function(Y) {
             var val = Y.YUI2.util.Dom.getStyle(el, prop);
             if (val == 'auto') {
                 if (el.get) {
-                    el = el.get('element'); // get real HTMLElement from YUI element
+                    el = el.get('element'); // Get real HTMLElement from YUI element.
                 }
                 val = Y.YUI2.util.Dom.getComputedStyle(Y.YUI2.util.Dom.get(el), prop);
             }
@@ -153,25 +152,25 @@ M.mod_imscp.init = function(Y) {
             var obj = Y.YUI2.util.Dom.get('imscp_object');
             if (obj) {
                 var content = imscp_layout_widget.getUnitByPosition('center').get('wrap');
-                // basically trap IE6 and 7
+                // Basically trap IE6 and 7.
                 if (Y.YUI2.env.ua.ie > 5 && Y.YUI2.env.ua.ie < 8) {
                     if( obj.style.setAttribute ) {
-                        obj.style.setAttribute("cssText", 'width: ' +(content.offsetWidth - 6)+'px; height: ' + (content.offsetHeight - 10)+'px;');
+                        obj.style.setAttribute("cssText", 'width: ' + (content.offsetWidth - 6) + 'px; height: ' + (content.offsetHeight - 10) + 'px;');
                     }
                     else {
-                        obj.style.setAttribute('width', (content.offsetWidth - 6)+'px', 0);
-                        obj.style.setAttribute('height', (content.offsetHeight - 10)+'px', 0);
+                        obj.style.setAttribute('width', (content.offsetWidth - 6) + 'px', 0);
+                        obj.style.setAttribute('height', (content.offsetHeight - 10) + 'px', 0);
                     }
                 }
                 else {
-                    obj.style.width = (content.offsetWidth - 6)+'px';
-                    obj.style.height = (content.offsetHeight - 10)+'px';
+                    obj.style.width = (content.offsetWidth - 6) + 'px';
+                    obj.style.height = (content.offsetHeight - 10) + 'px';
                 }
             }
         };
 
         var imscp_firstlinked = function(node) {
-            // Return first item with an href
+            // Return first item with an href.
             if (node.href) {
                 return node;
             } else if (node.children) {
@@ -190,7 +189,7 @@ M.mod_imscp.init = function(Y) {
 
         var imscp_lastchild = function(node) {
             if (node.children.length) {
-                return imscp_lastchild(node.children[node.children.length-1]);
+                return imscp_lastchild(node.children[node.children.length - 1]);
             } else {
                 return node;
             }
@@ -228,8 +227,7 @@ M.mod_imscp.init = function(Y) {
             return null;
         };
 
-
-        // layout
+        // Layout.
         Y.YUI2.widget.LayoutUnit.prototype.STR_COLLAPSE = M.str.moodle.hide;
         Y.YUI2.widget.LayoutUnit.prototype.STR_EXPAND = M.str.moodle.show;
 
@@ -250,7 +248,7 @@ M.mod_imscp.init = function(Y) {
             imscp_resize_frame();
         });
 
-        // ugly resizing hack that works around problems with resizing of iframes and objects
+        // Ugly resizing hack that works around problems with resizing of iframes and objects.
         left._resize.on('startResize', function() {
             var obj = Y.YUI2.util.Dom.get('imscp_object');
             obj.style.display = 'none';
@@ -261,7 +259,7 @@ M.mod_imscp.init = function(Y) {
             imscp_resize_frame();
         });
 
-        // TOC tree
+        // TOC tree.
         var tree = new Y.YUI2.widget.TreeView('imscp_tree');
         tree.singleNodeHighlight = true;
         tree.subscribe('clickEvent', function(oArgs) {
@@ -290,7 +288,7 @@ M.mod_imscp.init = function(Y) {
         var navbar = Y.YUI2.util.Dom.get('imscp_nav');
         navbar.style.display = 'block';
 
-        // navigation
+        // Navigation.
         imscp_buttons[0] = new Y.YUI2.widget.Button('nav_skipprev');
         imscp_buttons[1] = new Y.YUI2.widget.Button('nav_prev');
         imscp_buttons[2] = new Y.YUI2.widget.Button('nav_up');
@@ -312,13 +310,13 @@ M.mod_imscp.init = function(Y) {
             imscp_activate_item(imscp_skipnext(imscp_current_node));
         });
 
-        // finally activate the first item
+        // Finally activate the first item.
         imscp_activate_item(imscp_firstlinked(tree.getRoot().children[0]));
 
-        // resizing
+        // Resizing.
         imscp_resize_layout(false);
 
-        // fix layout if window resized
+        // Fix layout if window resized.
         window.onresize = function() {
             imscp_resize_layout(true);
         };
