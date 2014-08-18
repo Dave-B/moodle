@@ -18,3 +18,5 @@
 #page-mod-imscp-view .yui-layout-hd h2 {
  color: black;
 }
+
+.imscp_fake_content {margin-left: 1em; width: auto !important; height: auto !important;}
