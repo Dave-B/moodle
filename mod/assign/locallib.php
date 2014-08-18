@@ -2773,7 +2773,7 @@ class assign {
      * @return string
      */
     protected function view_single_grade_page($mform) {
-        global $DB, $CFG;
+        global $DB, $CFG, $PAGE;
 
         $o = '';
         $instance = $this->get_instance();
@@ -2782,13 +2782,6 @@ class assign {
 
         // Need submit permission to submit an assignment.
         require_capability('mod/assign:grade', $this->context);
-
-        $header = new assign_header($instance,
-                                    $this->get_context(),
-                                    false,
-                                    $this->get_course_module()->id,
-                                    get_string('grading', 'assign'));
-        $o .= $this->get_renderer()->render($header);
 
         // If userid is passed - we are only grading a single student.
         $rownum = required_param('rownum', PARAM_INT);
@@ -2817,6 +2810,25 @@ class assign {
             $last = true;
         }
         $user = $DB->get_record('user', array('id' => $userid));
+
+        if (has_capability('report/log:view', $this->context)) {
+            // Add Admin link to logs for this User's submission.
+            $loglink = $PAGE->settingsnav->get('modulesettings')->get('logreport');
+            $params = array('chooselog' => 1,
+                            'modid' => $this->get_course_module()->id,
+                            'user' => $userid);
+            $newloglink = $loglink->add(get_string('logsthissubmission', 'assign'),
+                                        new moodle_url('/report/log/index.php', $params));
+            $newloglink->force_open();
+        }
+
+        $header = new assign_header($instance,
+                                    $this->get_context(),
+                                    false,
+                                    $this->get_course_module()->id,
+                                    get_string('grading', 'assign'));
+        $o .= $this->get_renderer()->render($header);
+
         if ($user) {
             $viewfullnames = has_capability('moodle/site:viewfullnames', $this->get_course_context());
             $usersummary = new assign_user_summary($user,

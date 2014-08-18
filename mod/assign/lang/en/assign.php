@@ -238,6 +238,7 @@ $string['latesubmissions'] = 'Late submissions';
 $string['latesubmissionsaccepted'] = 'Only student(s) having been granted extension can still submit the assignment';
 $string['locksubmissionforstudent'] = 'Prevent any more submissions for student: (id={$a->id}, fullname={$a->fullname}).';
 $string['locksubmissions'] = 'Lock submissions';
+$string['logsthissubmission'] = 'Logs for this submission';
 $string['manageassignfeedbackplugins'] = 'Manage assignment feedback plugins';
 $string['manageassignsubmissionplugins'] = 'Manage assignment submission plugins';
 $string['marker'] = 'Marker';
