@@ -279,6 +279,15 @@ class theme_config {
     public $larrow = null;
 
     /**
+     * Accessibility: Up arrow-like character is used in
+     * the book heirarchical navigation.
+     * If the theme does not set characters, appropriate defaults
+     * are set automatically. Please DO NOT
+     * use ^ - this is confusing for blind users.
+     */
+    public $uarrow = null;
+
+    /**
      * @var bool Some themes may want to disable ajax course editing.
      */
     public $enablecourseajax = true;
@@ -454,7 +463,7 @@ class theme_config {
 
         $configurable = array('parents', 'sheets', 'parents_exclude_sheets', 'plugins_exclude_sheets', 'javascripts', 'javascripts_footer',
                               'parents_exclude_javascripts', 'layouts', 'enable_dock', 'enablecourseajax', 'supportscssoptimisation',
-                              'rendererfactory', 'csspostprocess', 'editor_sheets', 'rarrow', 'larrow', 'hidefromselector', 'doctype',
+                              'rendererfactory', 'csspostprocess', 'editor_sheets', 'rarrow', 'larrow', 'uarrow', 'hidefromselector', 'doctype',
                               'yuicssmodules', 'blockrtlmanipulations', 'lessfile', 'extralesscallback', 'lessvariablescallback',
                               'blockrendermethod');
 
@@ -533,7 +542,7 @@ class theme_config {
     }
 
     /**
-     * Checks if arrows $THEME->rarrow, $THEME->larrow have been set (theme/-/config.php).
+     * Checks if arrows $THEME->rarrow, $THEME->larrow, $THEME->uarrow have been set (theme/-/config.php).
      * If not it applies sensible defaults.
      *
      * Accessibility: right and left arrow Unicode characters for breadcrumb, calendar,
@@ -546,6 +555,7 @@ class theme_config {
             // Also OK in Win 9x/2K/IE 5.x
             $this->rarrow = '&#x25BA;';
             $this->larrow = '&#x25C4;';
+            $this->uarrow = '&#x25B2;';
             if (empty($_SERVER['HTTP_USER_AGENT'])) {
                 $uagent = '';
             } else {
@@ -564,6 +574,7 @@ class theme_config {
                 // So we use the same ones Konqueror uses.
                 $this->rarrow = '&rarr;';
                 $this->larrow = '&larr;';
+                $this->larrow = '&uarr;';
             }
             elseif (isset($_SERVER['HTTP_ACCEPT_CHARSET'])
                 && false === stripos($_SERVER['HTTP_ACCEPT_CHARSET'], 'utf-8')) {
@@ -571,6 +582,7 @@ class theme_config {
                 // To be safe, non-Unicode browsers!
                 $this->rarrow = '&gt;';
                 $this->larrow = '&lt;';
+                $this->uarrow = '^';
             }
 
             // RTL support - in RTL languages, swap r and l arrows
