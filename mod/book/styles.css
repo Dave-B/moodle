@@ -88,3 +88,15 @@
 .path-mod-book .book_toc_indented li li {
     list-style: none;
 }
+
+/* Text style links */
+.navtop.navtext .chaptername,
+.navbottom.navtext .chaptername {
+    font-weight: bolder;
+}
+.navtop.navtext a[title="Next"],
+.navtop.navtext a[title="Exit book"],
+.navbottom.navtext a[title="Next"],
+.navbottom.navtext a[title="Exit book"] {
+    margin-left: 2em;
+}
