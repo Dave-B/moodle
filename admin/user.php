@@ -256,17 +256,12 @@
         $table->colclasses = array();
         $table->head[] = $fullnamedisplay;
         $table->attributes['class'] = 'admintable generaltable';
-        $table->colclasses[] = 'leftalign';
         foreach ($extracolumns as $field) {
             $table->head[] = ${$field};
-            $table->colclasses[] = 'leftalign';
         }
         $table->head[] = $city;
-        $table->colclasses[] = 'leftalign';
         $table->head[] = $country;
-        $table->colclasses[] = 'leftalign';
         $table->head[] = $lastaccess;
-        $table->colclasses[] = 'leftalign';
         $table->head[] = get_string('edit');
         $table->colclasses[] = 'centeralign';
         $table->head[] = "";
@@ -369,20 +364,15 @@
     $ufiltering->display_add();
     $ufiltering->display_active();
 
-    if (has_capability('moodle/user:create', $sitecontext)) {
-        echo $OUTPUT->heading('<a href="'.$securewwwroot.'/user/editadvanced.php?id=-1">'.get_string('addnewuser').'</a>');
-    }
     if (!empty($table)) {
         echo html_writer::start_tag('div', array('class'=>'no-overflow'));
         echo html_writer::table($table);
         echo html_writer::end_tag('div');
         echo $OUTPUT->paging_bar($usercount, $page, $perpage, $baseurl);
-        if (has_capability('moodle/user:create', $sitecontext)) {
-            echo $OUTPUT->heading('<a href="'.$securewwwroot.'/user/editadvanced.php?id=-1">'.get_string('addnewuser').'</a>');
-        }
+    }
+    if (has_capability('moodle/user:create', $sitecontext)) {
+        $url = new moodle_url($securewwwroot . '/user/editadvanced.php', array('id' => -1));
+        echo $OUTPUT->single_button($url, get_string('addnewuser'), 'get');
     }
 
     echo $OUTPUT->footer();
-
-
-

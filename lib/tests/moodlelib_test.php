@@ -2247,11 +2247,61 @@ class core_moodlelib_testcase extends advanced_testcase {
         // Manually set the user's password to the md5 of the string 'password'.
         $DB->set_field('user', 'password', '5f4dcc3b5aa765d61d8327deb882cf99', array('id' => $user->id));
 
+        $sink = $this->redirectEvents();
         // Update the password.
         update_internal_user_password($user, 'password');
+        $events = $sink->get_events();
+        $sink->close();
+        $event = array_pop($events);
 
         // Password should have been updated to a bcrypt hash.
         $this->assertFalse(password_is_legacy_hash($user->password));
+
+        // Verify event information.
+        $this->assertInstanceOf('\core\event\user_password_updated', $event);
+        $this->assertSame($user->id, $event->relateduserid);
+        $this->assertEquals(context_user::instance($user->id), $event->get_context());
+        $this->assertEventContextNotUsed($event);
+
+        // Verify recovery of property 'auth'.
+        unset($user->auth);
+        update_internal_user_password($user, 'newpassword');
+        $this->assertDebuggingCalled('User record in update_internal_user_password() must include field auth',
+                DEBUG_DEVELOPER);
+        $this->assertEquals('manual', $user->auth);
+    }
+
+    /**
+     * Testing that if the password is not cached, that it does not update
+     * the user table and fire event.
+     */
+    public function test_update_internal_user_password_no_cache() {
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user(array('auth' => 'cas'));
+        $this->assertEquals(AUTH_PASSWORD_NOT_CACHED, $user->password);
+
+        $sink = $this->redirectEvents();
+        update_internal_user_password($user, 'wonkawonka');
+        $this->assertEquals(0, $sink->count(), 'User updated event should not fire');
+    }
+
+    /**
+     * Test if the user has a password hash, but now their auth method
+     * says not to cache it.  Then it should update.
+     */
+    public function test_update_internal_user_password_update_no_cache() {
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user(array('password' => 'test'));
+        $this->assertNotEquals(AUTH_PASSWORD_NOT_CACHED, $user->password);
+        $user->auth = 'cas'; // Change to a auth that does not store passwords.
+
+        $sink = $this->redirectEvents();
+        update_internal_user_password($user, 'wonkawonka');
+        $this->assertGreaterThanOrEqual(1, $sink->count(), 'User updated event should fire');
+
+        $this->assertEquals(AUTH_PASSWORD_NOT_CACHED, $user->password);
     }
 
     public function test_fullname() {
@@ -2562,9 +2612,9 @@ class core_moodlelib_testcase extends advanced_testcase {
     }
 
     /**
-     * Test user_updated event trigger by various apis.
+     * Test setnew_password_and_mail.
      */
-    public function test_user_updated_event() {
+    public function test_setnew_password_and_mail() {
         global $DB, $CFG;
 
         $this->resetAfterTest();
@@ -2578,27 +2628,21 @@ class core_moodlelib_testcase extends advanced_testcase {
         $sink = $this->redirectEvents();
         $sink2 = $this->redirectEmails(); // Make sure we are redirecting emails.
         setnew_password_and_mail($user);
-        update_internal_user_password($user, 'randompass');
         $events = $sink->get_events();
         $sink->close();
         $sink2->close();
+        $event = array_pop($events);
 
         // Test updated value.
         $dbuser = $DB->get_record('user', array('id' => $user->id));
         $this->assertSame($user->firstname, $dbuser->firstname);
-        $this->assertNotSame('M00dLe@T', $dbuser->password);
+        $this->assertNotEmpty($dbuser->password);
 
         // Test event.
-        foreach ($events as $event) {
-            $this->assertInstanceOf('\core\event\user_updated', $event);
-            $this->assertSame($user->id, $event->objectid);
-            $this->assertSame('user_updated', $event->get_legacy_eventname());
-            $this->assertEventLegacyData($user, $event);
-            $this->assertEquals(context_user::instance($user->id), $event->get_context());
-            $expectedlogdata = array(SITEID, 'user', 'update', 'view.php?id='.$user->id, '');
-            $this->assertEventLegacyLogData($expectedlogdata, $event);
-            $this->assertEventContextNotUsed($event);
-        }
+        $this->assertInstanceOf('\core\event\user_password_updated', $event);
+        $this->assertSame($user->id, $event->relateduserid);
+        $this->assertEquals(context_user::instance($user->id), $event->get_context());
+        $this->assertEventContextNotUsed($event);
     }
 
     /**

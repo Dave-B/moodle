@@ -69,9 +69,13 @@ class core_course_renderer extends plugin_renderer_base {
      */
     protected function add_modchoosertoggle() {
         global $CFG;
-        static $modchoosertoggleadded = false;
-        // Add the module chooser toggle to the course page
-        if ($modchoosertoggleadded || $this->page->state > moodle_page::STATE_PRINTING_HEADER ||
+
+        // Only needs to be done once per page.
+        if (!$this->page->requires->should_create_one_time_item_now('core_course_modchoosertoggle')) {
+            return;
+        }
+
+        if ($this->page->state > moodle_page::STATE_PRINTING_HEADER ||
                 $this->page->course->id == SITEID ||
                 !$this->page->user_is_editing() ||
                 !($context = context_course::instance($this->page->course->id)) ||
@@ -79,11 +83,11 @@ class core_course_renderer extends plugin_renderer_base {
                 !course_ajax_enabled($this->page->course) ||
                 !($coursenode = $this->page->settingsnav->find('courseadmin', navigation_node::TYPE_COURSE)) ||
                 !($turneditingnode = $coursenode->get('turneditingonoff'))) {
-            // too late or we are on site page or we could not find the adjacent nodes in course settings menu
-            // or we are not allowed to edit
+            // Too late, or we are on site page, or we could not find the
+            // adjacent nodes in course settings menu, or we are not allowed to edit.
             return;
         }
-        $modchoosertoggleadded = true;
+
         if ($this->page->url->compare(new moodle_url('/course/view.php'), URL_MATCH_BASE)) {
             // We are on the course page, retain the current page params e.g. section.
             $modchoosertoggleurl = clone($this->page->url);
@@ -168,11 +172,9 @@ class core_course_renderer extends plugin_renderer_base {
      * @return string The composed HTML for the module
      */
     public function course_modchooser($modules, $course) {
-        static $isdisplayed = false;
-        if ($isdisplayed) {
+        if (!$this->page->requires->should_create_one_time_item_now('core_course_modchooser')) {
             return '';
         }
-        $isdisplayed = true;
 
         // Add the module chooser
         $this->page->requires->yui_module('moodle-course-modchooser',
@@ -1096,8 +1098,9 @@ class core_course_renderer extends plugin_renderer_base {
             foreach ($moduleshtml as $modnumber => $modulehtml) {
                 if ($ismoving) {
                     $movingurl = new moodle_url('/course/mod.php', array('moveto' => $modnumber, 'sesskey' => sesskey()));
-                    $sectionoutput .= html_writer::tag('li', html_writer::link($movingurl, $this->output->render($movingpix)),
-                            array('class' => 'movehere', 'title' => $strmovefull));
+                    $sectionoutput .= html_writer::tag('li',
+                            html_writer::link($movingurl, $this->output->render($movingpix), array('title' => $strmovefull)),
+                            array('class' => 'movehere'));
                 }
 
                 $sectionoutput .= $modulehtml;
@@ -1105,8 +1108,9 @@ class core_course_renderer extends plugin_renderer_base {
 
             if ($ismoving) {
                 $movingurl = new moodle_url('/course/mod.php', array('movetosection' => $section->id, 'sesskey' => sesskey()));
-                $sectionoutput .= html_writer::tag('li', html_writer::link($movingurl, $this->output->render($movingpix)),
-                        array('class' => 'movehere', 'title' => $strmovefull));
+                $sectionoutput .= html_writer::tag('li',
+                        html_writer::link($movingurl, $this->output->render($movingpix), array('title' => $strmovefull)),
+                        array('class' => 'movehere'));
             }
         }
 
@@ -1492,14 +1496,13 @@ class core_course_renderer extends plugin_renderer_base {
      * Make sure that javascript file for AJAX expanding of courses and categories content is included
      */
     protected function coursecat_include_js() {
-        global $CFG;
-        static $jsloaded = false;
-        if (!$jsloaded) {
-            // We must only load this module once.
-            $this->page->requires->yui_module('moodle-course-categoryexpander',
-                    'Y.Moodle.course.categoryexpander.init');
-            $jsloaded = true;
+        if (!$this->page->requires->should_create_one_time_item_now('core_course_categoryexpanderjsinit')) {
+            return;
         }
+
+        // We must only load this module once.
+        $this->page->requires->yui_module('moodle-course-categoryexpander',
+                'Y.Moodle.course.categoryexpander.init');
     }
 
     /**

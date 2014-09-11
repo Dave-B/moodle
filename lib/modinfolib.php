@@ -704,9 +704,6 @@ class course_modinfo {
  * @property-read int $groupmode Group mode (one of the constants NOGROUPS, SEPARATEGROUPS, or VISIBLEGROUPS) - from
  *    course_modules table. Use {@link cm_info::$effectivegroupmode} to find the actual group mode that may be forced by course.
  * @property-read int $groupingid Grouping ID (0 = all groupings)
- * @property-read int $groupmembersonly Group members only (if set to 1, only members of a suitable group see this link on the
- *    course page; 0 = everyone sees it even if they don't belong to a suitable group) - from
- *    course_modules table
  * @property-read bool $coursegroupmodeforce Indicates whether the course containing the module has forced the groupmode
  *    This means that cm_info::$groupmode should be ignored and cm_info::$coursegroupmode be used instead
  * @property-read int $coursegroupmode Group mode (one of the constants NOGROUPS, SEPARATEGROUPS, or VISIBLEGROUPS) - from
@@ -863,14 +860,6 @@ class cm_info implements IteratorAggregate {
      * @var int
      */
     private $groupingid;
-
-    /**
-     * Group members only (if set to 1, only members of a suitable group see this link on the
-     * course page; 0 = everyone sees it even if they don't belong to a suitable group)  - from
-     * course_modules table
-     * @var int
-     */
-    private $groupmembersonly;
 
     /**
      * Indent level on course page (0 = no indent) - from course_modules table
@@ -1093,7 +1082,7 @@ class cm_info implements IteratorAggregate {
         'effectivegroupmode' => 'get_effective_groupmode',
         'extra' => false,
         'groupingid' => false,
-        'groupmembersonly' => false,
+        'groupmembersonly' => 'get_deprecated_group_members_only',
         'groupmode' => false,
         'icon' => false,
         'iconcomponent' => false,
@@ -1316,9 +1305,16 @@ class cm_info implements IteratorAggregate {
      * @return string
      */
     public function get_formatted_name($options = array()) {
+        global $CFG;
         $options = (array)$options;
         if (!isset($options['context'])) {
             $options['context'] = $this->get_context();
+        }
+        // Improve filter performance by preloading filter setttings for all
+        // activities on the course (this does nothing if called multiple
+        // times).
+        if (!empty($CFG->filterall)) {
+            filter_preload_activities($this->get_modinfo());
         }
         return format_string($this->get_name(), true,  $options);
     }
@@ -1513,7 +1509,7 @@ class cm_info implements IteratorAggregate {
 
         // Standard fields from table course_modules.
         static $cmfields = array('id', 'course', 'module', 'instance', 'section', 'idnumber', 'added',
-            'score', 'indent', 'visible', 'visibleold', 'groupmode', 'groupingid', 'groupmembersonly',
+            'score', 'indent', 'visible', 'visibleold', 'groupmode', 'groupingid',
             'completion', 'completiongradeitemnumber', 'completionview', 'completionexpected',
             'showdescription', 'availability');
         foreach ($cmfields as $key) {
@@ -1692,7 +1688,6 @@ class cm_info implements IteratorAggregate {
         $this->sectionnum       = $mod->section; // Note weirdness with name here
         $this->groupmode        = isset($mod->groupmode) ? $mod->groupmode : 0;
         $this->groupingid       = isset($mod->groupingid) ? $mod->groupingid : 0;
-        $this->groupmembersonly = isset($mod->groupmembersonly) ? $mod->groupmembersonly : 0;
         $this->indent           = isset($mod->indent) ? $mod->indent : 0;
         $this->extra            = isset($mod->extra) ? $mod->extra : '';
         $this->extraclasses     = isset($mod->extraclasses) ? $mod->extraclasses : '';
@@ -1738,6 +1733,31 @@ class cm_info implements IteratorAggregate {
         $this->url = $modviews[$this->modname]
                 ? new moodle_url('/mod/' . $this->modname . '/view.php', array('id'=>$this->id))
                 : null;
+    }
+
+    /**
+     * Creates a cm_info object from a database record (also accepts cm_info
+     * in which case it is just returned unchanged).
+     *
+     * @param stdClass|cm_info|null|bool $cm Stdclass or cm_info (or null or false)
+     * @param int $userid Optional userid (default to current)
+     * @return cm_info|null Object as cm_info, or null if input was null/false
+     */
+    public static function create($cm, $userid = 0) {
+        // Null, false, etc. gets passed through as null.
+        if (!$cm) {
+            return null;
+        }
+        // If it is already a cm_info object, just return it.
+        if ($cm instanceof cm_info) {
+            return $cm;
+        }
+        // Otherwise load modinfo.
+        if (empty($cm->id) || empty($cm->course)) {
+            throw new coding_exception('$cm must contain ->id and ->course');
+        }
+        $modinfo = get_fast_modinfo($cm->course, $userid);
+        return $modinfo->get_cm($cm->id);
     }
 
     /**
@@ -1840,8 +1860,24 @@ class cm_info implements IteratorAggregate {
     }
 
     /**
+     * Getter method for $availablefrom and $availableuntil. Just returns zero
+     * as these are no longer supported.
+     *
+     * @return int Zero
+     * @deprecated Since Moodle 2.8
+     */
+    private function get_deprecated_group_members_only() {
+        debugging('$cm->groupmembersonly has been deprecated and always returns zero. ' .
+                'If used to restrict a list of enrolled users to only those who can ' .
+                'access the module, consider \core_availability\info_module::filter_user_list.',
+                DEBUG_DEVELOPER);
+        return 0;
+    }
+
+    /**
      * Getter method for property $availableinfo, ensures that dynamic data is retrieved
-     * @return type
+     *
+     * @return string Available info (HTML)
      */
     private function get_available_info() {
         $this->obtain_dynamic_data();
@@ -1853,7 +1889,6 @@ class cm_info implements IteratorAggregate {
      *
      * If the activity is unavailable, additional checks are required to determine if its hidden or greyed out
      *
-     * @see is_user_access_restricted_by_group()
      * @see is_user_access_restricted_by_conditional_access()
      * @return void
      */
@@ -1873,8 +1908,7 @@ class cm_info implements IteratorAggregate {
         }
 
         // Check group membership.
-        if ($this->is_user_access_restricted_by_group() ||
-                $this->is_user_access_restricted_by_capability()) {
+        if ($this->is_user_access_restricted_by_capability()) {
 
              $this->uservisible = false;
             // Ensure activity is completely hidden from the user.
@@ -1883,27 +1917,19 @@ class cm_info implements IteratorAggregate {
     }
 
     /**
-     * Checks whether the module's group settings restrict the current user's access
+     * Checks whether the module's group settings restrict the current user's
+     * access. This function is not necessary now that all access restrictions
+     * are handled by the availability API. You can use $cm->uservisible to
+     * find out if the current user can access an activity, or $cm->availableinfo
+     * to get information about why not.
      *
-     * @return bool True if the user access is restricted
+     * @return bool False
+     * @deprecated Since Moodle 2.8
      */
     public function is_user_access_restricted_by_group() {
-        global $CFG;
-
-        if (!empty($CFG->enablegroupmembersonly) and !empty($this->groupmembersonly)) {
-            $userid = $this->modinfo->get_user_id();
-            if ($userid == -1) {
-                return null;
-            }
-            if (!has_capability('moodle/site:accessallgroups', $this->get_context(), $userid)) {
-                // If the activity has 'group members only' and you don't have accessallgroups...
-                $groups = $this->modinfo->get_groups($this->groupingid);
-                if (empty($groups)) {
-                    // ...and you don't belong to a group, then set it so you can't see/access it
-                    return true;
-                }
-            }
-        }
+        debugging('cm_info::is_user_access_restricted_by_group() ' .
+                'is deprecated and always returns false; use $cm->uservisible ' .
+                'to decide whether the current user can access an activity', DEBUG_DEVELOPER);
         return false;
     }
 
@@ -1944,7 +1970,7 @@ class cm_info implements IteratorAggregate {
         global $CFG;
         debugging('cm_info::is_user_access_restricted_by_conditional_access() ' .
                 'is deprecated; this function is not needed (use $cm->uservisible ' .
-                'and $cm->availableinfo) to decide whether it should be available ' .
+                'and $cm->availableinfo to decide whether it should be available ' .
                 'or appear)', DEBUG_DEVELOPER);
 
         if (empty($CFG->enableavailability)) {
@@ -2054,6 +2080,165 @@ function get_fast_modinfo($courseorid, $userid = 0, $resetonly = false) {
     // Function is called with $reset = false, retrieve modinfo
     return course_modinfo::instance($courseorid, $userid);
 }
+
+/**
+ * Efficiently retrieves the $course (stdclass) and $cm (cm_info) objects, given
+ * a cmid. If module name is also provided, it will ensure the cm is of that type.
+ *
+ * Usage:
+ * list($course, $cm) = get_course_and_cm_from_cmid($cmid, 'forum');
+ *
+ * Using this method has a performance advantage because it works by loading
+ * modinfo for the course - which will then be cached and it is needed later
+ * in most requests. It also guarantees that the $cm object is a cm_info and
+ * not a stdclass.
+ *
+ * The $course object can be supplied if already known and will speed
+ * up this function - although it is more efficient to use this function to
+ * get the course if you are starting from a cmid.
+ *
+ * To avoid security problems and obscure bugs, you should always specify
+ * $modulename if the cmid value came from user input.
+ *
+ * By default this obtains information (for example, whether user can access
+ * the activity) for current user, but you can specify a userid if required.
+ *
+ * @param stdClass|int $cmorid Id of course-module, or database object
+ * @param string $modulename Optional modulename (improves security)
+ * @param stdClass|int $courseorid Optional course object if already loaded
+ * @param int $userid Optional userid (default = current)
+ * @return array Array with 2 elements $course and $cm
+ * @throws moodle_exception If the item doesn't exist or is of wrong module name
+ */
+function get_course_and_cm_from_cmid($cmorid, $modulename = '', $courseorid = 0, $userid = 0) {
+    global $DB;
+    if (is_object($cmorid)) {
+        $cmid = $cmorid->id;
+        if (isset($cmorid->course)) {
+            $courseid = (int)$cmorid->course;
+        } else {
+            $courseid = 0;
+        }
+    } else {
+        $cmid = (int)$cmorid;
+        $courseid = 0;
+    }
+
+    // Validate module name if supplied.
+    if ($modulename && !core_component::is_valid_plugin_name('mod', $modulename)) {
+        throw new coding_exception('Invalid modulename parameter');
+    }
+
+    // Get course from last parameter if supplied.
+    $course = null;
+    if (is_object($courseorid)) {
+        $course = $courseorid;
+    } else if ($courseorid) {
+        $courseid = (int)$courseorid;
+    }
+
+    if (!$course) {
+        if ($courseid) {
+            // If course ID is known, get it using normal function.
+            $course = get_course($courseid);
+        } else {
+            // Get course record in a single query based on cmid.
+            $course = $DB->get_record_sql("
+                    SELECT c.*
+                      FROM {course_modules} cm
+                      JOIN {course} c ON c.id = cm.course
+                     WHERE cm.id = ?", array($cmid), MUST_EXIST);
+        }
+    }
+
+    // Get cm from get_fast_modinfo.
+    $modinfo = get_fast_modinfo($course, $userid);
+    $cm = $modinfo->get_cm($cmid);
+    if ($modulename && $cm->modname !== $modulename) {
+        throw new moodle_exception('invalidcoursemodule', 'error');
+    }
+    return array($course, $cm);
+}
+
+/**
+ * Efficiently retrieves the $course (stdclass) and $cm (cm_info) objects, given
+ * an instance id or record and module name.
+ *
+ * Usage:
+ * list($course, $cm) = get_course_and_cm_from_instance($forum, 'forum');
+ *
+ * Using this method has a performance advantage because it works by loading
+ * modinfo for the course - which will then be cached and it is needed later
+ * in most requests. It also guarantees that the $cm object is a cm_info and
+ * not a stdclass.
+ *
+ * The $course object can be supplied if already known and will speed
+ * up this function - although it is more efficient to use this function to
+ * get the course if you are starting from an instance id.
+ *
+ * By default this obtains information (for example, whether user can access
+ * the activity) for current user, but you can specify a userid if required.
+ *
+ * @param stdclass|int $instanceorid Id of module instance, or database object
+ * @param string $modulename Modulename (required)
+ * @param stdClass|int $courseorid Optional course object if already loaded
+ * @param int $userid Optional userid (default = current)
+ * @return array Array with 2 elements $course and $cm
+ * @throws moodle_exception If the item doesn't exist or is of wrong module name
+ */
+function get_course_and_cm_from_instance($instanceorid, $modulename, $courseorid = 0, $userid = 0) {
+    global $DB;
+
+    // Get data from parameter.
+    if (is_object($instanceorid)) {
+        $instanceid = $instanceorid->id;
+        if (isset($instanceorid->course)) {
+            $courseid = (int)$instanceorid->course;
+        } else {
+            $courseid = 0;
+        }
+    } else {
+        $instanceid = (int)$instanceorid;
+        $courseid = 0;
+    }
+
+    // Get course from last parameter if supplied.
+    $course = null;
+    if (is_object($courseorid)) {
+        $course = $courseorid;
+    } else if ($courseorid) {
+        $courseid = (int)$courseorid;
+    }
+
+    // Validate module name if supplied.
+    if (!core_component::is_valid_plugin_name('mod', $modulename)) {
+        throw new coding_exception('Invalid modulename parameter');
+    }
+
+    if (!$course) {
+        if ($courseid) {
+            // If course ID is known, get it using normal function.
+            $course = get_course($courseid);
+        } else {
+            // Get course record in a single query based on instance id.
+            $pagetable = '{' . $modulename . '}';
+            $course = $DB->get_record_sql("
+                    SELECT c.*
+                      FROM $pagetable instance
+                      JOIN {course} c ON c.id = instance.course
+                     WHERE instance.id = ?", array($instanceid), MUST_EXIST);
+        }
+    }
+
+    // Get cm from get_fast_modinfo.
+    $modinfo = get_fast_modinfo($course, $userid);
+    $instances = $modinfo->get_instances_of($modulename);
+    if (!array_key_exists($instanceid, $instances)) {
+        throw new moodle_exception('invalidmoduleid', 'error', $instanceid);
+    }
+    return array($course, $instances[$instanceid]);
+}
+
 
 /**
  * Rebuilds or resets the cached list of course activities stored in MUC.

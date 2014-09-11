@@ -1583,6 +1583,8 @@ function xmldb_main_upgrade($oldversion) {
     }
 
     if ($oldversion < 2013021100.01) {
+        // Make sure there are no bogus nulls in old MySQL tables.
+        $DB->set_field_select('user', 'password', '', "password IS NULL");
 
         // Changing precision of field password on table user to (255).
         $table = new xmldb_table('user');
@@ -3674,6 +3676,118 @@ function xmldb_main_upgrade($oldversion) {
         $filetypes = array('%.pub'=>'application/x-mspublisher');
         upgrade_mimetypes($filetypes);
         upgrade_main_savepoint(true, 2014061000.00);
+    }
+
+    if ($oldversion < 2014062600.01) {
+        // We only want to delete DragMath if the directory no longer exists. If the directory
+        // is present then it means it has been restored, so do not perform the uninstall.
+        if (!check_dir_exists($CFG->libdir . '/editor/tinymce/plugins/dragmath', false)) {
+            // Purge DragMath plugin which is incompatible with GNU GPL license.
+            unset_all_config_for_plugin('tinymce_dragmath');
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014062600.01);
+    }
+
+    // Switch the order of the fields in the files_reference index, to improve the performance of search_references.
+    if ($oldversion < 2014070100.00) {
+        $table = new xmldb_table('files_reference');
+        $index = new xmldb_index('uq_external_file', XMLDB_INDEX_UNIQUE, array('repositoryid', 'referencehash'));
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+        upgrade_main_savepoint(true, 2014070100.00);
+    }
+
+    if ($oldversion < 2014070101.00) {
+        $table = new xmldb_table('files_reference');
+        $index = new xmldb_index('uq_external_file', XMLDB_INDEX_UNIQUE, array('referencehash', 'repositoryid'));
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        upgrade_main_savepoint(true, 2014070101.00);
+    }
+
+    if ($oldversion < 2014072400.01) {
+        $table = new xmldb_table('user_devices');
+        $oldindex = new xmldb_index('pushid-platform', XMLDB_KEY_UNIQUE, array('pushid', 'platform'));
+        if ($dbman->index_exists($table, $oldindex)) {
+            $key = new xmldb_key('pushid-platform', XMLDB_KEY_UNIQUE, array('pushid', 'platform'));
+            $dbman->drop_key($table, $key);
+        }
+        upgrade_main_savepoint(true, 2014072400.01);
+    }
+
+    if ($oldversion < 2014080801.00) {
+
+        // Define index behaviour (not unique) to be added to question_attempts.
+        $table = new xmldb_table('question_attempts');
+        $index = new xmldb_index('behaviour', XMLDB_INDEX_NOTUNIQUE, array('behaviour'));
+
+        // Conditionally launch add index behaviour.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2014080801.00);
+    }
+
+    if ($oldversion < 2014082900.01) {
+        // Fixing possible wrong MIME type for 7-zip and Rar files.
+        $filetypes = array(
+                '%.7z' => 'application/x-7z-compressed',
+                '%.rar' => 'application/x-rar-compressed');
+        upgrade_mimetypes($filetypes);
+        upgrade_main_savepoint(true, 2014082900.01);
+    }
+
+    if ($oldversion < 2014082900.02) {
+        // Replace groupmembersonly usage with new availability system.
+        $transaction = $DB->start_delegated_transaction();
+        if ($CFG->enablegroupmembersonly) {
+            // If it isn't already enabled, we need to enable availability.
+            if (!$CFG->enableavailability) {
+                set_config('enableavailability', 1);
+            }
+
+            // Count all course-modules with groupmembersonly set (for progress
+            // bar).
+            $total = $DB->count_records('course_modules', array('groupmembersonly' => 1));
+            $pbar = new progress_bar('upgradegroupmembersonly', 500, true);
+
+            // Get all these course-modules, one at a time.
+            $rs = $DB->get_recordset('course_modules', array('groupmembersonly' => 1),
+                    'course, id');
+            $i = 0;
+            foreach ($rs as $cm) {
+                // Calculate and set new availability value.
+                $availability = upgrade_group_members_only($cm->groupingid, $cm->availability);
+                $DB->set_field('course_modules', 'availability', $availability,
+                        array('id' => $cm->id));
+
+                // Update progress.
+                $i++;
+                $pbar->update($i, $total, "Upgrading groupmembersonly settings - $i/$total.");
+            }
+            $rs->close();
+        }
+
+        // Define field groupmembersonly to be dropped from course_modules.
+        $table = new xmldb_table('course_modules');
+        $field = new xmldb_field('groupmembersonly');
+
+        // Conditionally launch drop field groupmembersonly.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Unset old config variable.
+        unset_config('enablegroupmembersonly');
+        $transaction->allow_commit();
+
+        upgrade_main_savepoint(true, 2014082900.02);
     }
 
     return true;

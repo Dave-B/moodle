@@ -30,6 +30,18 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class enrol_cohort_plugin extends enrol_plugin {
+
+    /**
+     * Is it possible to delete enrol instance via standard UI?
+     *
+     * @param stdClass $instance
+     * @return bool
+     */
+    public function can_delete_instance($instance) {
+        $context = context_course::instance($instance->courseid);
+        return has_capability('enrol/cohort:config', $context);
+    }
+
     /**
      * Returns localised name of enrol instance.
      *
@@ -347,6 +359,17 @@ class enrol_cohort_plugin extends enrol_plugin {
     public function restore_group_member($instance, $groupid, $userid) {
         // Nothing to do here, the group members are added in $this->restore_group_restored()
         return;
+    }
+
+    /**
+     * Is it possible to hide/show enrol instance via standard UI?
+     *
+     * @param stdClass $instance
+     * @return bool
+     */
+    public function can_hide_show_instance($instance) {
+        $context = context_course::instance($instance->courseid);
+        return has_capability('enrol/cohort:config', $context);
     }
 }
 

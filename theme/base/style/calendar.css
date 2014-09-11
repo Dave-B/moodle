@@ -43,6 +43,8 @@
 .dir-rtl.path-calendar .maincalendar .header .buttons {float: left;}
 .path-calendar .filters table {border-collapse:separate;border-spacing: 2px;width: 100%;}
 #page-calendar-export .indent {padding-left: 20px;}
+.path-calendar div.cal_courses_flt { float: left; }
+.dir-rtl.path-calendar div.cal_courses_flt { float: right; }
 .path-calendar .cal_courses_flt label { margin-right: .45em; }
 .dir-rtl.path-calendar .cal_courses_flt label { margin-left: .45em; margin-right: 0; }
 
@@ -59,3 +61,23 @@
 .block .calendar_filters .eventname { padding-left: .2em;}
 .dir-rtl .block .calendar_filters .eventname { padding-right: .2em; padding-left: 0; }
 .block .content h3.eventskey {margin-top:0.5em;}
+
+.ical-link {
+    font-size: 10px;
+    font-weight: bold;
+    background-color: #f60;
+    padding: 0px 5px;
+    color: #fff;
+    border-top: 1px solid #f93;
+    border-left: 1px solid #f93;
+    border-bottom: 1px solid #013;
+    border-right: 1px solid #013;
+    margin: 3px;
+    text-decoration: none;
+}
+.ical-link:hover,
+.ical-link:active,
+.ical-link:focus {
+    color: #fff;
+    text-decoration: none;
+}

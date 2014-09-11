@@ -356,13 +356,25 @@ abstract class cache_store implements cache_store_interface {
      * Initialises a test instance for unit tests.
      *
      * This differs from initialise_test_instance in that it doesn't rely on interacting with the config table.
-     * By default however it calls initialise_test_instance to support backwards compatability.
+     * By default however it calls initialise_test_instance to support backwards compatibility.
      *
      * @since 2.8
      * @param cache_definition $definition
      * @return cache_store|false
      */
     public static function initialise_unit_test_instance(cache_definition $definition) {
-        return self::initialise_test_instance($definition);
+        return static::initialise_test_instance($definition);
+    }
+
+    /**
+     * Can be overridden to return any warnings this store instance should make to the admin.
+     *
+     * This should be used to notify things like configuration conflicts etc.
+     * The warnings returned here will be displayed on the cache configuration screen.
+     *
+     * @return string[] An array of warning strings from the store instance.
+     */
+    public function get_warnings() {
+        return array();
     }
 }

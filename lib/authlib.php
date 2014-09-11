@@ -76,6 +76,8 @@ define('AUTH_LOGIN_FAILED', 3);
 /** Can not login because user is locked out. */
 define('AUTH_LOGIN_LOCKOUT', 4);
 
+/** Can not login becauser user is not authorised. */
+define('AUTH_LOGIN_UNAUTHORISED', 5);
 
 /**
  * Abstract authentication plugin.
@@ -565,6 +567,16 @@ class auth_plugin_base {
         unset($proffields);
 
         return $this->customfields;
+    }
+
+    /**
+     * Post logout hook.
+     *
+     * This method is used after moodle logout by auth classes to execute server logout.
+     *
+     * @param stdClass $user clone of USER object before the user session was terminated
+     */
+    public function postlogout_hook($user) {
     }
 }
 

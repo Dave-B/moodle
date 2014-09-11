@@ -175,6 +175,11 @@ class user_picture implements renderable {
     public $class = 'userpicture';
 
     /**
+     * @var bool Whether to be visible to screen readers.
+     */
+    public $visibletoscreenreaders = true;
+
+    /**
      * User picture constructor.
      *
      * @param stdClass $user user record with at least id, picture, imagealt, firstname and lastname set.
@@ -1606,7 +1611,13 @@ class html_writer {
                         $row->attributes['class'] .= ' lastrow';
                     }
 
-                    $output .= html_writer::start_tag('tr', array('class' => trim($row->attributes['class']), 'style' => $row->style, 'id' => $row->id)) . "\n";
+                    // Explicitly assigned properties should override those defined in the attributes.
+                    $row->attributes['class'] = trim($row->attributes['class']);
+                    $trattributes = array_merge($row->attributes, array(
+                            'id'            => $row->id,
+                            'style'         => $row->style,
+                        ));
+                    $output .= html_writer::start_tag('tr', $trattributes) . "\n";
                     $keys2 = array_keys($row->cells);
                     $lastkey = end($keys2);
 
@@ -2354,7 +2365,7 @@ class paging_bar implements renderable {
                 $displaypage = $currpage + 1;
 
                 if ($this->page == $currpage) {
-                    $this->pagelinks[] = $displaypage;
+                    $this->pagelinks[] = html_writer::span($displaypage, 'current-page');
                 } else {
                     $pagelink = html_writer::link(new moodle_url($this->baseurl, array($this->pagevar=>$currpage)), $displaypage);
                     $this->pagelinks[] = $pagelink;

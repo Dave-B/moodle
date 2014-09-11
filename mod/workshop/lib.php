@@ -46,7 +46,6 @@ function workshop_supports($feature) {
         case FEATURE_GRADE_HAS_GRADE:   return true;
         case FEATURE_GROUPS:            return true;
         case FEATURE_GROUPINGS:         return true;
-        case FEATURE_GROUPMEMBERSONLY:  return true;
         case FEATURE_MOD_INTRO:         return true;
         case FEATURE_BACKUP_MOODLE2:    return true;
         case FEATURE_COMPLETION_TRACKS_VIEWS:
@@ -1139,6 +1138,17 @@ function workshop_grade_item_category_update($workshop) {
             } else if ($gradeitem->itemnumber == 1) {
                 if ($gradeitem->categoryid != $workshop->gradinggradecategory) {
                     $gradeitem->set_parent($workshop->gradinggradecategory);
+                }
+            }
+            if (!empty($workshop->add)) {
+                $gradecategory = $gradeitem->get_parent_category();
+                if (grade_category::aggregation_uses_aggregationcoef($gradecategory->aggregation)) {
+                    if ($gradecategory->aggregation == GRADE_AGGREGATE_WEIGHTED_MEAN) {
+                        $gradeitem->aggregationcoef = 1;
+                    } else {
+                        $gradeitem->aggregationcoef = 0;
+                    }
+                    $gradeitem->update();
                 }
             }
         }
