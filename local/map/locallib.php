@@ -201,9 +201,15 @@ class local_map_map {
         if ($this->receivemarker) {
             $extramodules = ", 'event', 'node', 'io'";
         }
+
+        // HACK warning: disable InfoMap lat/lng/area field elements, so users are forced to use the map.
+        // TODO: Remove and make the lat/lng/area fields required, via the fix to MDL-5583.
+        $extramodules .= ", 'get'";
+        $infomaphack = "\n console.log(Y.all('.field_lat, .field_long, .field_Area').set('disabled', true));";
+
         $jsmapinitstart = "YUI({delayUntil: 'domready'}).use('moodle-local_map-map'".
                           $extramodules.", function(Y) {M.local_map.init(function() {";
-        $jsmapinitend = '});});';
+        $jsmapinitend = $infomaphack . '});});';
         $jsmapview = '{center: ['.$this->view->lat.','.$this->view->lng.'], zoom: '.$this->view->zoom.'}';
         $jsmap = 'M.local_map.maps["'.$this->domid.'"] = L.map("'.$this->domid.'", '.$jsmapview.');';
         $jstiles = '';
