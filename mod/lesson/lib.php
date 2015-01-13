@@ -51,15 +51,13 @@ function lesson_add_instance($data, $mform) {
     $lessonid = $DB->insert_record("lesson", $data);
     $data->id = $lessonid;
 
-    $lesson = $DB->get_record('lesson', array('id'=>$lessonid), '*', MUST_EXIST);
-
     lesson_update_media_file($lessonid, $context, $draftitemid);
 
     lesson_process_post_save($data);
 
     lesson_grade_item_update($data);
 
-    return $lesson->id;
+    return $lessonid;
 }
 
 /**
@@ -430,11 +428,11 @@ function lesson_grade_item_update($lesson, $grades=null) {
         $params = array('itemname'=>$lesson->name);
     }
 
-    if ($lesson->grade > 0) {
+    if (!$lesson->practice and $lesson->grade > 0) {
         $params['gradetype']  = GRADE_TYPE_VALUE;
         $params['grademax']   = $lesson->grade;
         $params['grademin']   = 0;
-    } else if ($lesson->grade < 0) {
+    } else if (!$lesson->practice and $lesson->grade < 0) {
         $params['gradetype']  = GRADE_TYPE_SCALE;
         $params['scaleid']   = -$lesson->grade;
 
@@ -729,7 +727,6 @@ function lesson_get_extra_capabilities() {
 /**
  * @uses FEATURE_GROUPS
  * @uses FEATURE_GROUPINGS
- * @uses FEATURE_GROUPMEMBERSONLY
  * @uses FEATURE_MOD_INTRO
  * @uses FEATURE_COMPLETION_TRACKS_VIEWS
  * @uses FEATURE_GRADE_HAS_GRADE
@@ -739,18 +736,57 @@ function lesson_get_extra_capabilities() {
  */
 function lesson_supports($feature) {
     switch($feature) {
-        case FEATURE_GROUPS:                  return false;
-        case FEATURE_GROUPINGS:               return false;
-        case FEATURE_GROUPMEMBERSONLY:        return true;
-        case FEATURE_MOD_INTRO:               return false;
-        case FEATURE_COMPLETION_TRACKS_VIEWS: return true;
-        case FEATURE_GRADE_HAS_GRADE:         return true;
-        case FEATURE_GRADE_OUTCOMES:          return true;
-        case FEATURE_BACKUP_MOODLE2:          return true;
-        default: return null;
+        case FEATURE_GROUPS:
+            return false;
+        case FEATURE_GROUPINGS:
+            return false;
+        case FEATURE_GROUPMEMBERSONLY:
+            return true;
+        case FEATURE_MOD_INTRO:
+            return true;
+        case FEATURE_COMPLETION_TRACKS_VIEWS:
+            return true;
+        case FEATURE_GRADE_HAS_GRADE:
+            return true;
+        case FEATURE_COMPLETION_HAS_RULES:
+            return true;
+        case FEATURE_GRADE_OUTCOMES:
+            return true;
+        case FEATURE_BACKUP_MOODLE2:
+            return true;
+        case FEATURE_SHOW_DESCRIPTION:
+            return true;
+        default:
+            return null;
     }
 }
 
+/**
+ * Obtains the automatic completion state for this lesson based on any conditions
+ * in lesson settings.
+ *
+ * @param object $course Course
+ * @param object $cm course-module
+ * @param int $userid User ID
+ * @param bool $type Type of comparison (or/and; can be used as return value if no conditions)
+ * @return bool True if completed, false if not, $type if conditions not set.
+ */
+function lesson_get_completion_state($course, $cm, $userid, $type) {
+    global $CFG, $DB;
+
+    // Get lesson details.
+    $lesson = $DB->get_record('lesson', array('id' => $cm->instance), '*',
+            MUST_EXIST);
+
+    // If completion option is enabled, evaluate it and return true/false.
+    if ($lesson->completionendreached) {
+        return $DB->record_exists('lesson_timer', array(
+                'lessonid' => $lesson->id, 'userid' => $userid, 'completed' => 1));
+    } else {
+        // Completion option is not enabled so just return $type.
+        return $type;
+    }
+}
 /**
  * This function extends the settings navigation block for the site.
  *
@@ -763,12 +799,10 @@ function lesson_supports($feature) {
 function lesson_extend_settings_navigation($settings, $lessonnode) {
     global $PAGE, $DB;
 
-    $canedit = has_capability('mod/lesson:edit', $PAGE->cm->context);
-
     $url = new moodle_url('/mod/lesson/view.php', array('id'=>$PAGE->cm->id));
     $lessonnode->add(get_string('preview', 'lesson'), $url);
 
-    if ($canedit) {
+    if (has_capability('mod/lesson:edit', $PAGE->cm->context)) {
         $url = new moodle_url('/mod/lesson/edit.php', array('id'=>$PAGE->cm->id));
         $lessonnode->add(get_string('edit', 'lesson'), $url);
     }
@@ -781,7 +815,7 @@ function lesson_extend_settings_navigation($settings, $lessonnode) {
         $reportsnode->add(get_string('detailedstats', 'lesson'), $url);
     }
 
-    if ($canedit) {
+    if (has_capability('mod/lesson:grade', $PAGE->cm->context)) {
         $url = new moodle_url('/mod/lesson/essay.php', array('id'=>$PAGE->cm->id));
         $lessonnode->add(get_string('manualgrading', 'lesson'), $url);
     }
@@ -867,6 +901,13 @@ function lesson_pluginfile($course, $cm, $context, $filearea, $args, $forcedownl
         }
         $fullpath = "/$context->id/mod_lesson/$filearea/$pageid/".implode('/', $args);
 
+    } else if ($filearea === 'page_answers' || $filearea === 'page_responses') {
+        $itemid = (int)array_shift($args);
+        if (!$pageanswers = $DB->get_record('lesson_answers', array('id' => $itemid))) {
+            return false;
+        }
+        $fullpath = "/$context->id/mod_lesson/$filearea/$itemid/".implode('/', $args);
+
     } else if ($filearea === 'mediafile') {
         if (count($args) > 1) {
             // Remove the itemid when it appears to be part of the arguments. If there is only one argument
@@ -899,6 +940,8 @@ function lesson_get_file_areas() {
     $areas = array();
     $areas['page_contents'] = get_string('pagecontents', 'mod_lesson');
     $areas['mediafile'] = get_string('mediafile', 'mod_lesson');
+    $areas['page_answers'] = get_string('pageanswers', 'mod_lesson');
+    $areas['page_responses'] = get_string('pageresponses', 'mod_lesson');
     return $areas;
 }
 

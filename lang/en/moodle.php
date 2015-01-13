@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,7 +17,7 @@
 /**
  * Strings for component 'moodle', language 'en', branch 'MOODLE_20_STABLE'
  *
- * @package   moodle
+ * @package   core
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -160,8 +159,8 @@ $string['authenticateduserdescription'] = 'All logged in users.';
 $string['authentication'] = 'Authentication';
 $string['authenticationplugins'] = 'Authentication plugins';
 $string['autosubscribe'] = 'Forum auto-subscribe';
-$string['autosubscribeno'] = 'No: don\'t automatically subscribe me to forums';
-$string['autosubscribeyes'] = 'Yes: when I post, subscribe me to that forum';
+$string['autosubscribeno'] = 'No: don\'t automatically subscribe me to forum discussions';
+$string['autosubscribeyes'] = 'Yes: when I post, subscribe me to that forum discussion';
 $string['availability'] = 'Availability';
 $string['availablecourses'] = 'Available courses';
 $string['back'] = 'Back';
@@ -262,8 +261,9 @@ $string['collapseall'] = 'Collapse all';
 $string['collapsecategory'] = 'Collapse {$a}';
 $string['commentincontext'] = 'Find this comment in context';
 $string['comments'] = 'Comments';
+$string['commentscount'] = 'Comments ({$a})';
 $string['commentsnotenabled'] = 'Comments feature is not enabled';
-$string['commentsrequirelogin'] = 'You need to login to view the comments';
+$string['commentsrequirelogin'] = 'You need to log in to view the comments.';
 $string['comparelanguage'] = 'Compare and edit current language';
 $string['complete'] = 'Complete';
 $string['completereport'] = 'Complete report';
@@ -373,6 +373,7 @@ $string['courserequestintro'] = 'Use this form to request a course to be created
 $string['courserequestreason'] = 'Reasons for wanting this course';
 $string['courserequestsuccess'] = 'Your course request has been saved successfully. You will be sent an email to inform you whether your request was approved.';
 $string['courserequestsupport'] = 'Supporting information to help the administrator evaluate this request';
+$string['courserequestwarning'] = 'The user requesting this course will be automatically enrolled using the "{$a}" role';
 $string['courserestore'] = 'Course restore';
 $string['courses'] = 'Courses';
 $string['coursesectionsummaries'] = 'Course section summaries';
@@ -522,11 +523,6 @@ $string['downloadtext'] = 'Download in text format';
 $string['doyouagree'] = 'Have you read these conditions and understood them?';
 $string['droptoupload'] = 'Drop files here to upload';
 $string['duplicate'] = 'Duplicate';
-$string['duplicateconfirm'] = 'Are you sure you want to duplicate {$a->modtype} \'{$a->modname}\' ?';
-$string['duplicatecontcourse'] = 'Return to the course';
-$string['duplicatecontedit'] = 'Edit the new copy';
-$string['duplicatesuccess'] = '{$a->modtype} \'{$a->modname}\' has been duplicated successfully';
-$string['duplicatinga'] = 'Duplicating: {$a}';
 $string['edhelpaspellpath'] = 'To use spell-checking within the editor, you MUST have <strong>aspell 0.50</strong> or later installed on your server, and you must specify the correct path to access the aspell binary.  On Unix/Linux systems, this path is usually <strong>/usr/bin/aspell</strong>, but it might be something else.';
 $string['edhelpbgcolor'] = 'Define the edit area\'s background color.<br />Valid values are, for example: #FFFFFF or white';
 $string['edhelpcleanword'] = 'This setting enables or disables Word-specific format filtering.';
@@ -703,6 +699,8 @@ $string['emailresetconfirmationsubject'] = '{$a}: Password reset request';
 $string['emailresetconfirmsent'] = 'An email has been sent to your address at <b>{$a}</b>.
 <br />It contains easy instructions to confirm and complete this password change.
 If you continue to have difficulty, contact the site administrator.';
+$string['emailtoprivatefiles'] = 'You can also e-mail files as attachments straight to your private files space. Simply attach your files to an e-mail and send it to {$a}';
+$string['emailtoprivatefilesdenied'] = 'Your administrator has disabled the option to upload your own private files.';
 $string['emptydragdropregion'] = 'empty region';
 $string['enable'] = 'Enable';
 $string['encryptedcode'] = 'Encrypted code';
@@ -784,6 +782,7 @@ $string['first'] = 'First';
 $string['firstaccess'] = 'First access';
 $string['firstname'] = 'First name';
 $string['firstnamephonetic'] = 'First name - phonetic';
+$string['firstsiteaccess'] = 'First access to site';
 $string['firsttime'] = 'Is this your first time here?';
 $string['folder'] = 'Folder';
 $string['folderclosed'] = 'Closed folder';
@@ -824,7 +823,7 @@ $string['frontpagecourselist'] = 'List of courses';
 $string['frontpagecoursesearch'] = 'Course search box';
 $string['frontpageenrolledcourselist'] = 'Enrolled courses';
 $string['frontpagedescription'] = 'Front page summary';
-$string['frontpagedescriptionhelp'] = 'This summary can be displayed on the front page using the course/site summary block or by including a topic section on the front page.';
+$string['frontpagedescriptionhelp'] = 'This summary can be displayed on the front page using the course/site summary block.';
 $string['frontpageformat'] = 'Front page format';
 $string['frontpageformatloggedin'] = 'Front page format when logged in';
 $string['frontpagenews'] = 'News items';
@@ -1012,12 +1011,14 @@ $string['language'] = 'Language';
 $string['languagegood'] = 'This language pack is up-to-date! :-)';
 $string['last'] = 'Last';
 $string['lastaccess'] = 'Last access';
+$string['lastcourseaccess'] = 'Last access to course';
 $string['lastedited'] = 'Last edited';
 $string['lastip'] = 'Last IP address';
 $string['lastlogin'] = 'Last login';
 $string['lastmodified'] = 'Last modified';
 $string['lastname'] = 'Surname';
 $string['lastnamephonetic'] = 'Surname - phonetic';
+$string['lastsiteaccess'] = 'Last access to site';
 $string['lastyear'] = 'Last year';
 $string['latestlanguagepack'] = 'Check for latest language pack on moodle.org';
 $string['layouttable'] = 'Layout table';
@@ -1447,6 +1448,8 @@ $string['previous'] = 'Previous';
 $string['previouslyselectedusers'] = 'Previously selected users not matching \'{$a}\'';
 $string['previoussection'] = 'Previous section';
 $string['primaryadminsetup'] = 'Setup administrator account';
+$string['private_files_handler'] = 'Store attachments to an e-mail in the user\'s private files storage space.';
+$string['private_files_handler_name'] = 'Email to Private files';
 $string['profile'] = 'Profile';
 $string['profilenotshown'] = 'This profile description will not be shown until this person is enrolled in at least one course.';
 $string['publicprofile'] = 'Public profile';
@@ -1564,6 +1567,7 @@ $string['saveandnext'] = 'Save and show next';
 $string['savedat'] = 'Saved at:';
 $string['savechanges'] = 'Save changes';
 $string['savechangesanddisplay'] = 'Save and display';
+$string['savechangesandreturn'] = 'Save and return';
 $string['savechangesandreturntocourse'] = 'Save and return to course';
 $string['savecomment'] = 'Save comment';
 $string['savepreferences'] = 'Save preferences';
@@ -1901,6 +1905,7 @@ $string['userdescription_help'] = 'This box enables you to enter some text about
 $string['userdetails'] = 'User details';
 $string['userfiles'] = 'User files';
 $string['userlist'] = 'User list';
+$string['usermenu'] = 'User menu';
 $string['username'] = 'Username';
 $string['usernameemail'] = 'Username / email';
 $string['usernameemailmatch'] = 'The username and email address do not relate to the same user';

@@ -139,6 +139,10 @@ $CFG->admin = 'admin';
 // any existing key.
 //      $CFG->mnetkeylifetime = 28;
 //
+// Not recommended: Set the following to true to allow the use
+// off non-Moodle standard characters in usernames.
+//      $CFG->extendedusernamechars = true;
+//
 // Allow user passwords to be included in backup files. Very dangerous
 // setting as far as it publishes password hashes that can be unencrypted
 // if the backup file is publicy available. Use it only if you can guarantee
@@ -279,7 +283,7 @@ $CFG->admin = 'admin';
 //      $CFG->reverseproxy = true;
 //
 // Enable when using external SSL appliance for performance reasons.
-// Please note that site may be accessible via https: or https:, but not both!
+// Please note that site may be accessible via http: or https:, but not both!
 //      $CFG->sslproxy = true;
 //
 // This setting will cause the userdate() function not to fix %d in
@@ -512,6 +516,23 @@ $CFG->admin = 'admin';
 // Location for lock files used by the File locking factory. This must exist
 // on a shared file system that supports locking.
 //      $CFG->lock_file_root = $CFG->dataroot . '/lock';
+//
+// Moodle 2.9 allows administrators to customise the list of supported file types.
+// To add a new filetype or override the definition of an existing one, set the
+// customfiletypes variable like this:
+//
+// $CFG->customfiletypes = array(
+//     (object)array(
+//         'extension' => 'frog',
+//         'icon' => 'archive',
+//         'type' => 'application/frog',
+//         'customdescription' => 'Amphibian-related file archive'
+//     )
+// );
+//
+// The extension, icon, and type fields are required. The icon field can refer to
+// any icon inside the pix/f folder. You can also set the customdescription field
+// (shown above) and (for advanced use) the groups, string, and defaulticon fields.
 //
 //=========================================================================
 // 7. SETTINGS FOR DEVELOPMENT SERVERS - not intended for production use!!!

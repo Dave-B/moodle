@@ -66,8 +66,11 @@ class manager {
         foreach ($tasks as $task) {
             $record = (object) $task;
             $scheduledtask = self::scheduled_task_from_record($record);
-            $scheduledtask->set_component($componentname);
-            $scheduledtasks[] = $scheduledtask;
+            // Safety check in case the task in the DB does not match a real class (maybe something was uninstalled).
+            if ($scheduledtask) {
+                $scheduledtask->set_component($componentname);
+                $scheduledtasks[] = $scheduledtask;
+            }
         }
 
         return $scheduledtasks;
@@ -90,10 +93,19 @@ class manager {
         $tasks = self::load_default_scheduled_tasks_for_component($componentname);
 
         $tasklocks = array();
-        foreach ($tasks as $task) {
+        foreach ($tasks as $taskid => $task) {
             $classname = get_class($task);
             if (strpos($classname, '\\') !== 0) {
                 $classname = '\\' . $classname;
+            }
+
+            // For tasks, the first run should also follow the schedule.
+            $task->set_next_run_time($task->get_next_scheduled_time());
+
+            // If there is an existing task with a custom schedule, do not override it.
+            $currenttask = self::get_scheduled_task($classname);
+            if ($currenttask && $currenttask->is_customised()) {
+                $tasks[$taskid] = $currenttask;
             }
 
             if (!$lock = $cronlockfactory->get_lock($classname, 10, 60)) {
@@ -237,6 +249,7 @@ class manager {
             $classname = '\\' . $classname;
         }
         if (!class_exists($classname)) {
+            debugging("Failed to load task: " . $classname, DEBUG_DEVELOPER);
             return false;
         }
         $task = new $classname;
@@ -272,6 +285,7 @@ class manager {
             $classname = '\\' . $classname;
         }
         if (!class_exists($classname)) {
+            debugging("Failed to load task: " . $classname, DEBUG_DEVELOPER);
             return false;
         }
         /** @var \core\task\scheduled_task $task */
@@ -325,10 +339,13 @@ class manager {
 
         $tasks = array();
         // We are just reading - so no locks required.
-        $records = $DB->get_records('task_scheduled', array('componentname' => $componentname), 'classname', '*', IGNORE_MISSING);
+        $records = $DB->get_records('task_scheduled', array('component' => $componentname), 'classname', '*', IGNORE_MISSING);
         foreach ($records as $record) {
             $task = self::scheduled_task_from_record($record);
-            $tasks[] = $task;
+            // Safety check in case the task in the DB does not match a real class (maybe something was uninstalled).
+            if ($task) {
+                $tasks[] = $task;
+            }
         }
 
         return $tasks;
@@ -362,8 +379,12 @@ class manager {
      */
     public static function get_default_scheduled_task($classname) {
         $task = self::get_scheduled_task($classname);
+        $componenttasks = array();
 
-        $componenttasks = self::load_default_scheduled_tasks_for_component($task->get_component());
+        // Safety check in case no task was found for the given classname.
+        if ($task) {
+            $componenttasks = self::load_default_scheduled_tasks_for_component($task->get_component());
+        }
 
         foreach ($componenttasks as $componenttask) {
             if (get_class($componenttask) == get_class($task)) {
@@ -387,7 +408,10 @@ class manager {
 
         foreach ($records as $record) {
             $task = self::scheduled_task_from_record($record);
-            $tasks[] = $task;
+            // Safety check in case the task in the DB does not match a real class (maybe something was uninstalled).
+            if ($task) {
+                $tasks[] = $task;
+            }
         }
 
         return $tasks;
@@ -418,6 +442,11 @@ class manager {
             if ($lock = $cronlockfactory->get_lock('adhoc_' . $record->id, 10)) {
                 $classname = '\\' . $record->classname;
                 $task = self::adhoc_task_from_record($record);
+                // Safety check in case the task in the DB does not match a real class (maybe something was uninstalled).
+                if (!$task) {
+                    $lock->release();
+                    continue;
+                }
 
                 $task->set_lock($lock);
                 if (!$task->is_blocking()) {
@@ -463,6 +492,11 @@ class manager {
             if ($lock = $cronlockfactory->get_lock(($record->classname), 10)) {
                 $classname = '\\' . $record->classname;
                 $task = self::scheduled_task_from_record($record);
+                // Safety check in case the task in the DB does not match a real class (maybe something was uninstalled).
+                if (!$task) {
+                    $lock->release();
+                    continue;
+                }
 
                 $task->set_lock($lock);
 
@@ -470,7 +504,8 @@ class manager {
                 $plugininfo = $pluginmanager->get_plugin_info($task->get_component());
 
                 if ($plugininfo) {
-                    if (!$task->get_run_if_component_disabled() && !$plugininfo->is_enabled()) {
+                    if (($plugininfo->is_enabled() === false) && !$task->get_run_if_component_disabled()) {
+                        mtrace($task->get_name().' skipped - the component '.$task->get_component().' is disabled');
                         $lock->release();
                         continue;
                     }

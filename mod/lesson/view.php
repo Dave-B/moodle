@@ -410,7 +410,6 @@ if ($pageid != LESSON_EOL) {
         echo '<a name="maincontent" id="maincontent" title="' . get_string('anchortitle', 'lesson') . '"></a>';
     }
     echo $lessoncontent;
-    echo $lessonoutput->slideshow_end();
     echo $lessonoutput->progress_bar($lesson);
     echo $lessonoutput->footer();
 
@@ -429,9 +428,17 @@ if ($pageid != LESSON_EOL) {
         $ntries--;  // need to look at the old attempts :)
     }
     if (!$canmanage) {
+        // Store this now before any modifications to pages viewed.
+        $progressbar = $lessonoutput->progress_bar($lesson);
         // Update the clock / get time information for this user.
         $lesson->stop_timer();
         $gradeinfo = lesson_grade($lesson, $ntries);
+
+        // Update completion state.
+        $completion = new completion_info($course);
+        if ($completion->is_enabled($cm) && $lesson->completionendreached) {
+            $completion->update_state($cm, COMPLETION_COMPLETE);
+        }
 
         if ($gradeinfo->attempts) {
             if (!$lesson->custom) {
@@ -489,15 +496,16 @@ if ($pageid != LESSON_EOL) {
                     if (!$lesson->practice) {
                         $newgradeid = $DB->insert_record("lesson_grades", $grade);
                     }
-                    $lessoncontent .= get_string("eolstudentoutoftimenoanswers", "lesson");
+                    $lessoncontent .= $lessonoutput->paragraph(get_string("eolstudentoutoftimenoanswers", "lesson"));
                 }
             } else {
-                $lessoncontent .= get_string("welldone", "lesson");
+                $lessoncontent .= $lessonoutput->paragraph(get_string("welldone", "lesson"));
             }
         }
 
         // update central gradebook
         lesson_update_grades($lesson, $USER->id);
+        $lessoncontent .= $progressbar;
 
     } else {
         // display for teacher
@@ -576,8 +584,11 @@ if ($pageid != LESSON_EOL) {
     $url = new moodle_url('/course/view.php', array('id'=>$course->id));
     $lessoncontent .= html_writer::link($url, get_string('returnto', 'lesson', format_string($course->fullname, true)), array('class'=>'centerpadded lessonbutton standardbutton'));
 
-    $url = new moodle_url('/grade/index.php', array('id'=>$course->id));
-    $lessoncontent .= html_writer::link($url, get_string('viewgrades', 'lesson'), array('class'=>'centerpadded lessonbutton standardbutton'));
+    if (!$lesson->practice) {
+        $url = new moodle_url('/grade/index.php', array('id' => $course->id));
+        $lessoncontent .= html_writer::link($url, get_string('viewgrades', 'lesson'),
+            array('class' => 'centerpadded lessonbutton standardbutton'));
+    }
 
     lesson_add_fake_blocks($PAGE, $cm, $lesson, $timer);
     echo $lessonoutput->header($lesson, $cm, $currenttab, $extraeditbuttons, $lessonpageid, get_string("congratulations", "lesson"));

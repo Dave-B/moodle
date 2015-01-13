@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,7 +17,7 @@
 /**
  * Strings for component 'install', language 'en', branch 'MOODLE_20_STABLE'
  *
- * @package   install
+ * @package   core
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -167,7 +166,7 @@ $string['memorylimithelp'] = '<p>The PHP memory limit for your server is current
     (you will see errors when you look at pages) so you\'ll have to remove the .htaccess file.</p></li>
 </ol>';
 $string['mssqlextensionisnotpresentinphp'] = 'PHP has not been properly configured with the MSSQL extension so that it can communicate with SQL*Server.  Please check your php.ini file or recompile PHP.';
-$string['mysqliextensionisnotpresentinphp'] = 'PHP has not been properly configured with the MySQLi extension so that it can communicate with MySQL.  Please check your php.ini file or recompile PHP.  MySQLi extension is not available for PHP 4.';
+$string['mysqliextensionisnotpresentinphp'] = 'PHP has not been properly configured with the MySQLi extension for it to communicate with MySQL. Please check your php.ini file or recompile PHP.';
 $string['nativemariadb'] = 'MariaDB (native/mariadb)';
 $string['nativemariadbhelp'] = '<p>The database is where most of the Moodle settings and data are stored and must be configured here.</p>
 <p>The database name, username, and password are required fields; table prefix is optional.</p>

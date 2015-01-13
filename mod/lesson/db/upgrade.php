@@ -78,7 +78,64 @@ function xmldb_lesson_upgrade($oldversion) {
     // Moodle v2.7.0 release upgrade line.
     // Put any upgrade step following this.
 
+    if ($oldversion < 2014091001) {
+        $table = new xmldb_table('lesson');
+        $field = new xmldb_field('intro', XMLDB_TYPE_TEXT, null, null, null, null, null, 'name');
+        // Conditionally launch add field.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('introformat', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'intro');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2014091001, 'lesson');
+    }
+
+    if ($oldversion < 2014100600) {
+        // Previously there was no module intro in lesson so don't require
+        // it to be filled in for upgraded sites.
+        set_config('requiremodintro', 0, 'lesson');
+        upgrade_mod_savepoint(true, 2014100600, 'lesson');
+    }
+
+    // Moodle v2.8.0 release upgrade line.
+    // Put any upgrade step following this.
+
+    if ($oldversion < 2014112300) {
+
+        // Define field completionendreached to be added to lesson.
+        $table = new xmldb_table('lesson');
+        $field = new xmldb_field('completionendreached', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', 'timemodified');
+
+        // Conditionally launch add field completionendreached.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field completed to be added to lesson_timer.
+        $table = new xmldb_table('lesson_timer');
+        $field = new xmldb_field('completed', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', 'lessontime');
+
+        // Conditionally launch add field completed.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Lesson savepoint reached.
+        upgrade_mod_savepoint(true, 2014112300, 'lesson');
+    }
+
+    if ($oldversion < 2014122900) {
+
+        // Changing precision of field grade on table lesson to (10).
+        $table = new xmldb_table('lesson');
+        $field = new xmldb_field('grade', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'conditions');
+
+        // Launch change of precision for field grade.
+        $dbman->change_field_precision($table, $field);
+
+        // Lesson savepoint reached.
+        upgrade_mod_savepoint(true, 2014122900, 'lesson');
+    }
     return true;
 }
-
-

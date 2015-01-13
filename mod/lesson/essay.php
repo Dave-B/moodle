@@ -38,7 +38,7 @@ $lesson = new lesson($dblesson);
 
 require_login($course, false, $cm);
 $context = context_module::instance($cm->id);
-require_capability('mod/lesson:edit', $context);
+require_capability('mod/lesson:grade', $context);
 
 $url = new moodle_url('/mod/lesson/essay.php', array('id'=>$id));
 if ($mode !== 'display') {
@@ -182,7 +182,7 @@ switch ($mode) {
 
         $pages = $lesson->load_all_pages();
         foreach ($pages as $key=>$page) {
-            if ($page->qtype !== LESSON_PAGE_ESSAY) {
+            if ($page->qtype != LESSON_PAGE_ESSAY) {
                 unset($pages[$key]);
             }
         }
@@ -265,7 +265,7 @@ switch ($mode) {
         // Get lesson pages that are essay
         $pages = $lesson->load_all_pages();
         foreach ($pages as $key=>$page) {
-            if ($page->qtype !== LESSON_PAGE_ESSAY) {
+            if ($page->qtype != LESSON_PAGE_ESSAY) {
                 unset($pages[$key]);
             }
         }
@@ -356,11 +356,11 @@ switch ($mode) {
                     $attributes = array();
                     // Different colors for all the states of an essay (graded, if sent, not graded)
                     if (!$essayinfo->graded) {
-                        $attributes['class'] = "graded";
+                        $attributes['class'] = "essayungraded";
                     } elseif (!$essayinfo->sent) {
-                        $attributes['class'] = "sent";
+                        $attributes['class'] = "essaygraded";
                     } else {
-                        $attributes['class'] = "ungraded";
+                        $attributes['class'] = "essaysent";
                     }
                     $essaylinks[] = html_writer::link($url, userdate($essay->timeseen, get_string('strftimedatetime')).' '.format_string($pages[$essay->pageid]->title,true), $attributes);
                 }

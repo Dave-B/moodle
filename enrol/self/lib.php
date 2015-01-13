@@ -432,7 +432,13 @@ class enrol_self_plugin extends enrol_plugin {
         if (!empty($CFG->coursecontact)) {
             $croles = explode(',', $CFG->coursecontact);
             list($sort, $sortparams) = users_order_by_sql('u');
-            $rusers = get_role_users($croles, $context, true, '', 'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
+            // We only use the first user.
+            $i = 0;
+            do {
+                $rusers = get_role_users($croles[$i], $context, true, '',
+                    'r.sortorder ASC, ' . $sort, null, '', '', '', '', $sortparams);
+                $i++;
+            } while (empty($rusers) && !empty($croles[$i]));
         }
         if ($rusers) {
             $contact = reset($rusers);
@@ -651,10 +657,21 @@ class enrol_self_plugin extends enrol_plugin {
     /**
      * Is it possible to delete enrol instance via standard UI?
      *
-     * @param object $instance
+     * @param stdClass $instance
      * @return bool
      */
     public function can_delete_instance($instance) {
+        $context = context_course::instance($instance->courseid);
+        return has_capability('enrol/self:config', $context);
+    }
+
+    /**
+     * Is it possible to hide/show enrol instance via standard UI?
+     *
+     * @param stdClass $instance
+     * @return bool
+     */
+    public function can_hide_show_instance($instance) {
         $context = context_course::instance($instance->courseid);
         return has_capability('enrol/self:config', $context);
     }

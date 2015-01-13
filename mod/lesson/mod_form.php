@@ -43,7 +43,8 @@ class mod_lesson_mod_form extends moodleform_mod {
 
         $mform    = $this->_form;
 
-//-------------------------------------------------------------------------------
+        $config = get_config('lesson');
+
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         /** Legacy slideshow width element to maintain backwards compatibility */
@@ -89,6 +90,7 @@ class mod_lesson_mod_form extends moodleform_mod {
         }
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        $this->add_intro_editor($config->requiremodintro);
 
         // Appearance.
         $mform->addElement('header', 'appearancehdr', get_string('appearance'));
@@ -340,6 +342,29 @@ class mod_lesson_mod_form extends moodleform_mod {
         }
 
         return $errors;
+    }
+
+    /**
+     * Display module-specific activity completion rules.
+     * Part of the API defined by moodleform_mod
+     * @return array Array of string IDs of added items, empty array if none
+     */
+    public function add_completion_rules() {
+        $mform = $this->_form;
+
+        $mform->addElement('checkbox', 'completionendreached', get_string('completionendreached', 'lesson'),
+                get_string('completionendreached_desc', 'lesson'));
+        return array('completionendreached');
+    }
+
+    /**
+     * Called during validation. Indicates whether a module-specific completion rule is selected.
+     *
+     * @param array $data Input data (not yet validated)
+     * @return bool True if one or more rules is enabled, false if none are.
+     */
+    public function completion_rule_enabled($data) {
+        return !empty($data['completionendreached']);
     }
 }
 

@@ -202,6 +202,13 @@ function uninstall_plugin($type, $name) {
     // Delete scheduled tasks.
     $DB->delete_records('task_scheduled', array('component' => $pluginname));
 
+    // Delete Inbound Message datakeys.
+    $DB->delete_records_select('messageinbound_datakeys',
+            'handler IN (SELECT id FROM {messageinbound_handlers} WHERE component = ?)', array($pluginname));
+
+    // Delete Inbound Message handlers.
+    $DB->delete_records('messageinbound_handlers', array('component' => $pluginname));
+
     // delete all the logs
     $DB->delete_records('log', array('module' => $pluginname));
 
@@ -2418,6 +2425,7 @@ class admin_setting_configfile extends admin_setting_configtext {
      * @return string XHTML field
      */
     public function output_html($data, $query='') {
+        global $CFG;
         $default = $this->get_defaultsetting();
 
         if ($data) {
@@ -2429,18 +2437,32 @@ class admin_setting_configfile extends admin_setting_configtext {
         } else {
             $executable = '';
         }
+        $readonly = '';
+        if (!empty($CFG->preventexecpath)) {
+            $this->visiblename .= '<div class="form-overridden">'.get_string('execpathnotallowed', 'admin').'</div>';
+            $readonly = 'readonly="readonly"';
+        }
 
         return format_admin_setting($this, $this->visiblename,
-        '<div class="form-file defaultsnext"><input type="text" size="'.$this->size.'" id="'.$this->get_id().'" name="'.$this->get_full_name().'" value="'.s($data).'" />'.$executable.'</div>',
+        '<div class="form-file defaultsnext"><input '.$readonly.' type="text" size="'.$this->size.'" id="'.$this->get_id().'" name="'.$this->get_full_name().'" value="'.s($data).'" />'.$executable.'</div>',
         $this->description, true, '', $default, $query);
     }
+
     /**
-     * checks if execpatch has been disabled in config.php
+     * Checks if execpatch has been disabled in config.php
      */
     public function write_setting($data) {
         global $CFG;
         if (!empty($CFG->preventexecpath)) {
-            return '';
+            if ($this->get_setting() === null) {
+                // Use default during installation.
+                $data = $this->get_defaultsetting();
+                if ($data === null) {
+                    $data = '';
+                }
+            } else {
+                return '';
+            }
         }
         return parent::write_setting($data);
     }
@@ -2474,12 +2496,14 @@ class admin_setting_configexecutable extends admin_setting_configfile {
         } else {
             $executable = '';
         }
+        $readonly = '';
         if (!empty($CFG->preventexecpath)) {
             $this->visiblename .= '<div class="form-overridden">'.get_string('execpathnotallowed', 'admin').'</div>';
+            $readonly = 'readonly="readonly"';
         }
 
         return format_admin_setting($this, $this->visiblename,
-        '<div class="form-file defaultsnext"><input type="text" size="'.$this->size.'" id="'.$this->get_id().'" name="'.$this->get_full_name().'" value="'.s($data).'" />'.$executable.'</div>',
+        '<div class="form-file defaultsnext"><input '.$readonly.' type="text" size="'.$this->size.'" id="'.$this->get_id().'" name="'.$this->get_full_name().'" value="'.s($data).'" />'.$executable.'</div>',
         $this->description, true, '', $default, $query);
     }
 }
@@ -2500,6 +2524,7 @@ class admin_setting_configdirectory extends admin_setting_configfile {
      * @return string XHTML
      */
     public function output_html($data, $query='') {
+        global $CFG;
         $default = $this->get_defaultsetting();
 
         if ($data) {
@@ -2511,9 +2536,14 @@ class admin_setting_configdirectory extends admin_setting_configfile {
         } else {
             $executable = '';
         }
+        $readonly = '';
+        if (!empty($CFG->preventexecpath)) {
+            $this->visiblename .= '<div class="form-overridden">'.get_string('execpathnotallowed', 'admin').'</div>';
+            $readonly = 'readonly="readonly"';
+        }
 
         return format_admin_setting($this, $this->visiblename,
-        '<div class="form-file defaultsnext"><input type="text" size="'.$this->size.'" id="'.$this->get_id().'" name="'.$this->get_full_name().'" value="'.s($data).'" />'.$executable.'</div>',
+        '<div class="form-file defaultsnext"><input '.$readonly.' type="text" size="'.$this->size.'" id="'.$this->get_id().'" name="'.$this->get_full_name().'" value="'.s($data).'" />'.$executable.'</div>',
         $this->description, true, '', $default, $query);
     }
 }
@@ -3359,8 +3389,13 @@ class admin_setting_configduration extends admin_setting {
 
         $units = self::get_units();
 
+        $inputid = $this->get_id() . 'v';
+
         $return = '<div class="form-duration defaultsnext">';
-        $return .= '<input type="text" size="5" id="'.$this->get_id().'v" name="'.$this->get_full_name().'[v]" value="'.s($data['v']).'" />';
+        $return .= '<input type="text" size="5" id="' . $inputid . '" name="' . $this->get_full_name() .
+            '[v]" value="' . s($data['v']) . '" />';
+        $return .= '<label for="' . $this->get_id() . 'u" class="accesshide">' .
+            get_string('durationunits', 'admin') . '</label>';
         $return .= '<select id="'.$this->get_id().'u" name="'.$this->get_full_name().'[u]">';
         foreach ($units as $val => $text) {
             $selected = '';
@@ -3374,7 +3409,7 @@ class admin_setting_configduration extends admin_setting {
             $return .= '<option value="'.$val.'"'.$selected.'>'.$text.'</option>';
         }
         $return .= '</select></div>';
-        return format_admin_setting($this, $this->visiblename, $return, $this->description, false, '', $defaultinfo, $query);
+        return format_admin_setting($this, $this->visiblename, $return, $this->description, $inputid, '', $defaultinfo, $query);
     }
 }
 
@@ -6877,7 +6912,7 @@ function admin_output_new_settings_by_page($node) {
  * @param string $title label element
  * @param string $form form fragment, html code - not highlighted automatically
  * @param string $description
- * @param bool $label link label to id, true by default
+ * @param mixed $label link label to id, true by default or string being the label to connect it to
  * @param string $warning warning text
  * @param sting $defaultinfo defaults info, null means nothing, '' is converted to "Empty" string, defaults to null
  * @param string $query search query to be highlighted
@@ -6890,10 +6925,12 @@ function format_admin_setting($setting, $title='', $form='', $description='', $l
     $fullname = $setting->get_full_name();
 
     // sometimes the id is not id_s_name, but id_s_name_m or something, and this does not validate
-    if ($label) {
+    if ($label === true) {
         $labelfor = 'for = "'.$setting->get_id().'"';
-    } else {
+    } else if ($label === false) {
         $labelfor = '';
+    } else {
+        $labelfor = 'for="' . $label . '"';
     }
     $form .= $setting->output_setting_flags();
 
@@ -8401,7 +8438,7 @@ class admin_setting_configcolourpicker extends admin_setting {
             $content .= html_writer::empty_tag('input', array('type'=>'button','id'=>$this->get_id().'_preview', 'value'=>get_string('preview'), 'class'=>'admin_colourpicker_preview'));
         }
         $content .= html_writer::end_tag('div');
-        return format_admin_setting($this, $this->visiblename, $content, $this->description, false, '', $this->get_defaultsetting(), $query);
+        return format_admin_setting($this, $this->visiblename, $content, $this->description, true, '', $this->get_defaultsetting(), $query);
     }
 }
 

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,7 +17,7 @@
 /**
  * Strings for component 'webservice', language 'en', branch 'MOODLE_20_STABLE'
  *
- * @package   webservice
+ * @package   core_webservice
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -114,7 +113,7 @@ $string['invalidiptoken'] = 'Invalid token - your IP is not supported';
 $string['invalidtimedtoken'] = 'Invalid token - token expired';
 $string['invalidtoken'] = 'Invalid token - token not found';
 $string['iprestriction'] = 'IP restriction';
-$string['iprestriction_help'] = 'The user will need to call web service from the listed IPs.';
+$string['iprestriction_help'] = 'The user will need to call the web service from the listed IPs (separated by commas).';
 $string['key'] = 'Key';
 $string['keyshelp'] = 'The keys are used to access your Moodle account from external applications.';
 $string['manageprotocols'] = 'Manage protocols';

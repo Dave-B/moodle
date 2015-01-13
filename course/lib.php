@@ -996,12 +996,8 @@ function get_array_of_activities($courseid) {
 //  name - the name of the instance
 //  visible - is the instance visible or not
 //  groupingid - grouping id
-//  groupmembersonly - is this instance visible to group members only
 //  extra - contains extra string to include in any link
     global $CFG, $DB;
-    if(!empty($CFG->enableavailability)) {
-        require_once($CFG->libdir.'/conditionlib.php');
-    }
 
     $course = $DB->get_record('course', array('id'=>$courseid));
 
@@ -1048,7 +1044,6 @@ function get_array_of_activities($courseid) {
                    $mod[$seq]->visibleold       = $rawmods[$seq]->visibleold;
                    $mod[$seq]->groupmode        = $rawmods[$seq]->groupmode;
                    $mod[$seq]->groupingid       = $rawmods[$seq]->groupingid;
-                   $mod[$seq]->groupmembersonly = $rawmods[$seq]->groupmembersonly;
                    $mod[$seq]->indent           = $rawmods[$seq]->indent;
                    $mod[$seq]->completion       = $rawmods[$seq]->completion;
                    $mod[$seq]->extra            = "";
@@ -1127,13 +1122,12 @@ function get_array_of_activities($courseid) {
                        $mod[$seq]->name = $DB->get_field($rawmods[$seq]->modname, "name", array("id"=>$rawmods[$seq]->instance));
                    }
 
-                   // Minimise the database size by unsetting default options when they are
-                   // 'empty'. This list corresponds to code in the cm_info constructor.
-                   foreach (array('idnumber', 'groupmode', 'groupingid', 'groupmembersonly',
-                           'indent', 'completion', 'extra', 'extraclasses', 'iconurl', 'onclick', 'content',
-                           'icon', 'iconcomponent', 'customdata', 'availability',
-                           'completionview', 'completionexpected', 'score', 'showdescription')
-                           as $property) {
+                    // Minimise the database size by unsetting default options when they are
+                    // 'empty'. This list corresponds to code in the cm_info constructor.
+                    foreach (array('idnumber', 'groupmode', 'groupingid',
+                            'indent', 'completion', 'extra', 'extraclasses', 'iconurl', 'onclick', 'content',
+                            'icon', 'iconcomponent', 'customdata', 'availability', 'completionview',
+                            'completionexpected', 'score', 'showdescription') as $property) {
                        if (property_exists($mod[$seq], $property) &&
                                empty($mod[$seq]->{$property})) {
                            unset($mod[$seq]->{$property});
@@ -2057,8 +2051,7 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
     }
 
     // Duplicate (require both target import caps to be able to duplicate and backup2 support, see modduplicate.php)
-    // Note that restoring on front page is never allowed.
-    if ($mod->course != SITEID && has_all_capabilities($dupecaps, $coursecontext) &&
+    if (has_all_capabilities($dupecaps, $coursecontext) &&
             plugin_supports('mod', $mod->modname, FEATURE_BACKUP_MOODLE2)) {
         $actions['duplicate'] = new action_menu_link_secondary(
             new moodle_url($baseurl, array('duplicate' => $mod->id)),

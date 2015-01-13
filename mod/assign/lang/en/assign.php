@@ -230,12 +230,14 @@ $string['gradingsummary'] = 'Grading summary';
 $string['hideshow'] = 'Hide/Show';
 $string['hiddenuser'] = 'Participant ';
 $string['instructionfiles'] = 'Instruction files';
+$string['introattachments'] = 'Additional files';
+$string['introattachments_help'] = 'Additional files for use in the assignment, such as answer templates, may be added. Download links for the files will then be displayed on the assignment page under the description.';
 $string['invalidgradeforscale'] = 'The grade supplied was not valid for the current scale';
 $string['invalidfloatforgrade'] = 'The grade provided could not be understood: {$a}';
 $string['lastmodifiedsubmission'] = 'Last modified (submission)';
 $string['lastmodifiedgrade'] = 'Last modified (grade)';
 $string['latesubmissions'] = 'Late submissions';
-$string['latesubmissionsaccepted'] = 'Only student(s) having been granted extension can still submit the assignment';
+$string['latesubmissionsaccepted'] = 'Allowed until the cut-off date';
 $string['locksubmissionforstudent'] = 'Prevent any more submissions for student: (id={$a->id}, fullname={$a->fullname}).';
 $string['locksubmissions'] = 'Lock submissions';
 $string['logsthissubmission'] = 'Logs for this submission';
@@ -283,7 +285,7 @@ $string['noattempt'] = 'No attempt';
 $string['nofiles'] = 'No files. ';
 $string['nograde'] = 'No grade. ';
 $string['nolatesubmissions'] = 'No late submissions accepted. ';
-$string['nomoresubmissionsaccepted'] = 'No more submissions accepted';
+$string['nomoresubmissionsaccepted'] = 'Only allowed for participants who have been granted an extension';
 $string['noonlinesubmissions'] = 'This assignment does not require you to submit anything online';
 $string['nosavebutnext'] = 'Next';
 $string['nosubmission'] = 'Nothing has been submitted for this assignment';
@@ -352,6 +354,7 @@ $string['setmarkerallocationforlog'] = 'Set marking allocation : (id={$a->id}, f
 $string['settings'] = 'Assignment settings';
 $string['showrecentsubmissions'] = 'Show recent submissions';
 $string['status'] = 'Status';
+$string['studentnotificationworkflowstateerror'] = 'Marking workflow state must be \'Released\' to notify students.';
 $string['submissioncopiedtext'] = 'You have made a copy of your previous
 assignment submission for \'{$a->assignment}\'
 
@@ -402,7 +405,7 @@ $string['submissionstatementacceptedlog'] = 'Submission statement accepted by us
 $string['submissionstatus_draft'] = 'Draft (not submitted)';
 $string['submissionstatusheading'] = 'Submission status';
 $string['submissionstatus_marked'] = 'Graded';
-$string['submissionstatus_new'] = 'New submission';
+$string['submissionstatus_new'] = 'No submission';
 $string['submissionstatus_reopened'] = 'Reopened';
 $string['submissionstatus_'] = 'No submission';
 $string['submissionstatus'] = 'Submission status';

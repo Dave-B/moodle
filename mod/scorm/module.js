@@ -162,7 +162,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
             if (window_name) {
                 var mine = window.open('','','width=1,height=1,left=0,top=0,scrollbars=no');
                 if(! mine) {
-                    alert(M.str.scorm.popupsblocked);
+                    alert(M.util.get_string('popupsblocked', 'scorm'));
                 }
                 mine.close();
             }
@@ -295,7 +295,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
             }
 
             // Calculate the rough new height from the viewport height.
-            newheight = Y.one('body').get('winHeight') -5;
+            newheight = Y.one('body').get('winHeight') - 5;
             if (newheight < 600) {
                 newheight = 600;
             }
@@ -331,7 +331,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
 
         var scorm_lastchild = function(node) {
             if (node.children.length) {
-                return scorm_lastchild(node.children[node.children.length-1]);
+                return scorm_lastchild(node.children[node.children.length - 1]);
             } else {
                 return node;
             }
@@ -632,9 +632,9 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
         // navigation
         if (scorm_hide_nav == false) {
             // TODO: make some better&accessible buttons.
-            var navbuttonshtml = '<span id="scorm_nav"><button id="nav_skipprev">&lt;&lt;</button>&nbsp;<button id="nav_prev">&lt;</button>'
-                    + '&nbsp;<button id="nav_up">^</button>&nbsp;<button id="nav_next">&gt;</button>'
-                    + '&nbsp;<button id="nav_skipnext">&gt;&gt;</button></span>';
+            var navbuttonshtml = '<span id="scorm_nav"><button id="nav_skipprev">&lt;&lt;</button>&nbsp;' +
+                                    '<button id="nav_prev">&lt;</button>&nbsp;<button id="nav_up">^</button>&nbsp;' +
+                                    '<button id="nav_next">&gt;</button>&nbsp;<button id="nav_skipnext">&gt;&gt;</button></span>';
             if (nav_display === 1) {
                 Y.one('#scorm_navpanel').setHTML(navbuttonshtml);
             } else {
@@ -737,13 +737,15 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
 
         // finally activate the chosen item
         var scorm_first_url = null;
-        if (tree.rootNode.children[0].title !== scoes_nav[launch_sco].url) {
-            var node = tree.getNodeByAttribute('title', scoes_nav[launch_sco].url);
-            if (node !== null) {
-                scorm_first_url = node;
+        if (typeof tree.rootNode.children[0] !== 'undefined') {
+            if (tree.rootNode.children[0].title !== scoes_nav[launch_sco].url) {
+                var node = tree.getNodeByAttribute('title', scoes_nav[launch_sco].url);
+                if (node !== null) {
+                    scorm_first_url = node;
+                }
+            } else {
+                scorm_first_url = tree.rootNode.children[0];
             }
-        } else {
-            scorm_first_url = tree.rootNode.children[0];
         }
 
         if (scorm_first_url == null) { // This is probably a single sco with no children (AICC Direct uses this).
@@ -800,6 +802,9 @@ M.mod_scorm.connectPrereqCallback = {
             }
             var el_new_tree = document.createElement('div');
             var pagecontent = document.getElementById("page-content");
+            if (!pagecontent) {
+                pagecontent = document.getElementById("content");
+            }
             el_new_tree.setAttribute('id','scormtree123');
             el_new_tree.innerHTML = o.responseText;
             // Make sure it does not show.

@@ -72,6 +72,11 @@ class restore_lesson_activity_structure_step extends restore_activity_structure_
             unset($data->showhighscores);
         }
 
+        // Supply item that maybe missing from previous versions.
+        if (!isset($data->completionendreached)) {
+            $data->completionendreached = 0;
+        }
+
         // insert the lesson record
         $newitemid = $DB->insert_record('lesson', $data);
         // immediately after inserting "activity" record, call this
@@ -105,7 +110,7 @@ class restore_lesson_activity_structure_step extends restore_activity_structure_
 
         // Set a dummy mapping to get the old ID so that it can be used by get_old_parentid when
         // processing attempts. It will be corrected in after_execute
-        $this->set_mapping('lesson_answer', $data->id, 0);
+        $this->set_mapping('lesson_answer', $data->id, 0, true); // Has related fileareas.
 
         // Answers need to be processed in order, so we store them in an
         // instance variable and insert them in the after_execute stage
@@ -175,7 +180,10 @@ class restore_lesson_activity_structure_step extends restore_activity_structure_
         $data->userid = $this->get_mappingid('user', $data->userid);
         $data->starttime = $this->apply_date_offset($data->starttime);
         $data->lessontime = $this->apply_date_offset($data->lessontime);
-
+        // Supply item that maybe missing from previous versions.
+        if (!isset($data->completed)) {
+            $data->completed = 0;
+        }
         $newitemid = $DB->insert_record('lesson_timer', $data);
     }
 
@@ -186,7 +194,7 @@ class restore_lesson_activity_structure_step extends restore_activity_structure_
         ksort($this->answers);
         foreach ($this->answers as $answer) {
             $newitemid = $DB->insert_record('lesson_answers', $answer);
-            $this->set_mapping('lesson_answer', $answer->id, $newitemid);
+            $this->set_mapping('lesson_answer', $answer->id, $newitemid, true);
 
             // Update the lesson attempts to use the newly created answerid
             $DB->set_field('lesson_attempts', 'answerid', $newitemid, array(
@@ -199,6 +207,8 @@ class restore_lesson_activity_structure_step extends restore_activity_structure_
         $this->add_related_files('mod_lesson', 'mediafile', null);
         // Add lesson page files, by lesson_page itemname
         $this->add_related_files('mod_lesson', 'page_contents', 'lesson_page');
+        $this->add_related_files('mod_lesson', 'page_answers', 'lesson_answer');
+        $this->add_related_files('mod_lesson', 'page_responses', 'lesson_answer');
 
         // Remap all the restored prevpageid and nextpageid now that we have all the pages and their mappings
         $rs = $DB->get_recordset('lesson_pages', array('lessonid' => $this->task->get_activityid()),

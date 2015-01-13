@@ -34,6 +34,13 @@ require_once($CFG->dirroot . '/tag/lib.php');
 class core_course_courselib_testcase extends advanced_testcase {
 
     /**
+     * Tidy up open files that may be left open.
+     */
+    protected function tearDown() {
+        gc_collect_cycles();
+    }
+
+    /**
      * Set forum specific test values for calling create_module().
      *
      * @param object $moduleinfo - the moduleinfo to add some specific values - passed in reference.
@@ -201,7 +208,6 @@ class core_course_courselib_testcase extends advanced_testcase {
         $moduleinfo->section = 1; // This is the section number in the course. Not the section id in the database.
         $moduleinfo->course = $course->id;
         $moduleinfo->groupingid = $grouping->id;
-        $moduleinfo->groupmembersonly = 0;
         $moduleinfo->visible = true;
 
         // Sometimes optional generic values for some modules.
@@ -227,7 +233,7 @@ class core_course_courselib_testcase extends advanced_testcase {
                 ']}';
         $coursegradeitem = grade_item::fetch_course_item($moduleinfo->course); //the activity will become available only when the user reach some grade into the course itself.
         $moduleinfo->conditiongradegroup = array(array('conditiongradeitemid' => $coursegradeitem->id, 'conditiongrademin' => 10, 'conditiongrademax' => 80));
-        $moduleinfo->conditionfieldgroup = array(array('conditionfield' => 'email', 'conditionfieldoperator' => OP_CONTAINS, 'conditionfieldvalue' => '@'));
+        $moduleinfo->conditionfieldgroup = array(array('conditionfield' => 'email', 'conditionfieldoperator' => \availability_profile\condition::OP_CONTAINS, 'conditionfieldvalue' => '@'));
         $moduleinfo->conditioncompletiongroup = array(array('conditionsourcecmid' => $assigncm->id, 'conditionrequiredcompletion' => COMPLETION_COMPLETE)); // "conditionsourcecmid == 0" => none
 
         // Grading and Advanced grading.
@@ -276,7 +282,6 @@ class core_course_courselib_testcase extends advanced_testcase {
         $this->assertEquals($moduleinfo->section, $section->section);
         $this->assertEquals($moduleinfo->course, $dbcm->course);
         $this->assertEquals($moduleinfo->groupingid, $dbcm->groupingid);
-        $this->assertEquals($moduleinfo->groupmembersonly, $dbcm->groupmembersonly);
         $this->assertEquals($moduleinfo->visible, $dbcm->visible);
         $this->assertEquals($moduleinfo->completion, $dbcm->completion);
         $this->assertEquals($moduleinfo->completionview, $dbcm->completionview);
@@ -438,7 +443,6 @@ class core_course_courselib_testcase extends advanced_testcase {
         $moduleinfo->modulename = $modulename;
         $moduleinfo->course = $course->id;
         $moduleinfo->groupingid = $grouping->id;
-        $moduleinfo->groupmembersonly = 0;
         $moduleinfo->visible = true;
 
         // Sometimes optional generic values for some modules.
@@ -460,13 +464,12 @@ class core_course_courselib_testcase extends advanced_testcase {
 
         // Conditional activity.
         $coursegradeitem = grade_item::fetch_course_item($moduleinfo->course); //the activity will become available only when the user reach some grade into the course itself.
-        $moduleinfo->availability = '{"op":"&","showc":[true,true],"c":[' .
-                '{"type":"date","d":">=","t":' . time() . '},' .
-                '{"type":"date","d":"<","t":' . (time() + (7 * 24 * 3600)) . '}' .
-                '{"type":"grade","id":' . $coursegradeitem->id . ',"min":10,"max":80},' .
-                '{"type":"profile","sf":"email","op":"contains","v":"@"},'.
-                '{"type":"completion","id":'. $assigncm->id . ',"e":' . COMPLETION_COMPLETE . '}' .
-                ']}';
+        $moduleinfo->availability = json_encode(\core_availability\tree::get_root_json(
+                array(\availability_date\condition::get_json('>=', time()),
+                \availability_date\condition::get_json('<', time() + (7 * 24 * 3600)),
+                \availability_grade\condition::get_json($coursegradeitem->id, 10, 80),
+                \availability_profile\condition::get_json(false, 'email', 'contains', '@'),
+                \availability_completion\condition::get_json($assigncm->id, COMPLETION_COMPLETE)), '&'));
 
         // Grading and Advanced grading.
         require_once($CFG->dirroot . '/rating/lib.php');
@@ -509,7 +512,6 @@ class core_course_courselib_testcase extends advanced_testcase {
         $this->assertEquals($moduleinfo->modulename, $dbcm->modname);
         $this->assertEquals($moduleinfo->course, $dbcm->course);
         $this->assertEquals($moduleinfo->groupingid, $dbcm->groupingid);
-        $this->assertEquals($moduleinfo->groupmembersonly, $dbcm->groupmembersonly);
         $this->assertEquals($moduleinfo->visible, $dbcm->visible);
         $this->assertEquals($moduleinfo->completion, $dbcm->completion);
         $this->assertEquals($moduleinfo->completionview, $dbcm->completionview);
@@ -2512,5 +2514,44 @@ class core_course_courselib_testcase extends advanced_testcase {
             }
             $this->assertEquals($value, $newcm->$prop);
         }
+    }
+
+    /**
+     * Tests that when creating or updating a module, if the availability settings
+     * are present but set to an empty tree, availability is set to null in
+     * database.
+     */
+    public function test_empty_availability_settings() {
+        global $DB;
+        $this->setAdminUser();
+        $this->resetAfterTest();
+
+        // Enable availability.
+        set_config('enableavailability', 1);
+
+        // Test add.
+        $emptyavailability = json_encode(\core_availability\tree::get_root_json(array()));
+        $course = self::getDataGenerator()->create_course();
+        $label = self::getDataGenerator()->create_module('label', array(
+                'course' => $course, 'availability' => $emptyavailability));
+        $this->assertNull($DB->get_field('course_modules', 'availability',
+                array('id' => $label->cmid)));
+
+        // Test update.
+        $formdata = $DB->get_record('course_modules', array('id' => $label->cmid));
+        unset($formdata->availability);
+        $formdata->availabilityconditionsjson = $emptyavailability;
+        $formdata->modulename = 'label';
+        $formdata->coursemodule = $label->cmid;
+        $draftid = 0;
+        file_prepare_draft_area($draftid, context_module::instance($label->cmid)->id,
+                'mod_label', 'intro', 0);
+        $formdata->introeditor = array(
+            'itemid' => $draftid,
+            'text' => '<p>Yo</p>',
+            'format' => FORMAT_HTML);
+        update_module($formdata);
+        $this->assertNull($DB->get_field('course_modules', 'availability',
+                array('id' => $label->cmid)));
     }
 }

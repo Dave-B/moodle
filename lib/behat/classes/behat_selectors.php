@@ -43,6 +43,7 @@ class behat_selectors {
         'block' => 'block',
         'region' => 'region',
         'table_row' => 'table_row',
+        'list_item' => 'list_item',
         'table' => 'table',
         'fieldset' => 'fieldset',
         'css_element' => 'css_element',
@@ -57,6 +58,7 @@ class behat_selectors {
         'block' => 'block',
         'region' => 'region',
         'table_row' => 'table_row',
+        'list_item' => 'list_item',
         'link' => 'link',
         'button' => 'button',
         'link_or_button' => 'link_or_button',
@@ -107,9 +109,15 @@ XPATH
         , 'table_row' => <<<XPATH
 .//tr[contains(normalize-space(.), %locator%)]
 XPATH
+        , 'list_item' => <<<XPATH
+.//li[contains(normalize-space(.), %locator%)]
+XPATH
         , 'filemanager' => <<<XPATH
 //div[contains(concat(' ', normalize-space(@class), ' '), ' ffilemanager ')]
     /descendant::input[@id = //label[contains(normalize-space(string(.)), %locator%)]/@for]
+XPATH
+        , 'table' => <<<XPATH
+.//table[(./@id = %locator% or contains(.//caption, %locator%) or contains(concat(' ', normalize-space(@class), ' '), %locator% ))]
 XPATH
     );
 

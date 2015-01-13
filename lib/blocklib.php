@@ -1082,7 +1082,7 @@ class block_manager {
         }
 
         // Assign roles icon.
-        if (has_capability('moodle/role:assign', $block->context)) {
+        if ($this->page->pagetype != 'my-index' && has_capability('moodle/role:assign', $block->context)) {
             //TODO: please note it is sloppy to pass urls through page parameters!!
             //      it is shortened because some web servers (e.g. IIS by default) give
             //      a 'security' error if you try to pass a full URL as a GET parameter in another URL.
@@ -1722,6 +1722,30 @@ function matching_page_type_patterns($pagetype) {
 }
 
 /**
+ * Give an specific pattern, return all the page type patterns that would also match it.
+ *
+ * @param  string $pattern the pattern, e.g. 'mod-forum-*' or 'mod-quiz-view'.
+ * @return array of all the page type patterns matching.
+ */
+function matching_page_type_patterns_from_pattern($pattern) {
+    $patterns = array($pattern);
+    if ($pattern === '*') {
+        return $patterns;
+    }
+
+    // Only keep the part before the star because we will append -* to all the bits.
+    $star = strpos($pattern, '-*');
+    if ($star !== false) {
+        $pattern = substr($pattern, 0, $star);
+    }
+
+    $patterns = array_merge($patterns, matching_page_type_patterns($pattern));
+    $patterns = array_unique($patterns);
+
+    return $patterns;
+}
+
+/**
  * Given a specific page type, parent context and currect context, return all the page type patterns
  * that might be used by this block.
  *
@@ -2178,7 +2202,13 @@ function blocks_add_default_system_blocks() {
     $page->blocks->add_blocks(array(BLOCK_POS_LEFT => array('navigation', 'settings')), '*', null, true);
     $page->blocks->add_blocks(array(BLOCK_POS_LEFT => array('admin_bookmarks')), 'admin-*', null, null, 2);
 
+    if ($defaultmypage = $DB->get_record('my_pages', array('userid' => null, 'name' => '__default', 'private' => 1))) {
+        $subpagepattern = $defaultmypage->id;
+    } else {
+        $subpagepattern = null;
+    }
+
     $newblocks = array('private_files', 'online_users', 'badges', 'calendar_month', 'calendar_upcoming');
     $newcontent = array('course_overview');
-    $page->blocks->add_blocks(array(BLOCK_POS_RIGHT => $newblocks, 'content' => $newcontent), 'my-index');
+    $page->blocks->add_blocks(array(BLOCK_POS_RIGHT => $newblocks, 'content' => $newcontent), 'my-index', $subpagepattern);
 }
