@@ -2987,6 +2987,7 @@ class assign {
             // Add Admin link to logs for this User's submission.
             $loglink = $PAGE->settingsnav->get('modulesettings')->get('logreport');
             $params = array('chooselog' => 1,
+                            'id' => $this->course->id,
                             'modid' => $this->get_course_module()->id,
                             'user' => $userid);
             $newloglink = $loglink->add(get_string('logsthissubmission', 'assign'),
