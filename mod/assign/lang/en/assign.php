@@ -240,7 +240,6 @@ $string['latesubmissions'] = 'Late submissions';
 $string['latesubmissionsaccepted'] = 'Allowed until the cut-off date';
 $string['locksubmissionforstudent'] = 'Prevent any more submissions for student: (id={$a->id}, fullname={$a->fullname}).';
 $string['locksubmissions'] = 'Lock submissions';
-$string['logsthissubmission'] = 'Logs for this submission';
 $string['manageassignfeedbackplugins'] = 'Manage assignment feedback plugins';
 $string['manageassignsubmissionplugins'] = 'Manage assignment submission plugins';
 $string['marker'] = 'Marker';
