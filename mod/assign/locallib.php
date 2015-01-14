@@ -2985,14 +2985,17 @@ class assign {
 
         if (has_capability('report/log:view', $this->context)) {
             // Add Admin link to logs for this User's submission.
-            $loglink = $PAGE->settingsnav->get('modulesettings')->get('logreport');
             $params = array('chooselog' => 1,
                             'id' => $this->course->id,
                             'modid' => $this->get_course_module()->id,
                             'user' => $userid);
-            $newloglink = $loglink->add(get_string('logsthissubmission', 'assign'),
-                                        new moodle_url('/report/log/index.php', $params));
-            $newloglink->force_open();
+            $link = new moodle_url('/report/log/index.php', $params);
+            if ($logreportnode = $PAGE->settingsnav->find('logreport', navigation_node::TYPE_SETTING)) {
+                $node = $logreportnode->add(get_string('logsthissubmission', 'assign'), $link, navigation_node::TYPE_SETTING);
+            } else {
+                $node = $PAGE->settingsnav->add(get_string('logsthissubmission', 'assign'), $link, navigation_node::TYPE_SETTING);
+            }
+            $node->force_open();
         }
 
         $header = new assign_header($instance,
