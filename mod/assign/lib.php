@@ -240,6 +240,36 @@ function assign_extend_settings_navigation(settings_navigation $settings, naviga
             $node = $navref->add($linkname, $url, navigation_node::TYPE_SETTING);
         }
     }
+
+    if (has_capability('report/log:view', $context) &&
+            preg_match('#mod/assign/view.php$#', $PAGE->url->get_path()) &&
+            $PAGE->url->get_param('action') === 'grade') {
+        // Admin link to logs for this user's submission (only on single grading page).
+        $useridlistid = time();
+        $cache = cache::make_from_params(cache_store::MODE_SESSION, 'mod_assign', 'useridlist');
+        if (!$useridlist = $cache->get($cm->id . '_' . $useridlistid)) {
+            // FIXME:
+            $assignment = new assign($context, $cm, $course);
+            $useridlist = $assignment->get_grading_userid_list();
+        }
+        $cache->set($cm->id . '_' . $useridlistid, $useridlist);
+        if ($rownum < 0 || $rownum > count($useridlist)) {
+            throw new coding_exception('Row is out of bounds for the current grading table: ' . $rownum);
+        }
+        $userid = $useridlist[$PAGE->url->get_param('rownum')];
+
+        $params = array('chooselog' => 1,
+                        'id' => $course->id,
+                        'modid' => $context->instanceid,
+                        'user' => $userid);
+        $link = new moodle_url('/report/log/index.php', $params);
+        if ($logreportnode = $navref->find('logreport', navigation_node::TYPE_SETTING)) {
+            $node = $logreportnode->add(get_string('logsthissubmission', 'assign'), $link, navigation_node::TYPE_SETTING);
+        } else {
+            $node = $navref->add(get_string('logsthissubmission', 'assign'), $link, navigation_node::TYPE_SETTING);
+        }
+        $node->force_open();
+    }
 }
 
 /**
