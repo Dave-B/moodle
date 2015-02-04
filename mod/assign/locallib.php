@@ -5649,9 +5649,9 @@ class assign {
         foreach ($this->submissionplugins as $plugin) {
             if ($plugin->is_enabled() && $plugin->is_visible()) {
                 $required = $plugin->get_require_type($submission);
-                if ($plugin->is_empty($submission) and $required == 2) {
+                if ($plugin->is_empty($submission) and $required == ASSIGN_PLUGIN_REQUIRED) {
                     return true;
-                } else if ($required == 1 and
+                } else if ($required == ASSIGN_PLUGIN_GROUP_REQUIRED and
                            (!$incomplete || !$plugin->is_empty($submission))) {
                     $incomplete = false;
                 }
