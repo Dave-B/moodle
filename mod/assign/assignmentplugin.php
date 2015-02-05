@@ -188,6 +188,15 @@ abstract class assign_plugin {
     }
 
     /**
+     * Is this assignment plugin required? (i.e. require is_empty() != true)
+     * @param stdClass $submissionorgrade assign_submission or assign_grade
+     * @return int ASSIGN_PLUGIN_OPTIONAL | ASSIGN_PLUGIN_GROUP_REQUIRED | ASSIGN_PLUGIN_REQUIRED
+     */
+    public function get_require_type(stdClass $submissionorgrade) {
+        return ASSIGN_PLUGIN_GROUP_REQUIRED;
+    }
+
+    /**
      * Save any custom data for this form submission
      *
      * @param stdClass $submissionorgrade - assign_submission or assign_grade.

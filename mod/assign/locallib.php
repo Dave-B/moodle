@@ -64,6 +64,16 @@ define('ASSIGN_MARKING_WORKFLOW_STATE_RELEASED', 'released');
 // Name of file area for intro attachments.
 define('ASSIGN_INTROATTACHMENT_FILEAREA', 'introattachment');
 
+/**
+ * The following defines are used to control which assignment plugins are required, when more than one are enabled.
+ * ASSIGN_PLUGIN_OPTIONAL       Submissions can optionally include an entry this plugin, whatever settings other plugins have.
+ * ASSIGN_PLUGIN_GROUP_REQUIRED Submissions must include an entry for at least one plugin of this type.
+ * ASSIGN_PLUGIN_REQUIRED       Submissions must include an entry for this plugin, whatever settings other plugins have.
+ */
+define('ASSIGN_PLUGIN_OPTIONAL', '0');
+define('ASSIGN_PLUGIN_GROUP_REQUIRED', '1');
+define('ASSIGN_PLUGIN_REQUIRED', '2');
+
 require_once($CFG->libdir . '/accesslib.php');
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot . '/repository/lib.php');
@@ -4055,7 +4065,7 @@ class assign {
             if ($teamsubmission->status === ASSIGN_SUBMISSION_STATUS_SUBMITTED) {
                 // The assignment submission has been completed.
                 return false;
-            } else if ($this->submission_empty($teamsubmission)) {
+            } else if ($this->submission_incomplete($teamsubmission)) {
                 // There is nothing to submit yet.
                 return false;
             } else if ($submission && $submission->status === ASSIGN_SUBMISSION_STATUS_SUBMITTED) {
@@ -4066,7 +4076,7 @@ class assign {
             if ($submission->status === ASSIGN_SUBMISSION_STATUS_SUBMITTED) {
                 // The assignment submission has been completed.
                 return false;
-            } else if ($this->submission_empty($submission)) {
+            } else if ($this->submission_incomplete($submission)) {
                 // There is nothing to submit.
                 return false;
             }
@@ -5735,22 +5745,31 @@ class assign {
     }
 
     /**
-     * Determine if the current submission is empty or not.
+     * Determine if the current submission is ready for changing to "submitted" or not.
+     *
+     * The submission plugins get_require_type() affects this test:
+     *  ASSIGN_PLUGIN_OPTIONAL - this type is ignored when checking if empty.
+     *  ASSIGN_PLUGIN_GROUP_REQUIRED - if any of this type has content, submission is not empty.
+     *  ASSIGN_PLUGIN_REQUIRED - if any of this type has *no* content, submission is empty.
      *
      * @param submission $submission the students submission record to check.
      * @return bool
      */
-    public function submission_empty($submission) {
-        $allempty = true;
+    public function submission_incomplete($submission) {
+        $incomplete = true;
 
         foreach ($this->submissionplugins as $plugin) {
             if ($plugin->is_enabled() && $plugin->is_visible()) {
-                if (!$allempty || !$plugin->is_empty($submission)) {
-                    $allempty = false;
+                $required = $plugin->get_require_type($submission);
+                if ($plugin->is_empty($submission) and $required == ASSIGN_PLUGIN_REQUIRED) {
+                    return true;
+                } else if ($required == ASSIGN_PLUGIN_GROUP_REQUIRED and
+                           (!$incomplete || !$plugin->is_empty($submission))) {
+                    $incomplete = false;
                 }
             }
         }
-        return $allempty;
+        return $incomplete;
     }
 
     /**
@@ -5809,9 +5828,9 @@ class assign {
             }
         }
 
-        $allempty = $this->submission_empty($submission);
-        if ($pluginerror || $allempty) {
-            if ($allempty) {
+        $incomplete = $this->submission_incomplete($submission);
+        if ($pluginerror || $incomplete) {
+            if ($incomplete) {
                 $notices[] = get_string('submissionempty', 'mod_assign');
             }
             return false;
