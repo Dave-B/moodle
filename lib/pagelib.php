@@ -1692,6 +1692,11 @@ class moodle_page {
             $this->add_body_class('path-' . join('-', array_slice($pathbits, 0, $i)));
         }
 
+        // If a URL parameter "action" is present, include it as a body class.
+        if ($action = optional_param('action', '', PARAM_TEXT)) {
+            $this->add_body_class('action-' .$action);
+        }
+
         $this->add_body_classes(core_useragent::get_browser_version_classes());
         $this->add_body_class('dir-' . get_string('thisdirection', 'langconfig'));
         $this->add_body_class('lang-' . current_language());
