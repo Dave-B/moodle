@@ -744,6 +744,7 @@ $string['eventcoursemoduleinstancelistviewed'] = 'Course module instance list vi
 $string['eventcourseuserreportviewed'] = 'Course user report viewed';
 $string['eventcourseviewed'] = 'Course viewed';
 $string['eventemailfailed'] = 'Email failed to send';
+$string['eventemailsent'] = 'Email sent';
 $string['eventname'] = 'Event name';
 $string['eventrecentactivityviewed'] = 'Recent activity viewed';
 $string['eventunknownlogged'] = 'Unknown event';

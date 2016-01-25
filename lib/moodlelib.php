@@ -5679,8 +5679,10 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
         }
     }
 
+    $recipientaddresslog = '';
     foreach ($temprecipients as $values) {
         $mail->addAddress($values[0], $values[1]);
+        $recipientaddresslog .= $values[0] . ',';
     }
     foreach ($tempreplyto as $values) {
         $mail->addReplyTo($values[0], $values[1]);
@@ -5688,6 +5690,18 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
 
     if ($mail->send()) {
         set_send_count($user);
+        // Trigger event for successfully sending email.
+        $event = \core\event\email_sent::create(array(
+            'context' => context_system::instance(),
+            'userid' => $from->id,
+            'relateduserid' => $user->id,
+            'other' => array(
+                'from' => $mail->From,
+                'to' => $recipientaddresslog,
+                'subject' => $subject
+            )
+        ));
+        $event->trigger();
         if (!empty($mail->SMTPDebug)) {
             echo '</pre>';
         }

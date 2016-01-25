@@ -182,6 +182,33 @@ class core_events_testcase extends advanced_testcase {
     }
 
     /**
+     * Test the email sent event.
+     *
+     */
+    public function test_email_sent() {
+        global $CFG;
+
+        $this->resetAfterTest();
+
+        $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+
+        $subject = 'subject';
+        $messagetext = 'message text';
+
+        $eventsink = $this->redirectEvents();
+        $mailsink = $this->redirectEmails();
+        email_to_user($user1, $user2, $subject, $messagetext);
+        $mailsink->close();
+        $events = $eventsink->get_events();
+        $event = reset($events);
+
+        $this->assertInstanceOf('\core\event\email_sent', $event);
+        $this->assertEquals(context_system::instance(), $event->get_context());
+        $this->assertEventContextNotUsed($event);
+    }
+
+    /**
      * There is no api involved so the best we can do is test legacy data by triggering event manually.
      */
     public function test_course_user_report_viewed() {
