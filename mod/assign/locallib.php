@@ -3037,7 +3037,9 @@ class assign {
      * @return string
      */
     protected function view_single_grade_page($mform) {
-        global $DB, $CFG, $SESSION;
+        global $DB, $CFG, $SESSION, $PAGE;
+
+        $PAGE->set_pagetype('mod-assign-grade');
 
         $o = '';
         $instance = $this->get_instance();
@@ -3474,7 +3476,9 @@ class assign {
      * @return string
      */
     protected function view_grading_page() {
-        global $CFG;
+        global $CFG, $PAGE;
+
+        $PAGE->set_pagetype('mod-assign-grading');
 
         $o = '';
         // Need submit permission to submit an assignment.
