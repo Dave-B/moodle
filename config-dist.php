@@ -61,6 +61,10 @@ $CFG->dboptions = array(
                                 //  default port
 );
 
+// Workaround for MDL-56362.
+// Strip out characters from the Unicode mbp (e.g. emojis), to avoid database errors.
+// Logs original strings to $CFG->dataroot . '/mbp4replace'.
+// $CFG->mbp4replace = true;
 
 //=========================================================================
 // 2. WEB SITE LOCATION

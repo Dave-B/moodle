@@ -28,6 +28,41 @@ require_once(__DIR__.'/moodle_database.php');
 require_once(__DIR__.'/mysqli_native_moodle_recordset.php');
 require_once(__DIR__.'/mysqli_native_moodle_temptables.php');
 
+// Workaround for MDL-56362.
+// Strip out characters from the Unicode mbp (e.g. emojis), to avoid database errors.
+// Ref: https://tracker.moodle.org/browse/MDL-45233?focusedCommentId=384124#comment-384124
+function replace4byte($string) {
+    global $CFG;
+
+    $newstring = preg_replace('%(?:
+          \xF0[\x90-\xBF][\x80-\xBF]{2}    # planes 1-3
+        | [\xF1-\xF3][\x80-\xBF]{3}        # planes 4-15
+        | \xF4[\x80-\x8F][\x80-\xBF]{2}    # plane 16
+    )%xs', '', $string);
+
+    if ($newstring != $string) {
+        // If string changed, log the original, so we can evaluate how much this happens.
+        // Will typically add 3 lines for each forum post, due to event logs, etc.
+        $dir = $CFG->dataroot . '/mbp4replace';
+        if (!file_exists($dir)) {
+            // Create logfile dir if needed.
+            mkdir($dir);
+        }
+        $file = '/'.date('Y-m-d').'.txt';
+
+        $log = fopen($dir.$file, 'a');
+        fwrite($log, 'A: ' . $string . "\n");
+        fwrite($log, 'B: ' . $newstring . "\n");
+        fclose($log);
+
+        return $newstring;
+
+    }
+
+    return $string;
+}
+
+
 /**
  * Native mysqli class representing moodle database interface.
  *
@@ -853,6 +888,7 @@ class mysqli_native_moodle_database extends moodle_database {
      * @return mixed the normalised value
      */
     protected function normalise_value($column, $value) {
+        global $CFG;
         $this->detect_objects($value);
 
         if (is_bool($value)) { // Always, convert boolean to int
@@ -866,6 +902,11 @@ class mysqli_native_moodle_database extends moodle_database {
         // any implicit conversion by MySQL
         } else if (is_float($value) and ($column->meta_type == 'C' or $column->meta_type == 'X')) {
             $value = "$value";
+        } else if ($column->meta_type == 'C' or $column->meta_type == 'X') {
+            if (!empty($CFG->mbp4replace) && is_string($value)) {
+                // Workaround for MDL-56362.
+                $value = replace4byte($value);
+            }
         }
         return $value;
     }
