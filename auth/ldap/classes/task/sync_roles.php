@@ -27,7 +27,7 @@ namespace auth_ldap\task;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * A scheduled task class for LDAP user sync.
+ * A scheduled task class for LDAP roles sync.
  *
  * @author     David Balch <david.balch@conted.ox.ac.uk>
  * @copyright  2017 The Chancellor Masters and Scholars of the University of Oxford {@link http://www.tall.ox.ac.uk}
@@ -48,7 +48,7 @@ class sync_roles extends \core\task\scheduled_task {
      * Synchronise role assignments from LDAP.
      */
     public function execute() {
-        global $CFG;
+        global $DB;
         if (is_enabled_auth('ldap')) {
             $auth = get_auth_plugin('ldap');
             $users = $DB->get_records('user', array('auth' => 'ldap'));
