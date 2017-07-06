@@ -226,9 +226,9 @@ if ($ADMIN->fulltree) {
                 get_string('auth_ldap_create_context_key', 'auth_ldap'),
                 get_string('auth_ldap_create_context', 'auth_ldap'), '', PARAM_RAW_TRIMMED));
 
-        // System roles header.
-        $settings->add(new admin_setting_heading('auth_ldap/systemroles',
-                new lang_string('systemroles', 'auth_ldap'), ''));
+        // System roles mapping header.
+        $settings->add(new admin_setting_heading('auth_ldap/systemrolesmapping',
+                                        new lang_string('systemrolesmapping', 'auth_ldap'), ''));
 
         // Get assignable roles.
         $roles = get_assignable_roles(context_system::instance(), ROLENAME_BOTH);
