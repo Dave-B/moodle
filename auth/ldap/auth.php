@@ -79,6 +79,7 @@ if (!defined('LDAP_OPT_DIAGNOSTIC_MESSAGE')) {
 require_once($CFG->libdir.'/authlib.php');
 require_once($CFG->libdir.'/ldaplib.php');
 require_once($CFG->dirroot.'/user/lib.php');
+require_once('locallib.php');
 
 /**
  * LDAP authentication plugin.
@@ -865,17 +866,6 @@ class auth_plugin_ldap extends auth_plugin_base {
             if (!empty($users)) {
                 print_string('userentriestoupdate', 'auth_ldap', count($users));
 
-                $sitecontext = context_system::instance();
-                $roles = array();
-                for ($i = 1, $j = 3; $i <= $j; $i++) {
-                    $role = 'role' . $i;
-                    $rolecontext = $role . 'context';
-                    if (!empty($this->config->$role) && !empty($this->config->$rolecontext)) {
-                        $roles[$i] = $DB->get_record('role', array('id' => $this->config->$role));
-                    }
-                }
-                $roles = array_filter($roles);
-
                 $transaction = $DB->start_delegated_transaction();
                 $xcount = 0;
                 $maxxcount = 100;
@@ -889,15 +879,7 @@ class auth_plugin_ldap extends auth_plugin_base {
                     $xcount++;
 
                     // Update system roles, if needed.
-                    if (!empty($roles)) {
-                        foreach ($roles as $key => $role) {
-                            if ($this->is_role($user->username, $key)) {
-                                role_assign($role->id, $user->id, $sitecontext->id, $this->roleauth);
-                            } else {
-                                role_unassign($role->id, $user->id, $sitecontext->id, $this->roleauth);
-                            }
-                        }
-                    }
+                    $this->sync_roles($user);
                 }
                 $transaction->allow_commit();
                 unset($users); // free mem
@@ -918,17 +900,6 @@ class auth_plugin_ldap extends auth_plugin_base {
 
         if (!empty($add_users)) {
             print_string('userentriestoadd', 'auth_ldap', count($add_users));
-
-            $sitecontext = context_system::instance();
-            $roles = array();
-            for ($i = 1, $j = 3; $i <= $j; $i++) {
-                $role = 'role' . $i;
-                $rolecontext = $role . 'context';
-                if (!empty($this->config->$role) && !empty($this->config->$rolecontext)) {
-                    $roles[$i] = $DB->get_record('role', array('id' => $this->config->$role));
-                }
-            }
-            $roles = array_filter($roles);
 
             $transaction = $DB->start_delegated_transaction();
             foreach ($add_users as $user) {
@@ -964,13 +935,7 @@ class auth_plugin_ldap extends auth_plugin_base {
                 }
 
                 // Add roles if needed.
-                if (!empty($roles)) {
-                    foreach ($roles as $key => $role) {
-                        if ($this->is_role($user->username, $key)) {
-                            role_assign($role->id, $id, $sitecontext->id, $this->roleauth);
-                        }
-                    }
-                }
+                $this->sync_roles($user);
 
             }
             $transaction->allow_commit();
@@ -1146,14 +1111,11 @@ class auth_plugin_ldap extends auth_plugin_base {
      * Returns true if user should be assigned role.
      *
      * @param mixed $username username (without system magic quotes).
-     * @param mixed $num Number to use when looking up role and context config.
+     * @param array $role Array of role's shortname, localname, and settingname for the config value.
      * @return mixed result null if role/LDAP context is not configured, boolean otherwise.
      */
-    private function is_role($username, $num) {
-        $role = 'role' . $num;
-        $rolecontext = $role . 'context';
-
-        if (empty($this->config->$role) or empty($this->config->$rolecontext) or empty($this->config->memberattribute)) {
+    private function is_role($username, $role) {
+        if (empty($this->config->$role['settingname']) or empty($this->config->memberattribute)) {
             return null;
         }
 
@@ -1169,7 +1131,7 @@ class auth_plugin_ldap extends auth_plugin_base {
             $userid = $extusername;
         }
 
-        $groupdns = explode(';', $this->config->$rolecontext);
+        $groupdns = explode(';', $this->config->$role['settingname']);
         $isrole = ldap_isgroupmember($ldapconnection, $userid, $groupdns, $this->config->memberattribute);
 
         $this->ldap_close();
@@ -1848,21 +1810,21 @@ class auth_plugin_ldap extends auth_plugin_base {
     function sync_roles($user) {
         global $DB;
 
-        for ($i = 1, $j = 3; $i <= $j; $i++) {
-            $role = 'role'.$i;
-            $isrole = $this->is_role($user->username, $i);
+        $roles = get_assignable_role_names();
+        foreach ($roles as $role) {
+            $isrole = $this->is_role($user->username, $role);
             if ($isrole === null) {
                 continue; // Nothing to sync - role/LDAP contexts not configured.
             }
-            if ($rolerecord = $DB->get_record('role', array('id' => $this->config->$role))) {
-                $systemcontext = context_system::instance();
-                if ($isrole) {
-                    // Following calls will not create duplicates.
-                    role_assign($rolerecord->id, $user->id, $systemcontext->id, $this->roleauth);
-                } else {
-                    // Unassign only if previously assigned by this plugin!
-                    role_unassign($rolerecord->id, $user->id, $systemcontext->id, $this->roleauth);
-                }
+
+            // Sync user.
+            $systemcontext = context_system::instance();
+            if ($isrole) {
+                // Following calls will not create duplicates.
+                role_assign($role['id'], $user->id, $systemcontext->id, $this->roleauth);
+            } else {
+                // Unassign only if previously assigned by this plugin.
+                role_unassign($role['id'], $user->id, $systemcontext->id, $this->roleauth);
             }
         }
     }

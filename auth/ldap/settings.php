@@ -230,34 +230,13 @@ if ($ADMIN->fulltree) {
         $settings->add(new admin_setting_heading('auth_ldap/systemrolesmapping',
                                         new lang_string('systemrolesmapping', 'auth_ldap'), ''));
 
-        // Get assignable roles.
-        $roles = get_assignable_roles(context_system::instance(), ROLENAME_BOTH);
-        $rolechoices = array('0' => get_string('none'));
-        foreach ($roles as $id => $role) {
-            $rolechoices[$id] = $role;
+        // Create system role mapping field for each assignable system role.
+        $roles = get_assignable_role_names();
+        foreach ($roles as $role) {
+            $settings->add(new admin_setting_configtext('auth_ldap/' . $role['settingname'],
+                    get_string('auth_ldap_rolecontext', 'auth_ldap', $role),
+                    get_string('auth_ldap_rolecontext_help', 'auth_ldap', $role), '', PARAM_RAW_TRIMMED));
         }
-
-        // System roles fields mapping.
-        $settings->add(new admin_setting_configselect('auth_ldap/role1',
-                get_string('auth_ldap_rolen', 'auth_ldap', '1'),
-                get_string('auth_ldap_rolen_help', 'auth_ldap'), 0, $rolechoices));
-        $settings->add(new admin_setting_configtext('auth_ldap/role1context',
-                get_string('auth_ldap_rolencontext', 'auth_ldap', '1'),
-                get_string('auth_ldap_rolencontext_help', 'auth_ldap'), '', PARAM_RAW_TRIMMED));
-
-        $settings->add(new admin_setting_configselect('auth_ldap/role2',
-                                        get_string('auth_ldap_rolen', 'auth_ldap', '2'),
-                                        get_string('auth_ldap_rolen_help', 'auth_ldap'), 0, $rolechoices));
-        $settings->add(new admin_setting_configtext('auth_ldap/role2context',
-                get_string('auth_ldap_rolencontext', 'auth_ldap', '2'),
-                get_string('auth_ldap_rolencontext_help', 'auth_ldap'), '', PARAM_RAW_TRIMMED));
-
-        $settings->add(new admin_setting_configselect('auth_ldap/role3',
-                                        get_string('auth_ldap_rolen', 'auth_ldap', '3'),
-                                        get_string('auth_ldap_rolen_help', 'auth_ldap'), 0, $rolechoices));
-        $settings->add(new admin_setting_configtext('auth_ldap/role3context',
-                get_string('auth_ldap_rolencontext', 'auth_ldap', '3'),
-                get_string('auth_ldap_rolencontext_help', 'auth_ldap'), '', PARAM_RAW_TRIMMED));
 
         // User Account Sync.
         $settings->add(new admin_setting_heading('auth_ldap/syncusers',
