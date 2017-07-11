@@ -36,8 +36,6 @@ $string['auth_ldap_contexts_key'] = 'Contexts';
 $string['auth_ldap_create_context'] = 'If you enable user creation with email confirmation, specify the context where users are created. This context should be different from other users to prevent security issues. You don\'t need to add this context to ldap_context-variable, Moodle will search for users from this context automatically.<br /><b>Note!</b> You have to modify the method user_create() in file auth/ldap/auth.php to make user creation work';
 $string['auth_ldap_create_context_key'] = 'Context for new users';
 $string['auth_ldap_create_error'] = 'Error creating user in LDAP.';
-$string['auth_ldap_creators'] = 'List of groups or contexts whose members are allowed to create new courses. Separate multiple groups with \';\'. Usually something like \'cn=teachers,ou=staff,o=myorg\'';
-$string['auth_ldap_creators_key'] = 'Creators';
 $string['auth_ldapdescription'] = 'This method provides authentication against an external LDAP server.
                                   If the given username and password are valid, Moodle creates a new user
                                   entry in its database. This module can read user attributes from LDAP and prefill
@@ -162,3 +160,7 @@ $string['userentriestorevive'] = "User entries to be revived: {\$a}\n";
 $string['userentriestoupdate'] = "User entries to be updated: {\$a}\n";
 $string['usernotfound'] = 'User not found in LDAP';
 $string['useracctctrlerror'] = 'Error getting userAccountControl for {$a}';
+
+// Deprecated since Moodle 3.4.
+$string['auth_ldap_creators'] = 'List of groups or contexts whose members are allowed to create new courses. Separate multiple groups with \';\'. Usually something like \'cn=teachers,ou=staff,o=myorg\'';
+$string['auth_ldap_creators_key'] = 'Creators';
