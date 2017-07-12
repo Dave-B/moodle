@@ -28,14 +28,16 @@ defined('MOODLE_INTERNAL') || die();
 require_once('locallib.php');
 
 /**
- * Get a list of system roles assignable by the current user.
+ * Get a list of system roles assignable by the current user, or a specified user.
  *
+ * @param bool $asadmin Set to true to run as admin user (e.g. when user logs in for the first time).
+ * @param integer|object $user A user id or object. By default (null) checks the permissions of the current user.
  * @return array $roles, each role as an array with id, shortname, localname, and settingname for the config value.
  */
-function get_assignable_role_names() {
+function get_assignable_role_names($user = null) {
     $roles = array();
 
-    if ($assignableroles = get_assignable_roles(context_system::instance(), ROLENAME_SHORT)) {
+    if ($assignableroles = get_assignable_roles(context_system::instance(), ROLENAME_SHORT, false, $user)) {
         $systemroles = role_fix_names(get_all_roles(), context_system::instance(), ROLENAME_ORIGINAL);
         foreach ($assignableroles as $shortname) {
             foreach ($systemroles as $systemrole) {
