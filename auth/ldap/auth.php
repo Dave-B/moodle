@@ -1079,8 +1079,14 @@ class auth_plugin_ldap extends auth_plugin_base {
      *
      * @param mixed $username    username (without system magic quotes)
      * @return mixed result      null if course creators is not configured, boolean otherwise.
+     *
+     * @deprecated since Moodle 3.4 MDL-30634 - please do not use this function any more.
+     * @todo MDL-##### This will be deleted in Moodle 3.8.
+     * @see auth_plugin_ldap::is_role()
      */
     function iscreator($username) {
+        debugging('iscreator() is deprecated. Please use auth_plugin_ldap::is_role() instead.', DEBUG_DEVELOPER);
+
         if (empty($this->config->creators) or empty($this->config->memberattribute)) {
             return null;
         }
