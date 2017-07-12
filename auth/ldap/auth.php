@@ -1086,27 +1086,38 @@ class auth_plugin_ldap extends auth_plugin_base {
      */
     function iscreator($username) {
         debugging('iscreator() is deprecated. Please use auth_plugin_ldap::is_role() instead.', DEBUG_DEVELOPER);
+        // If a site has previously assigned course creators via LDAP, a value was set for auth_ldap/creators,
+        // but the upgrade should have converted it from $this->config->creators
+        // to $this->config->coursecreatorcontext.
+        // To update iscreator() to use is_role() with the converted setting,
+        // we recreate the setting name as done in the upgrade.
 
-        if (empty($this->config->creators) or empty($this->config->memberattribute)) {
+        if (empty($this->config->memberattribute)) {
             return null;
         }
 
-        $extusername = core_text::convert($username, 'utf-8', $this->config->ldapencoding);
+        $creator = false;
 
-        $ldapconnection = $this->ldap_connect();
+        if ($roles = get_archetype_roles('coursecreator')) {
+            $creatorrole = array_shift($roles); // We can only use one, let's use the first.
+            $settingname = $creatorrole->$shortname . 'context';
 
-        if ($this->config->memberattribute_isdn) {
-            if(!($userid = $this->ldap_find_userdn($ldapconnection, $extusername))) {
-                return false;
+            if (empty($this->config->$settingname)) {
+                return null;
             }
-        } else {
-            $userid = $extusername;
+
+            $systemroles = role_fix_names(get_all_roles(), context_system::instance(), ROLENAME_ORIGINAL);
+            foreach ($systemroles as $systemrole) {
+                if ($systemrole->shortname == $creatorrole->$shortname) {
+                    $creatorrole = array('id' => $systemrole->id,
+                                     'shortname' => $shortname,
+                                     'localname' => $systemrole->localname,
+                                     'settingname' => $settingname);
+
+                    $creator = is_role($username, $creatorrole);
+                }
+            }
         }
-
-        $group_dns = explode(';', $this->config->creators);
-        $creator = ldap_isgroupmember($ldapconnection, $userid, $group_dns, $this->config->memberattribute);
-
-        $this->ldap_close();
 
         return $creator;
     }
