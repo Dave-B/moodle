@@ -30,7 +30,6 @@ require_once('locallib.php');
 /**
  * Get a list of system roles assignable by the current user, or a specified user.
  *
- * @param bool $asadmin Set to true to run as admin user (e.g. when user logs in for the first time).
  * @param integer|object $user A user id or object. By default (null) checks the permissions of the current user.
  * @return array $roles, each role as an array with id, shortname, localname, and settingname for the config value.
  */
