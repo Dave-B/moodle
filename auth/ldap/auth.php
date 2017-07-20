@@ -1119,7 +1119,7 @@ class auth_plugin_ldap extends auth_plugin_base {
      * @return mixed result null if role/LDAP context is not configured, boolean otherwise.
      */
     private function is_role($username, $role) {
-        if (empty($this->config->$role['settingname']) or empty($this->config->memberattribute)) {
+        if (empty($this->config->{$role['settingname']}) or empty($this->config->memberattribute)) {
             return null;
         }
 
@@ -1128,14 +1128,14 @@ class auth_plugin_ldap extends auth_plugin_base {
         $ldapconnection = $this->ldap_connect();
 
         if ($this->config->memberattribute_isdn) {
-            if(!($userid = $this->ldap_find_userdn($ldapconnection, $extusername))) {
+            if (!($userid = $this->ldap_find_userdn($ldapconnection, $extusername))) {
                 return false;
             }
         } else {
             $userid = $extusername;
         }
 
-        $groupdns = explode(';', $this->config->$role['settingname']);
+        $groupdns = explode(';', $this->config->{$role['settingname']});
         $isrole = ldap_isgroupmember($ldapconnection, $userid, $groupdns, $this->config->memberattribute);
 
         $this->ldap_close();
