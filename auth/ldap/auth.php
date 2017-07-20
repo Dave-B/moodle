@@ -79,7 +79,7 @@ if (!defined('LDAP_OPT_DIAGNOSTIC_MESSAGE')) {
 require_once($CFG->libdir.'/authlib.php');
 require_once($CFG->libdir.'/ldaplib.php');
 require_once($CFG->dirroot.'/user/lib.php');
-require_once('locallib.php');
+require_once($CFG->dirroot.'/auth/ldap/locallib.php');
 
 /**
  * LDAP authentication plugin.
@@ -1081,8 +1081,6 @@ class auth_plugin_ldap extends auth_plugin_base {
      * @return mixed result      null if course creators is not configured, boolean otherwise.
      *
      * @deprecated since Moodle 3.4 MDL-30634 - please do not use this function any more.
-     * @todo MDL-##### This will be deleted in Moodle 3.8.
-     * @see auth_plugin_ldap::is_role()
      */
     function iscreator($username) {
         debugging('iscreator() is deprecated. Please use auth_plugin_ldap::is_role() instead.', DEBUG_DEVELOPER);
@@ -1816,7 +1814,7 @@ class auth_plugin_ldap extends auth_plugin_base {
     function sync_roles($user) {
         global $DB;
 
-        $roles = get_assignable_role_names(2); // Admin user.
+        $roles = get_ldap_assignable_role_names(2); // Admin user.
 
         foreach ($roles as $role) {
             $isrole = $this->is_role($user->username, $role);

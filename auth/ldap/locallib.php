@@ -25,15 +25,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('locallib.php');
-
 /**
- * Get a list of system roles assignable by the current user, or a specified user.
+ * Get a list of system roles assignable by the current or a specified user, including their localised names.
  *
  * @param integer|object $user A user id or object. By default (null) checks the permissions of the current user.
  * @return array $roles, each role as an array with id, shortname, localname, and settingname for the config value.
  */
-function get_assignable_role_names($user = null) {
+function get_ldap_assignable_role_names($user = null) {
     $roles = array();
 
     if ($assignableroles = get_assignable_roles(context_system::instance(), ROLENAME_SHORT, false, $user)) {

@@ -231,7 +231,7 @@ if ($ADMIN->fulltree) {
                                         new lang_string('systemrolesmapping', 'auth_ldap'), ''));
 
         // Create system role mapping field for each assignable system role.
-        $roles = get_assignable_role_names();
+        $roles = get_ldap_assignable_role_names();
         foreach ($roles as $role) {
             $settings->add(new admin_setting_configtext('auth_ldap/' . $role['settingname'],
                     get_string('auth_ldap_rolecontext', 'auth_ldap', $role),
