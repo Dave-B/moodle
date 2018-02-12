@@ -73,8 +73,8 @@ class filter_urltolink extends moodle_text_filter {
         //<a href="blah">
         //&lt;a href="blah"&gt;
         //&lt;a href="blah">
-        $filterignoretagsopen  = array('<a\s[^>]+?>', '<span[^>]+?class="nolink"[^>]*?>');
-        $filterignoretagsclose = array('</a>', '</span>');
+        $filterignoretagsopen  = array('<a\s[^>]+?>', '<span[^>]+?class="nolink"[^>]*?>', '<script[^>]*?>');
+        $filterignoretagsclose = array('</a>', '</span>', '</script>');
         $ignoretags = [];
         filter_save_ignore_tags($text,$filterignoretagsopen,$filterignoretagsclose,$ignoretags);
 
