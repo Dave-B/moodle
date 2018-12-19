@@ -99,6 +99,11 @@ class MoodleQuickForm_editor extends HTML_QuickForm_element implements templatab
         // Note: for some reason the code using this setting does not like bools.
         $this->_options['subdirs'] = (int)($this->_options['subdirs'] == 1);
 
+        // Atto toolbar options.
+        if (!empty($options['atto:toolbar'])) {
+            $this->_options['atto:toolbar'] = $options['atto:toolbar'];
+        }
+
         editors_head_setup();
     }
 
