@@ -644,6 +644,13 @@ abstract class moodleform_mod extends moodleform {
                 $cm = null;
             }
             \core_availability\frontend::include_all_javascript($COURSE, $cm);
+
+            if ($this->_features->groups || $this->_features->groupings) {
+                // Option to limit group selector to groups allowed in Restrict Access.
+                $mform->addElement('checkbox', 'restrictgroupselector', '',
+                    get_string('restrictgroupdropdown', 'availability'));
+                $mform->hideIf('restrictgroupselector', 'groupmode', 'eq', NOGROUPS);
+            }
         }
 
         // Conditional activities: completion tracking section

@@ -64,5 +64,6 @@ $string['or'] = 'or';
 $string['privacy:metadata'] = 'The Access restriction subsystem does not store any personal data.';
 $string['restrictaccess'] = 'Restrict access';
 $string['restrictbygroup'] = 'Add group/grouping access restriction';
+$string['restrictgroupdropdown'] = 'Restrict the groups drop-down to only the groups allowed by access restrictions.';
 $string['setheading'] = '{$a->number} Set of {$a->count} restriction(s)';
 $string['unknowncondition'] = 'Unknown condition (deleted condition plugin)';
