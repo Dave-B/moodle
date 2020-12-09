@@ -182,6 +182,21 @@ class discussion_list {
         $hasanyactions = $hasanyactions || $capabilitymanager->can_pin_discussions($user);
         $hasanyactions = $hasanyactions || $capabilitymanager->can_manage_forum($user);
 
+        // Limit group selector to groups allowed in Restrict Access.
+        $availability = json_decode($forum->get_course_module_record()->availability);
+        if ($availability) {
+            if ($availability->op == '|') {
+                $restrictiongroups = [];
+                foreach ($availability->c as $constraint) {
+                    if ($constraint->type == 'group') {
+                        $restrictiongroups[] = $constraint->id;
+                    }
+                }
+            }
+        } else {
+            $restrictiongroups = null;
+        }
+
         $forumview = [
             'forum' => (array) $forumexporter->export($this->renderer),
             'contextid' => $forum->get_context()->id,
@@ -197,7 +212,9 @@ class discussion_list {
             'groupchangemenu' => groups_print_activity_menu(
                 $cm,
                 $this->urlfactory->get_forum_view_url_from_forum($forum),
-                true
+                true,
+                false,
+                $restrictiongroups
             ),
             'hasmore' => ($alldiscussionscount > $pagesize),
             'notifications' => $this->get_notifications($user, $groupid),
