@@ -742,9 +742,11 @@ function groups_allgroups_course_menu($course, $urlroot, $update = false, $activ
  *   selecting this option does not prevent groups_get_activity_group from
  *   returning 0; it will still do that if the user has chosen 'all participants'
  *   in another activity, or not chosen anything.)
+ * @param array $restrictiongroups If supplied, only the groups with ids specified are shown.
+ *   Expected to be the group ids allowed from groups allowed by Access Restrictions.
  * @return mixed void or string depending on $return param
  */
-function groups_print_activity_menu($cm, $urlroot, $return=false, $hideallparticipants=false) {
+function groups_print_activity_menu($cm, $urlroot, $return=false, $hideallparticipants=false, $restrictiongroups=null) {
     global $USER, $OUTPUT;
 
     if ($urlroot instanceof moodle_url) {
@@ -779,6 +781,20 @@ function groups_print_activity_menu($cm, $urlroot, $return=false, $hideallpartic
         $usergroups = groups_get_all_groups($cm->course, $USER->id, $cm->groupingid);
     } else {
         $allowedgroups = groups_get_all_groups($cm->course, $USER->id, $cm->groupingid); // only assigned groups
+    }
+
+    if (!empty($restrictiongroups)) {
+        // If there's an access restriction by group, only show the allowed groups.
+        foreach ($allowedgroups as $group) {
+            if (!in_array($group->id, $restrictiongroups)) {
+                unset($allowedgroups[$group->id]);
+            }
+        }
+        foreach ($usergroups as $group) {
+            if (!in_array($group->id, $restrictiongroups)) {
+                unset($usergroups[$group->id]);
+            }
+        }
     }
 
     $activegroup = groups_get_activity_group($cm, true, $allowedgroups);
